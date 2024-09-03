@@ -1,0 +1,54 @@
+import { useContext, useEffect } from "react";
+import "./App.scss";
+import { ThemeContext } from "./context/ThemeContext";
+import { DARK_THEME, LIGHT_THEME } from "./constants/themeConstants";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MoonIcon from "./assets/icons/moon.svg";
+import SunIcon from "./assets/icons/sun.svg";
+import BaseLayout from "./layout/BaseLayout";
+import { Dashboard, PageNotFound, Users, Login, Roles } from "./screens";
+import { AuthProvider } from "./config/AuthProvider"; // Importar AuthProvider
+import PrivateRoute from "./config/PrivateRoute"; // Importar PrivateRoute
+
+function App() {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  // Agregar la clase dark-mode si el tema oscuro está activado
+  useEffect(() => {
+    if (theme === DARK_THEME) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [theme]);
+
+  return (
+    <AuthProvider> {/* Envolver en AuthProvider */}
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route element={<BaseLayout />}>
+            <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
+            <Route path="/users" element={<PrivateRoute element={<Users />} />} />
+            <Route path="/roles" element={<PrivateRoute element={<Roles />} />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Route>
+        </Routes>
+
+        <button
+          type="button"
+          className="theme-toggle-btn"
+          onClick={toggleTheme}
+        >
+          <img
+            className="theme-icon"
+            src={theme === LIGHT_THEME ? SunIcon : MoonIcon}
+            alt="theme icon"
+          />
+        </button>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;
