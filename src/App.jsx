@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { Dashboard, PageNotFound, Users, Login, Roles } from "./screens";
+import { Dashboard, PageNotFound, Users, Login, Roles, Fincas, ResetPassword } from "./screens";
 import { AuthProvider } from "./config/AuthProvider"; // Importar AuthProvider
 import PrivateRoute from "./config/PrivateRoute"; // Importar PrivateRoute
 
@@ -27,10 +27,12 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<BaseLayout />}>
             <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
             <Route path="/users" element={<PrivateRoute element={<Users />} />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} />} />
+            <Route path="/fincas" element={<PrivateRoute element={<Fincas />} />} />
             <Route path="*" element={<PageNotFound />} />
           </Route>
         </Routes>

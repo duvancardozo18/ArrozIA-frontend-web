@@ -3,6 +3,9 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
+import { FaUserCog } from "react-icons/fa";
+
+
 import {
   MdOutlineAttachMoney,
   MdOutlineBarChart,
@@ -77,7 +80,7 @@ const Sidebar = () => {
               </Link>
             </li>
             <li className="menu-item">
-              <Link to="/" className={`menu-link ${isActive('/fincas') ? 'active' : ''}`}>
+              <Link to="/fincas" className={`menu-link ${isActive('/fincas') ? 'active' : ''}`}>
                 <span className="menu-link-icon">
                   <MdOutlineBarChart size={20} />
                 </span>
@@ -95,7 +98,8 @@ const Sidebar = () => {
             <li className="menu-item">
               <Link to="/roles" className={`menu-link ${isActive('/roles') ? 'active' : ''}`}>
                 <span className="menu-link-icon">
-                  <MdOutlineMessage size={18} />
+                <FaUserCog />
+                
                 </span>
                 <span className="menu-link-text">Roles y permisos</span>
               </Link>
