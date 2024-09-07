@@ -1,36 +1,40 @@
 import React, { useEffect, useState } from "react";
 import AreaTableAction from "./AreaTableAction";
 import "./AreaTable.scss";
-import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
+import axiosInstance from '../../../config/AxiosInstance';
+import Newuser from "../../../screens/users/Newuser";  // Asegúrate de que la ruta sea correcta
 
-// Encabezados de la tabla
 const TABLE_HEADS = [
   "Nombre",
   "Apellido",
   "Email",
-  "",
+  "Acciones",
 ];
 
 const AreaTable = () => {
-  const [tableData, setTableData] = useState([]);  // Estado para los datos de la tabla
-  const [loading, setLoading] = useState(true);  // Estado para la carga de datos
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
 
-  // useEffect para cargar datos de la API
+  const fetchData = async () => {
+    try {
+      const response = await axiosInstance.get('/users');
+      setTableData(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get('/users');  // Realiza la solicitud al endpoint 
-        const data = response.data;  // Acceder directamente a response.data
-        setTableData(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, []);  // El array vacío asegura que esto solo se ejecute una vez al montar el componente
+  }, []);
+
+  const handleSave = (newUser) => {
+    setTableData((prevData) => [...prevData, newUser]);  // Añade el nuevo usuario a la tabla
+    setShowNewUserModal(false);  // Cierra el modal después de guardar
+  };
 
   return (
     <section className="content-area-table">
@@ -38,8 +42,9 @@ const AreaTable = () => {
         <h4 className="data-table-title"></h4>
       </div>
       <div className="data-table-diagram">
-        {loading ? (  // Muestra un mensaje de carga mientras se cargan los datos
-          <p> Cargando...</p>
+       
+        {loading ? (
+          <p>Cargando...</p>
         ) : (
           <table>
             <thead>
@@ -50,13 +55,13 @@ const AreaTable = () => {
               </tr>
             </thead>
             <tbody>
-              {tableData?.map((dataItem) => (  // Usa los datos cargados en lugar de los estáticos
+              {tableData?.map((dataItem) => (
                 <tr key={dataItem.id}>
                   <td>{dataItem.nombre}</td>
                   <td>{dataItem.apellido}</td>
                   <td>{dataItem.email}</td>
                   <td className="dt-cell-action">
-                    <AreaTableAction />
+                    <AreaTableAction user={dataItem} onSave={fetchData} />
                   </td>
                 </tr>
               ))}
@@ -64,6 +69,14 @@ const AreaTable = () => {
           </table>
         )}
       </div>
+
+      {/* Modal para crear un nuevo usuario */}
+      {showNewUserModal && (
+        <Newuser
+          closeModal={() => setShowNewUserModal(false)}
+          onSave={handleSave}
+        />
+      )}
     </section>
   );
 };

@@ -9,6 +9,7 @@ import BaseLayout from "./layout/BaseLayout";
 import { Dashboard, PageNotFound, Users, Login, Roles, Fincas, ResetPassword } from "./screens";
 import { AuthProvider } from "./config/AuthProvider"; // Importar AuthProvider
 import PrivateRoute from "./config/PrivateRoute"; // Importar PrivateRoute
+import TablePermisos from "./components/dashboard/areaTable/TablePermisos"; // Importar TablePermisos
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -33,6 +34,7 @@ function App() {
             <Route path="/users" element={<PrivateRoute element={<Users />} />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} />} />
             <Route path="/fincas" element={<PrivateRoute element={<Fincas />} />} />
+            <Route path="/permisos" element={<PrivateRoute element={<TablePermisos />} />} /> {/* Nueva ruta para TablePermisos */}
             <Route path="*" element={<PageNotFound />} />
           </Route>
         </Routes>
