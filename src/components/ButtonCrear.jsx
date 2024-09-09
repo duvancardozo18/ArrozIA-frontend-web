@@ -1,23 +1,33 @@
-import React from 'react';
-import Button from '@mui/material/Button';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import Newuser from '../screens/users/Newuser'; // Importa el componente del modal
 
-const MyButton = () => {
-  const handleClick = () => {
-    alert('¡Botón presionado!');
-  };
+const ButtonStyled = styled.button`
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  
+  &:hover {
+    background-color: #218838;
+  }
+`;
+
+const ButtonCrear = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   return (
-    <Button sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <Button
-        variant="contained"
-        color="secondary" // Cambia 'secondary' por el color que prefieras
-        onClick={handleClick}
-        sx={{ backgroundColor: '#14B814' }} // Cambia el color hexadecimal por el que desees
-      >
-        Crear Usuario
-      </Button>
-    </Button>
+    <>
+      <ButtonStyled onClick={openModal}>Crear Usuario</ButtonStyled>
+      {showModal && <Newuser closeModal={closeModal} />} {/* Muestra el modal si showModal es true */}
+    </>
   );
 };
 
-export default MyButton;
+export default ButtonCrear;
