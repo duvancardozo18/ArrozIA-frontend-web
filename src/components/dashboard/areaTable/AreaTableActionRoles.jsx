@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineCog } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import EditModal from "../../../screens/users/EditModal";
-import DeleteModal from "../../../screens/users/DeleteModal";
-import DeleteSuccessModal from "../../../screens/users/DeleteSuccessModal";  // Asegúrate de que la ruta sea correcta
+import EditRoleModal from "../../../screens/roles/EditRoleModal";  // Asegúrate de crear este componente
+import DeleteModal from "../../../screens/roles/DeleteModal";  // Reutiliza el modal de confirmación de eliminación
+import DeleteSuccessModal from "../../../screens/roles/DeleteSuccessModal";  // Asegúrate de crear este componente para roles
 import axiosInstance from '../../../config/AxiosInstance';
 
 const rotate = keyframes`
@@ -67,7 +67,7 @@ const PermissionButton = styled(ActionButton)`
   }
 `;
 
-const AreaTableAction = ({ user, onSave }) => {
+const AreaTableActionRoles = ({ role, onSave }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);  // Estado para manejar el modal de éxito
@@ -81,21 +81,21 @@ const AreaTableAction = ({ user, onSave }) => {
 
   const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`/users/delete/${user.id}`);
+      await axiosInstance.delete(`/roles/delete/${role.id}`);  // Cambia la URL a la que corresponde a roles
       setShowSuccessModal(true);  // Muestra el modal de éxito después de eliminar
       closeDeleteModal();  // Cierra el modal de eliminación
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error deleting role:", error);
     }
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave(); // Refresca la tabla de usuarios después de cerrar el modal de éxito
+    onSave(); // Refresca la tabla de roles después de cerrar el modal de éxito
   };
 
   const handlePermissions = () => {
-    navigate('/permisos', { state: { user } });
+    navigate('/roles/permissions', { state: { role } });  // Asegúrate de tener esta ruta y componente
   };
 
   return (
@@ -112,11 +112,11 @@ const AreaTableAction = ({ user, onSave }) => {
         <HiOutlineCog size={18} />
       </PermissionButton>
 
-      {/* Modal de Edición */}
-      <EditModal
+      {/* Modal de Edición para Roles */}
+      <EditRoleModal
         show={showEditModal}
         closeModal={closeEditModal}
-        user={user}
+        role={role}
         onSave={onSave}
       />
 
@@ -127,7 +127,7 @@ const AreaTableAction = ({ user, onSave }) => {
         onConfirm={handleDelete}
       />
 
-      {/* Modal de Éxito */}
+      {/* Modal de Éxito para Roles */}
       <DeleteSuccessModal
         show={showSuccessModal}
         closeModal={closeSuccessModal}
@@ -136,4 +136,4 @@ const AreaTableAction = ({ user, onSave }) => {
   );
 };
 
-export default AreaTableAction;
+export default AreaTableActionRoles;

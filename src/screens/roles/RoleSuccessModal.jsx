@@ -22,14 +22,14 @@ const ModalOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 1000;
 `;
 
 const ModalContent = styled.div`
-  background: white; /* Mantiene el fondo del contenido sin transparencia */
+  background: linear-gradient(145deg, #f3f3f3, #ffffff);
   padding: 40px;
   border-radius: 15px;
-  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
   animation: ${fadeIn} 0.6s ease-out;
   position: relative;
@@ -77,23 +77,21 @@ const CloseButton = styled.button`
   }
 `;
 
-const DeleteSuccessModal = ({ show, closeModal }) => {
-    if (!show) return null;
-  
-    const handleClose = () => {
-      closeModal();  // Cierra el modal
-      window.location.reload();  // Refresca la página inmediatamente
-    };
-  
-    return (
-      <ModalOverlay>
-        <ModalContent>
-          <SuccessIcon>✓</SuccessIcon>
-          <SuccessMessage>Usuario eliminado correctamente</SuccessMessage>
-          <CloseButton onClick={handleClose}>Cerrar</CloseButton>
-        </ModalContent>
-      </ModalOverlay>
-    );
+const RoleSuccessModal = ({ closeModal }) => {
+  const handleClose = () => {
+    closeModal();  // Cierra el modal
+    window.location.reload();  // Refresca la página inmediatamente
   };
-  
-  export default DeleteSuccessModal;
+
+  return (
+    <ModalOverlay>
+      <ModalContent>
+        <SuccessIcon>✓</SuccessIcon>
+        <SuccessMessage>¡Rol creado exitosamente!</SuccessMessage>
+        <CloseButton onClick={handleClose}>Cerrar</CloseButton>
+      </ModalContent>
+    </ModalOverlay>
+  );
+};
+
+export default RoleSuccessModal;

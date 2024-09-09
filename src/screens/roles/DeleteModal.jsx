@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import DeleteSuccessModal from './DeleteSuccessModal';  // Asegúrate de que la ruta sea correcta
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -22,6 +21,12 @@ const ModalContent = styled.div`
   width: 450px;
   max-width: 100%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
+  transform: translateZ(0);
+  transition: transform 0.3s ease-in-out;
+
+  &:hover {
+    transform: translateY(-10px) scale(1.03) perspective(1000px);
+  }
 `;
 
 const ModalTitle = styled.h2`
@@ -77,42 +82,29 @@ const ConfirmButton = styled.button`
 `;
 
 const DeleteModal = ({ show, onClose, onConfirm }) => {
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-
   const handleDelete = async (event) => {
-    event.preventDefault();  // Previene el refresco de la página
+    event.preventDefault();
     try {
-      await onConfirm();  // Llama a la función de eliminación
-      setShowSuccessModal(true);  // Muestra el modal de éxito después de eliminar
+      await onConfirm();
+      onClose();
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error deleting role:", error);
     }
   };
 
-  const closeSuccessModal = () => {
-    setShowSuccessModal(false);
-    onClose();  // Cierra el modal principal después de cerrar el modal de éxito
-  };
+  if (!show) return null;
 
   return (
-    <>
-      {show && !showSuccessModal && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalTitle>Confirmar Eliminación</ModalTitle>
-            <ModalText>¿Estás seguro de que deseas eliminar este usuario?</ModalText>
-            <ModalButtons>
-              <CancelButton onClick={onClose}>Cancelar</CancelButton>
-              <ConfirmButton onClick={handleDelete}>Eliminar</ConfirmButton>
-            </ModalButtons>
-          </ModalContent>
-        </ModalOverlay>
-      )}
-
-      {showSuccessModal && (
-        <DeleteSuccessModal show={showSuccessModal} closeModal={closeSuccessModal} />
-      )}
-    </>
+    <ModalOverlay>
+      <ModalContent>
+        <ModalTitle>Confirmar Eliminación</ModalTitle>
+        <ModalText>¿Estás seguro de que deseas eliminar este rol?</ModalText>
+        <ModalButtons>
+          <CancelButton onClick={onClose}>Cancelar</CancelButton>
+          <ConfirmButton onClick={handleDelete}>Eliminar</ConfirmButton>
+        </ModalButtons>
+      </ModalContent>
+    </ModalOverlay>
   );
 };
 

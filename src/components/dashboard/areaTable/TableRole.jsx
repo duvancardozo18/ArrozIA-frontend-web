@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AreaTableAction from "./AreaTableAction";
+import AreaTableAction from "./AreaTableActionRoles";
 import "./AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
 
