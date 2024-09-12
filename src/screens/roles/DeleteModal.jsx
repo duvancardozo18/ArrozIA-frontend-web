@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const ModalOverlay = styled.div`
@@ -81,10 +81,11 @@ const ConfirmButton = styled.button`
   }
 `;
 
-const DeleteModal = ({ show, onClose, onConfirm }) => {
+const DeleteModal = ({ show, onClose, roleId, onConfirm }) => {
   const handleDelete = async (event) => {
     event.preventDefault();
     try {
+      console.log(`Deleting role with ID: ${roleId}`);
       await onConfirm();
       onClose();
     } catch (error) {

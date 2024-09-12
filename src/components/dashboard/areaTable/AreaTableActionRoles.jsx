@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineCog } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import EditRoleModal from "../../../screens/roles/EditRoleModal";  // Asegúrate de crear este componente
-import DeleteModal from "../../../screens/roles/DeleteModal";  // Reutiliza el modal de confirmación de eliminación
-import DeleteSuccessModal from "../../../screens/roles/DeleteSuccessModal";  // Asegúrate de crear este componente para roles
+import EditRoleModal from "../../../screens/roles/EditRoleModal";
+import DeleteModal from "../../../screens/roles/DeleteModal";
+import DeleteSuccessModal from "../../../screens/roles/DeleteSuccessModal";
 import axiosInstance from '../../../config/AxiosInstance';
 
 const rotate = keyframes`
@@ -70,32 +70,70 @@ const PermissionButton = styled(ActionButton)`
 const AreaTableActionRoles = ({ role, onSave }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);  // Estado para manejar el modal de éxito
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
 
-  const openEditModal = () => setShowEditModal(true);
+  const openEditModal = () => {
+    if (role && role.id) {
+      console.log("Opening edit modal for role:", role);
+      setShowEditModal(true);
+    } else {
+      console.error("No se pudo abrir el modal de edición: ID de rol indefinido.");
+    }
+  };
+
   const closeEditModal = () => setShowEditModal(false);
 
-  const openDeleteModal = () => setShowDeleteModal(true);
+  const openDeleteModal = () => {
+    if (role && role.id) {
+      console.log("Opening delete modal for role:", role);
+      setShowDeleteModal(true);
+    } else {
+      console.error("No se pudo abrir el modal de eliminación: ID de rol indefinido.");
+    }
+  };
+
   const closeDeleteModal = () => setShowDeleteModal(false);
 
   const handleDelete = async () => {
+    if (!role || !role.id) {
+      console.error("No se pudo eliminar el rol: ID de rol indefinido.");
+      return;
+    }
+
     try {
-      await axiosInstance.delete(`/roles/delete/${role.id}`);  // Cambia la URL a la que corresponde a roles
-      setShowSuccessModal(true);  // Muestra el modal de éxito después de eliminar
-      closeDeleteModal();  // Cierra el modal de eliminación
+      console.log(`DELETE /roles/${role.id}`);
+      const response = await axiosInstance.delete(`/roles/${role.id}`);
+      console.log("Rol eliminado correctamente:", response.data);
+      setShowSuccessModal(true);
+      closeDeleteModal();
     } catch (error) {
-      console.error("Error deleting role:", error);
+      if (error.response) {
+        if (error.response.status === 404) {
+          console.error("Rol no encontrado o ya eliminado.");
+          alert("Error: El rol no fue encontrado o ya ha sido eliminado.");
+        } else if (error.response.status === 400) {
+          console.error("No se puede eliminar el rol debido a registros relacionados.");
+          alert("Error: No se puede eliminar el rol debido a registros relacionados.");
+        } else {
+          console.error("Error al eliminar el rol:", error.response.data);
+          alert("Error: Hubo un problema al eliminar el rol.");
+        }
+      } else {
+        console.error("Error al eliminar el rol:", error.message);
+        alert("Error: Hubo un problema de red o el servidor no respondió.");
+      }
     }
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave(); // Refresca la tabla de roles después de cerrar el modal de éxito
+    onSave();
+    window.location.reload(); // Refresca la página al cerrar el modal
   };
 
   const handlePermissions = () => {
-    navigate('/roles/permissions', { state: { role } });  // Asegúrate de tener esta ruta y componente
+    navigate('/roles/permissions', { state: { role } });
   };
 
   return (
@@ -108,30 +146,35 @@ const AreaTableActionRoles = ({ role, onSave }) => {
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
-      <PermissionButton onClick={handlePermissions}>
-        <HiOutlineCog size={18} />
-      </PermissionButton>
+      
 
       {/* Modal de Edición para Roles */}
-      <EditRoleModal
-        show={showEditModal}
-        closeModal={closeEditModal}
-        role={role}
-        onSave={onSave}
-      />
+      {showEditModal && (
+        <EditRoleModal
+          show={showEditModal}
+          closeModal={closeEditModal}
+          role={role}
+          onSave={onSave}
+        />
+      )}
 
       {/* Modal de Confirmación de Eliminación */}
-      <DeleteModal
-        show={showDeleteModal}
-        onClose={closeDeleteModal}
-        onConfirm={handleDelete}
-      />
+      {showDeleteModal && (
+        <DeleteModal
+          show={showDeleteModal}
+          onClose={closeDeleteModal}
+          roleId={role.id}
+          onConfirm={handleDelete}
+        />
+      )}
 
       {/* Modal de Éxito para Roles */}
-      <DeleteSuccessModal
-        show={showSuccessModal}
-        closeModal={closeSuccessModal}
-      />
+      {showSuccessModal && (
+        <DeleteSuccessModal
+          show={showSuccessModal}
+          closeModal={closeSuccessModal}
+        />
+      )}
     </div>
   );
 };

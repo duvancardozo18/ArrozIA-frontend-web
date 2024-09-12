@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
 import SuccessModal from './RoleSuccessModal';  // Asegúrate de que la ruta sea correcta
@@ -74,6 +74,20 @@ const InputGroup = styled.div`
   }
 `;
 
+const CheckboxGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  input {
+    margin-right: 10px;
+  }
+`;
+
 const SubmitButton = styled.button`
   width: 100%;
   padding: 12px;
@@ -95,14 +109,40 @@ const SubmitButton = styled.button`
 const NewRol = ({ show, closeModal, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: '',
-    descripcion: ''
+    descripcion: '',
+    permisos: []  // Nuevo campo para almacenar permisos seleccionados
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [permissions, setPermissions] = useState([]); // Estado para almacenar permisos disponibles
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        const response = await axiosInstance.get('/permissions'); // Cambia la ruta si es necesario
+        setPermissions(response.data.permissions); // Asegúrate de que la respuesta tenga la lista de permisos
+      } catch (error) {
+        console.error("Error fetching permissions:", error);
+      }
+    };
+
+    fetchPermissions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prevState) => {
+      const permisos = checked
+        ? [...prevState.permisos, value]
+        : prevState.permisos.filter((permiso) => permiso !== value);
+
+      return { ...prevState, permisos };
+    });
   };
 
   const handleSubmit = async (event) => {
@@ -119,6 +159,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal(); // Cierra el modal principal también
+    onSave(); // Refresca la tabla de roles
   };
 
   if (!show) return null;
@@ -150,6 +191,19 @@ const NewRol = ({ show, closeModal, onSave }) => {
                 rows="4"
               />
             </InputGroup>
+            <CheckboxGroup>
+              <label>Permisos</label>
+              {permissions.map((permiso) => (
+                <CheckboxLabel key={permiso.id}>
+                  <input
+                    type="checkbox"
+                    value={permiso.id}
+                    onChange={handleCheckboxChange}
+                  />
+                  {permiso.nombre}
+                </CheckboxLabel>
+              ))}
+            </CheckboxGroup>
             <SubmitButton type="submit">Crear Rol</SubmitButton>
           </form>
         </ModalContent>
