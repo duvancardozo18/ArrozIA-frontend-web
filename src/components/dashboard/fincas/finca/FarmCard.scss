@@ -1,0 +1,62 @@
+.farm-card {
+  .card-finca {
+    background-color: var(--color-white);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+    padding: 1.4rem;
+    border-radius: var(--border-radius-2);
+    box-shadow: none; /* Sin sombra por defecto */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    justify-content: space-between;
+    position: relative;
+
+    &:hover {
+      background-color: var(--color-light); /* Efecto hover */
+      transform: translateY(-5px); /* Efecto de elevación */
+    }
+
+    &.selected {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra solo para la finca seleccionada */
+    }
+  }
+
+  .icon-container {
+    background-color: #14B814; /* Fondo verde para el ícono */
+    padding: 0.8rem;
+    border-radius: 10px; /* Bordes redondeados */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info h3 {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .info small {
+    font-size: 0.85rem;
+    color: var(--color-info-dark);
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .actions svg {
+    font-size: 1.5rem;
+  }
+
+  .actions svg:hover {
+    transition: all 0.2s ease;
+  }
+}
