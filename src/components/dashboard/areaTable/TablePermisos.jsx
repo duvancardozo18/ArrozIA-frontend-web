@@ -1,46 +1,42 @@
 import React, { useEffect, useState } from "react";
-import AreaTableActionRoles from "./AreaTableActionRoles"; // Asegúrate de que este sea el nombre correcto del archivo
+import AreaTableActionPermisos from "./AreaTableActionPermisos";
 import "./AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
 
 const TABLE_HEADS = [
   "Nombre",
   "Descripción",
-  "Acciones"  // Agregando el encabezado "Acciones"
+  "Acciones"  // Encabezado para la columna de acciones
 ];
 
-const TableRole = () => {
+const TablePermisos = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const fetchData = async () => {  // Mover la función fuera del useEffect para reutilizarla
-    try {
-      const response = await axiosInstance.get('/roles');
-      const data = response.data;
-
-      if (Array.isArray(data)) {
-        setTableData(data);
-      } else if (data && Array.isArray(data.roles)) {
-        setTableData(data.roles);
-      } else {
-        setTableData([]);
-      }
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false);
-    }
-  };
+  const [permissionIds, setPermissionIds] = useState([1, 2, 3, 4]);  // Lista de IDs de permisos
 
   useEffect(() => {
-    fetchData();  // Llamar a la función fetchData cuando el componente se monta
-  }, []);
+    const fetchPermissions = async () => {
+      try {
+        const promises = permissionIds.map(id => 
+          axiosInstance.get(`/permissions/${id}`).catch(error => null)  // Manejo de errores individuales
+        );
+        const responses = await Promise.all(promises);
+        const data = responses.filter(response => response !== null).map(response => response.data);
+        setTableData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error al obtener los permisos:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchPermissions();
+  }, [permissionIds]);
 
   return (
     <section className="content-area-table">
       <div className="data-table-info">
-        <h4 className="data-table-title">Roles</h4>
+        <h4 className="data-table-title">Permisos</h4>
       </div>
       <div className="data-table-diagram">
         {loading ? (
@@ -60,7 +56,7 @@ const TableRole = () => {
                   <td>{dataItem.nombre}</td>
                   <td>{dataItem.descripcion}</td>
                   <td className="dt-cell-action">
-                    <AreaTableActionRoles role={dataItem} onSave={fetchData} />
+                    <AreaTableActionPermisos permiso={dataItem} onSave={() => fetchPermissions()} />
                   </td>
                 </tr>
               ))}
@@ -72,4 +68,4 @@ const TableRole = () => {
   );
 };
 
-export default TableRole;
+export default TablePermisos;

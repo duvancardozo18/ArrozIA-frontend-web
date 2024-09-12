@@ -1,8 +1,9 @@
 import React, { useContext, useEffect } from 'react';
-import { AreaCards, AreaCharts, AreaTable, AreaTop } from "../../components";
+import { AreaTop } from "../../components";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from 'react-router-dom';
 import TableRole from '../../components/dashboard/areaTable/TableRole';
+import ButtonCrearRoles from '../../components/ButtonCrearRoles';  // Importa el botón
 
 const Roles = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -25,6 +26,7 @@ const Roles = () => {
   return (
     <div className="content-area">
       <AreaTop title="Roles" />
+      <ButtonCrearRoles />  {/* Agrega el botón aquí */}
       <TableRole />
     </div>
   );
