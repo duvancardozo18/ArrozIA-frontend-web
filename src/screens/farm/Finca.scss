@@ -1,0 +1,311 @@
+// Importa las fuentes
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+// Variables de color
+:root {
+  --color-primary: #6C9BCF;
+  --color-danger: #FF0060;
+  --color-success: #1B9C85;
+  --color-warning: #F7D060;
+  --color-white: #fff;
+  --color-info-dark: #7d8da1;
+  --color-dark: #363949;
+  --color-light: rgba(132, 139, 200, 0.18);
+  --color-dark-variant: #677483;
+  --color-background: #f6f6f9;
+
+  --card-border-radius: 2rem;
+  --border-radius-1: 0.4rem;
+  --border-radius-2: 1.2rem;
+
+  --card-padding: 1.8rem;
+  --padding-1: 1.2rem;
+
+  --box-shadow: 0 2rem 3rem var(--color-light);
+}
+
+.dark-mode-variables {
+  --color-background: #181a1e;
+  --color-white: #202528;
+  --color-dark: #edeffd;
+  --color-dark-variant: #a3bdcc;
+  --color-light: rgba(0, 0, 0, 0.4);
+  --box-shadow: 0 2rem 3rem var(--color-light);
+}
+
+// Reset básico
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  appearance: 0;
+  border: 0;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  user-select: none;
+  overflow-x: hidden;
+  color: var(--color-dark);
+  background-color: var(--color-background);
+}
+
+// Títulos y textos
+h1 {
+  font-weight: 800;
+  font-size: 1.8rem;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+h3 {
+  font-weight: 500;
+  font-size: 0.87rem;
+}
+
+.text-muted {
+  color: var(--color-info-dark);
+}
+
+// Contenedores y estilos de la página
+.content-area {
+  padding: var(--padding-1);
+}
+
+.layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.box-lote {
+  width: 70%;
+  background-color: var(--color-white);
+  color: var(--color-dark);
+  padding: var(--card-padding);
+  text-align: center;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--card-border-radius);
+  margin-top: 1.3rem;
+}
+
+
+.right-section {
+  width: 28%;
+  margin-top: 1.4rem;
+}
+
+
+.farms {
+  margin-top: 2rem;
+}
+
+.farm-notification {
+  background-color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+  padding: 1.4rem (--card-padding);
+  border-radius: var(--border-radius-2);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.farm-notification .notification .content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+}
+
+
+.icon {
+  padding: 0.6rem;
+  color: var(--color-white);
+  background-color: var(--color-success);
+  border-radius: 20%;
+  display: flex;
+}
+
+//edicion para la card finca
+
+
+.card-finca {
+    background-color: var(--color-white);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+    padding: 1.4rem;
+    border-radius: var(--border-radius-2);
+    box-shadow: none; /* Sin sombra por defecto */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    justify-content: space-between;
+    position: relative;
+  
+    &:hover {
+      background-color: var(--color-light); /* Efecto hover */
+      transform: translateY(-5px); /* Efecto de elevación */
+    }
+  
+    &.selected {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra solo para la finca seleccionada */
+    }
+  }
+  
+  
+  
+  .icon-container {
+    background-color: #14B814; /* Fondo verde para el ícono */
+    padding: 0.8rem;
+    border-radius: 10px; /* Bordes redondeados */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .info h3 {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .info small {
+    font-size: 0.85rem;
+    color: var(--color-info-dark);
+  }
+  
+  .actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .actions svg {
+    font-size: 1.5rem;
+  }
+  
+  .actions svg:hover {
+    transition: all 0.2s ease;
+  }
+
+//edicion para la tabla lote
+.lote-table-container {
+    width: 100%;
+    background-color: var(--color-white);
+    padding: 20px;
+    border-radius: var(--card-border-radius);
+    box-shadow: none; /* Sin sombra por defecto */
+    
+    &.with-shadow {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra solo si hay finca seleccionada */
+    }
+  }
+  
+  
+  .lote-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .lote-table th, .lote-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--color-light);
+  }
+  
+  .lote-table th {
+    font-weight: 600;
+    border: none; /* Sin borde para eliminar el aspecto de tabla */
+  }
+  
+  .lote-table-container .add-lote-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .separator {
+    margin-top: 10px;
+    border: none;
+    border-top: 1px solid var(--color-light);
+  }
+  
+  button {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    opacity: 0.8;
+  }
+  
+   
+.icon.deactive {
+  background-color: var(--color-danger);
+}
+
+.add-farm {
+  background-color: var(--color-white);
+  border: 2px dashed var(--color-primary);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: var(--border-radius-2);
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.add-farm:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.add-farm div {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+// Layout responsive
+@media screen and (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .box-lote {
+    width: 100%;
+  }
+
+  .right-section {
+    width: 100%;
+    margin-top: 2rem;
+  }
+}
