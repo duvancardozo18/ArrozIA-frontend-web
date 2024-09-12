@@ -1,10 +1,9 @@
-import { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
-import { FaUserCog } from "react-icons/fa";
-
+import { FaUserCog, FaKey } from "react-icons/fa";
 
 import {
   MdOutlineAttachMoney,
@@ -18,7 +17,7 @@ import {
   MdOutlineSettings,
   MdOutlineShoppingBag,
 } from "react-icons/md";
-import { Link, useLocation } from "react-router-dom"; // Importar useLocation
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Importar useLocation y useNavigate
 import "./Sidebar.scss";
 import { SidebarContext } from "../../context/SidebarContext";
 
@@ -27,6 +26,7 @@ const Sidebar = () => {
   const { isSidebarOpen, closeSidebar } = useContext(SidebarContext);
   const navbarRef = useRef(null);
   const location = useLocation(); // Usar useLocation para obtener la ruta actual
+  const navigate = useNavigate(); // Usar useNavigate para manejar la navegación programáticamente
 
   // Función para determinar si el enlace está activo
   const isActive = (path) => location.pathname === path;
@@ -49,6 +49,14 @@ const Sidebar = () => {
     };
   }, []);
 
+  // Función para manejar el logout
+  const handleLogout = () => {
+    // Aquí puedes eliminar tokens o realizar cualquier limpieza necesaria
+    localStorage.removeItem('access_token');
+    // Redirigir al login o a la página principal
+    navigate('/');
+  };
+
   return (
     <nav
       className={`sidebar ${isSidebarOpen ? "sidebar-show" : ""}`}
@@ -56,13 +64,13 @@ const Sidebar = () => {
     >
       <div className="sidebar-top">
         <div className="sidebar-brand">
-        <img 
+          <img 
             src={theme === LIGHT_THEME ? LogoBlue : LogoWhite} 
             alt="Logo" 
             width="50"  // Agrega el tamaño deseado
             height="50" // Agrega el tamaño deseado
           />
-          <span className="sidebar-brand-text" >ARROZ IA</span>
+          <span className="sidebar-brand-text">ARROZ IA</span>
         </div>
         <button className="sidebar-close-btn" onClick={closeSidebar}>
           <MdOutlineClose size={24} />
@@ -98,11 +106,13 @@ const Sidebar = () => {
             <li className="menu-item">
               <Link to="/roles" className={`menu-link ${isActive('/roles') ? 'active' : ''}`}>
                 <span className="menu-link-icon">
-                <FaUserCog />
-                
+                  <FaUserCog />
                 </span>
-                <span className="menu-link-text">Roles y permisos</span>
+                <span className="menu-link-text">Roles</span>
               </Link>
+            </li>
+            <li className="menu-item">
+              
             </li>
           </ul>
         </div>
@@ -110,7 +120,7 @@ const Sidebar = () => {
         <div className="sidebar-menu sidebar-menu2">
           <ul className="menu-list">
             <li className="menu-item">
-              <Link to="/" className={`menu-link ${isActive('/settings') ? 'active' : ''}`}>
+              <Link to="/settings" className={`menu-link ${isActive('/settings') ? 'active' : ''}`}>
                 <span className="menu-link-icon">
                   <MdOutlineSettings size={20} />
                 </span>
@@ -118,12 +128,12 @@ const Sidebar = () => {
               </Link>
             </li>
             <li className="menu-item">
-              <Link to="/" className={`menu-link ${isActive('/logout') ? 'active' : ''}`}>
+              <button className="menu-link" onClick={handleLogout}>
                 <span className="menu-link-icon">
                   <MdOutlineLogout size={20} />
                 </span>
                 <span className="menu-link-text">Logout</span>
-              </Link>
+              </button>
             </li>
           </ul>
         </div>

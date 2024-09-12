@@ -1,94 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import axiosInstance from '../../../config/AxiosInstance';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import AreaTableActionPermisos from "./AreaTableActionPermisos";
+import "./AreaTable.scss";
+import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
 
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  font-size: 18px;
-  text-align: left;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-`;
-
-const StyledThead = styled.thead`
-  background-color: #f4f4f4;
-`;
-
-const StyledTh = styled.th`
-  padding: 12px;
-  border-bottom: 2px solid #ddd;
-`;
-
-const StyledTbody = styled.tbody`
-  background-color: #ffffff;
-`;
-
-const StyledTr = styled.tr`
-  border-bottom: 1px solid #ddd;
-
-  &:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-
-  &:hover {
-    background-color: #f1f1f1;
-  }
-`;
-
-const StyledTd = styled.td`
-  padding: 12px;
-`;
+const TABLE_HEADS = [
+  "Nombre",
+  "Descripción",
+  "Acciones"  // Encabezado para la columna de acciones
+];
 
 const TablePermisos = () => {
-  const location = useLocation();
-  const { user } = location.state || {};
-  const [userData, setUserData] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [permissionIds, setPermissionIds] = useState([1, 2, 3, 4]);  // Lista de IDs de permisos
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchPermissions = async () => {
       try {
-        const response = await axiosInstance.get(`/users/${user.id}`);
-        setUserData(response.data);
+        const promises = permissionIds.map(id => 
+          axiosInstance.get(`/permissions/${id}`).catch(error => null)  // Manejo de errores individuales
+        );
+        const responses = await Promise.all(promises);
+        const data = responses.filter(response => response !== null).map(response => response.data);
+        setTableData(data);
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error al obtener los permisos:", error);
+        setLoading(false);
       }
     };
 
-    if (user && user.id) {
-      fetchUserData();
-    }
-  }, [user]);
-
-  if (!userData) {
-    return <div>Cargando información del usuario...</div>;
-  }
+    fetchPermissions();
+  }, [permissionIds]);
 
   return (
-    <div>
-      <h2>Gestión de Permisos</h2>
-      <StyledTable>
-        <StyledThead>
-          <StyledTr>
-            <StyledTh>Nombre</StyledTh>
-            <StyledTh>Email</StyledTh>
-            <StyledTh>Rol</StyledTh>
-          </StyledTr>
-        </StyledThead>
-        <StyledTbody>
-          <StyledTr>
-            <StyledTd>{userData.nombre}</StyledTd>
-            <StyledTd>{userData.email}</StyledTd>
-            <StyledTd>
-              {userData.roles.map((rol) => (
-                <span key={rol.id}>{rol.nombre}</span>
+    <section className="content-area-table">
+      <div className="data-table-info">
+        <h4 className="data-table-title">Permisos</h4>
+      </div>
+      <div className="data-table-diagram">
+        {loading ? (
+          <p>Cargando...</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                {TABLE_HEADS.map((th, index) => (
+                  <th key={index}>{th}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.map((dataItem) => (
+                <tr key={dataItem.id}>
+                  <td>{dataItem.nombre}</td>
+                  <td>{dataItem.descripcion}</td>
+                  <td className="dt-cell-action">
+                    <AreaTableActionPermisos permiso={dataItem} onSave={() => fetchPermissions()} />
+                  </td>
+                </tr>
               ))}
-            </StyledTd>
-          </StyledTr>
-        </StyledTbody>
-      </StyledTable>
-    </div>
+            </tbody>
+          </table>
+        )}
+      </div>
+    </section>
   );
 };
 

@@ -1,54 +1,50 @@
 import React, { useEffect, useState } from "react";
-import AreaTableAction from "./AreaTableActionRoles";
+import AreaTableActionRoles from "./AreaTableActionRoles"; // Asegúrate de que este sea el nombre correcto del archivo
 import "./AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
 
-// Encabezados de la tabla
 const TABLE_HEADS = [
   "Nombre",
-  "Descripcion",
-  "",
+  "Descripción",
+  "Acciones"  // Agregando el encabezado "Acciones"
 ];
 
 const TableRole = () => {
-  const [tableData, setTableData] = useState([]);  // Estado para los datos de la tabla
-  const [loading, setLoading] = useState(true);  // Estado para la carga de datos
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // useEffect para cargar datos de la API
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get('/roles'); // Realiza la solicitud al endpoint 
-        const data = response.data; // Acceder directamente a response.data
+  const fetchData = async () => {  // Mover la función fuera del useEffect para reutilizarla
+    try {
+      const response = await axiosInstance.get('/roles');
+      const data = response.data;
 
-        // Asegurarte de que data sea un array
-        if (Array.isArray(data)) {
-          setTableData(data);
-        } else if (data && Array.isArray(data.roles)) { 
-          // Si la respuesta es un objeto y tiene una propiedad 'roles' que es un array
-          setTableData(data.roles);
-        } else {
-          setTableData([]); // Si la respuesta no es un array, establece un array vacío
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
+      if (Array.isArray(data)) {
+        setTableData(data);
+      } else if (data && Array.isArray(data.roles)) {
+        setTableData(data.roles);
+      } else {
+        setTableData([]);
       }
-    };
 
-    fetchData();
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();  // Llamar a la función fetchData cuando el componente se monta
   }, []);
 
   return (
     <section className="content-area-table">
       <div className="data-table-info">
-        <h4 className="data-table-title"></h4>
+        <h4 className="data-table-title">Roles</h4>
       </div>
       <div className="data-table-diagram">
-        {loading ? (  // Muestra un mensaje de carga mientras se cargan los datos
-          <p> Cargando...</p>
+        {loading ? (
+          <p>Cargando...</p>
         ) : (
           <table>
             <thead>
@@ -59,12 +55,12 @@ const TableRole = () => {
               </tr>
             </thead>
             <tbody>
-              {tableData.map((dataItem) => (  // Usa los datos cargados en lugar de los estáticos
+              {tableData.map((dataItem) => (
                 <tr key={dataItem.id}>
                   <td>{dataItem.nombre}</td>
                   <td>{dataItem.descripcion}</td>
                   <td className="dt-cell-action">
-                    <AreaTableAction />
+                    <AreaTableActionRoles role={dataItem} onSave={fetchData} />
                   </td>
                 </tr>
               ))}
