@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import background from '../../assets/images/background.jpg';
 import axiosInstance from '../../config/AxiosInstance'; // Asegúrate de que esté configurado correctamente
@@ -68,38 +69,66 @@ const Button = styled.button`
   }
 `;
 
-const ResetPassword = () => {
-  const [email, setEmail] = useState('');
+const ResetPasswordForm = () => {
+  const { token } = useParams(); // Captura el token desde la URL
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSendResetLink = async () => {
+  const handleResetPassword = async () => {
+    if (newPassword !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('token', token);
+    formData.append('new_password', newPassword);
+  
     try {
-      const response = await axiosInstance.post('/password-reset/request', { email });
-
+      const response = await axiosInstance.post('password-reset/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+  
       if (response.status === 200) {
-        alert('Se ha enviado el enlace de recuperación a tu correo.');
+        alert('Contraseña restablecida con éxito.');
+        navigate('/');
       } else {
-        alert('No se pudo enviar el enlace de recuperación.');
+        setError('Hubo un problema al restablecer la contraseña.');
       }
     } catch (error) {
-      console.error('Error al enviar el enlace de recuperación:', error);
-      alert('Ocurrió un error.');
+      console.error('Error al restablecer la contraseña:', error);
+      setError('Hubo un error al procesar tu solicitud.');
     }
   };
+  
 
   return (
     <ResetContainer>
       <FormContainer>
-        <Title>Solicitud de restablecimiento de contraseña</Title>
+        <Title>Restablecer Contraseña</Title>
+        {/* Mostrar mensajes de error */}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        
         <Input
-          type="email"
-          placeholder="Ingresa tu correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="password"
+          placeholder="Nueva contraseña"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
         />
-        <Button onClick={handleSendResetLink}>Enviar enlace de recuperación</Button>
+        <Input
+          type="password"
+          placeholder="Confirmar nueva contraseña"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+        <Button onClick={handleResetPassword}>Restablecer contraseña</Button>
       </FormContainer>
     </ResetContainer>
   );
 };
 
-export default ResetPassword;
+export default ResetPasswordForm;

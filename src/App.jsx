@@ -10,6 +10,9 @@ import { Dashboard, PageNotFound, Users, Login, Roles, Fincas, ResetPassword } f
 import { AuthProvider } from "./config/AuthProvider"; // Importar AuthProvider
 import PrivateRoute from "./config/PrivateRoute"; // Importar PrivateRoute
 import TablePermisos from "./components/dashboard/areaTable/TablePermisos"; // Importar TablePermisos
+import ResetPasswordForm from './screens/password/ResetPasswordForm'; // Asegúrate de importar el componente correctamente
+
+
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -24,12 +27,21 @@ function App() {
   }, [theme]);
 
   return (
-    <AuthProvider> {/* Envolver en AuthProvider */}
+    <AuthProvider> {/* Envolver toda la app en AuthProvider */}
       <Router>
         <Routes>
+          {/* Ruta pública para el login */}
           <Route path="/" element={<Login />} />
+
+          {/* Ruta pública para la solicitud de restablecimiento de contraseña */}
           <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* Ruta para restablecer la contraseña usando el token */}
+          <Route path="/Reset_Password/:token" element={<ResetPasswordForm />} />
+
+          {/* Rutas protegidas envueltas en BaseLayout */}
           <Route element={<BaseLayout />}>
+            {/* Rutas protegidas con PrivateRoute */}
             <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
             <Route path="/users" element={<PrivateRoute element={<Users />} />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} />} />
