@@ -1,35 +1,75 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
-import { FaUserCog, FaKey } from "react-icons/fa";
-
+import { FaUserCog } from "react-icons/fa";
 import {
-  MdOutlineAttachMoney,
   MdOutlineBarChart,
   MdOutlineClose,
-  MdOutlineCurrencyExchange,
   MdOutlineGridView,
   MdOutlineLogout,
-  MdOutlineMessage,
-  MdOutlinePeople,
   MdOutlineSettings,
-  MdOutlineShoppingBag,
+  MdOutlinePeople,
 } from "react-icons/md";
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Importar useLocation y useNavigate
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.scss";
 import { SidebarContext } from "../../context/SidebarContext";
+import { AuthContext } from "../../config/AuthProvider"; // Importar el contexto de autenticación
+import axiosInstance from '../../config/AxiosInstance';
 
 const Sidebar = () => {
   const { theme } = useContext(ThemeContext);
   const { isSidebarOpen, closeSidebar } = useContext(SidebarContext);
+  const { userId } = useContext(AuthContext); // Obtener userId desde el contexto de autenticación
   const navbarRef = useRef(null);
-  const location = useLocation(); // Usar useLocation para obtener la ruta actual
-  const navigate = useNavigate(); // Usar useNavigate para manejar la navegación programáticamente
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [canViewUsers, setCanViewUsers] = useState(false);
+  const [canViewRoles, setCanViewRoles] = useState(false);
 
   // Función para determinar si el enlace está activo
   const isActive = (path) => location.pathname === path;
+
+  // Verificar el permiso "view_secure_data" para el módulo de usuarios
+  const checkPermissionsUsers = async () => {
+    try {
+      console.log("User ID for permissions check (Users):", userId); // Verificar si userId es correcto
+      if (userId) {
+        const response = await axiosInstance.get(`/view-secure-data?user_id=${userId}`);
+        if (response.status === 200) {
+          setCanViewUsers(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking user permissions:", error);
+      setCanViewUsers(false); // Si hay un error, ocultar el módulo de usuarios
+    }
+  };
+
+  // Verificar el permiso "edit_secure_data" para el módulo de roles
+  const checkPermissionsRoles = async () => {
+    try {
+      console.log("User ID for permissions check (Roles):", userId); // Verificar si userId es correcto
+      if (userId) {
+        const response = await axiosInstance.get(`/edit-secure-data?user_id=${userId}`);
+        if (response.status === 200) {
+          setCanViewRoles(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking roles permissions:", error);
+      setCanViewRoles(false); // Si hay un error, ocultar el módulo de roles
+    }
+  };
+
+  useEffect(() => {
+    if (userId) { // Solo ejecuta si `userId` no es null
+      checkPermissionsUsers();
+      checkPermissionsRoles();
+    }
+  }, [userId]); // Asegurarse de que se ejecuta cuando `userId` está disponible
 
   // Cerrar la barra lateral al hacer clic fuera de ella
   const handleClickOutside = (event) => {
@@ -51,9 +91,8 @@ const Sidebar = () => {
 
   // Función para manejar el logout
   const handleLogout = () => {
-    // Aquí puedes eliminar tokens o realizar cualquier limpieza necesaria
     localStorage.removeItem('access_token');
-    // Redirigir al login o a la página principal
+    localStorage.removeItem('user_id');
     navigate('/');
   };
 
@@ -67,8 +106,8 @@ const Sidebar = () => {
           <img 
             src={theme === LIGHT_THEME ? LogoBlue : LogoWhite} 
             alt="Logo" 
-            width="50"  // Agrega el tamaño deseado
-            height="50" // Agrega el tamaño deseado
+            width="50" 
+            height="50" 
           />
           <span className="sidebar-brand-text">ARROZ IA</span>
         </div>
@@ -95,25 +134,26 @@ const Sidebar = () => {
                 <span className="menu-link-text">Fincas</span>
               </Link>
             </li>
-            <li className="menu-item">
-              <Link to="/users" className={`menu-link ${isActive('/users') ? 'active' : ''}`}>
-                <span className="menu-link-icon">
-                  <MdOutlinePeople size={20} />
-                </span>
-                <span className="menu-link-text">Usuarios</span>
-              </Link>
-            </li>
-            <li className="menu-item">
-              <Link to="/roles" className={`menu-link ${isActive('/roles') ? 'active' : ''}`}>
-                <span className="menu-link-icon">
-                  <FaUserCog />
-                </span>
-                <span className="menu-link-text">Roles</span>
-              </Link>
-            </li>
-            <li className="menu-item">
-              
-            </li>
+            {canViewUsers && ( // Mostrar el módulo solo si el usuario tiene permiso
+              <li className="menu-item">
+                <Link to="/users" className={`menu-link ${isActive('/users') ? 'active' : ''}`}>
+                  <span className="menu-link-icon">
+                    <MdOutlinePeople size={20} />
+                  </span>
+                  <span className="menu-link-text">Usuarios</span>
+                </Link>
+              </li>
+            )}
+            {canViewRoles && ( // Mostrar el módulo solo si el usuario tiene permiso
+              <li className="menu-item">
+                <Link to="/roles" className={`menu-link ${isActive('/roles') ? 'active' : ''}`}>
+                  <span className="menu-link-icon">
+                    <FaUserCog />
+                  </span>
+                  <span className="menu-link-text">Roles</span>
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
 

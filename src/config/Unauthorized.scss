@@ -1,0 +1,33 @@
+.unauthorized-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+  
+    h1 {
+      font-size: 3rem;
+      color: #ff0000;
+    }
+  
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+  
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+  
