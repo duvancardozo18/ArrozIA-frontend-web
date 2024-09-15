@@ -1,0 +1,32 @@
+// src/components/dashboard/fincas/FincaMain.scss
+
+.content-area {
+  padding: var(--padding-1);
+}
+
+.layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.box-lote {
+  width: 70%;
+  background-color: var(--color-white);
+  color: var(--color-dark);
+  padding: var(--card-padding);
+  text-align: center;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--card-border-radius);
+  margin-top: 1.3rem;
+}
+
+.right-section {
+  width: 28%;
+  margin-top: 1.4rem;
+}
+
+.farms {
+  margin-top: 2rem;
+}
+
