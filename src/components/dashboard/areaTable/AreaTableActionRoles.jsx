@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineCog } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import EditRoleModal from "../../../screens/roles/EditRoleModal";
+import EditRoleModal from "../../../screens/roles/EditRoleModal2";
 import DeleteModal from "../../../screens/roles/DeleteModal";
 import DeleteSuccessModal from "../../../screens/roles/DeleteSuccessModal";
 import axiosInstance from '../../../config/AxiosInstance';

@@ -20,8 +20,8 @@ const ModalContent = styled.div`
   background: white;
   padding: 30px;
   border-radius: 20px;
-  width: 450px;
-  max-width: 100%;
+  width: 600px; /* Ajustar el ancho para las dos columnas */
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
@@ -58,6 +58,7 @@ const CloseButton = styled.button`
 
 const InputGroup = styled.div`
   margin-bottom: 20px;
+  flex: 1;
 
   label {
     display: block;
@@ -80,6 +81,16 @@ const InputGroup = styled.div`
       outline: none;
     }
   }
+`;
+
+const FormGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+`;
+
+const Column = styled.div`
+  flex: 1;
 `;
 
 const SubmitButton = styled.button`
@@ -124,9 +135,6 @@ const NewUser = ({ closeModal }) => {
         const fincasResponse = await axiosInstance.get('/farms');
         setFincas(fincasResponse.data || []);
 
-        // Verificar que las fincas están cargadas correctamente
-        console.log('Fincas cargadas:', fincasResponse.data);
-
       } catch (error) {
         console.error("Error fetching roles and fincas:", error);
         setErrorMessage("Error al cargar roles y fincas. Intente nuevamente.");
@@ -138,17 +146,11 @@ const NewUser = ({ closeModal }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('Campo cambiado:', name, 'Valor:', value);
 
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
-
-    // Verifica específicamente si el campo 'finca_id' está recibiendo un valor válido
-    if (name === 'finca_id') {
-        console.log("Finca seleccionada con ID:", value);
-    }
 };
 
 const handleSubmit = async (event) => {
@@ -156,7 +158,6 @@ const handleSubmit = async (event) => {
     try {
         setErrorMessage('');
 
-        // Verifica que todos los campos estén completos antes de enviar la solicitud
         if (!formData.nombre || !formData.apellido || !formData.email || !formData.password || !formData.rol_id || !formData.finca_id) {
             throw new Error("Todos los campos son obligatorios.");
         }
@@ -169,25 +170,20 @@ const handleSubmit = async (event) => {
         });
 
         const userId = userResponse.data.id;
-        console.log("User ID recibido:", userId);
 
         if (!userId) {
             throw new Error("No se pudo obtener el ID del usuario.");
         }
 
-        // Verifica los tipos de datos
         const dataToSend = {
             usuario_id: parseInt(userId, 10),
             rol_id: parseInt(formData.rol_id, 10),
             finca_id: parseInt(formData.finca_id, 10),
         };
 
-        // Verifica que 'finca_id' sea un número válido
         if (isNaN(dataToSend.finca_id)) {
             throw new Error("La finca seleccionada no es válida.");
         }
-
-        console.log("Datos enviados a /user-farm:", dataToSend);
 
         const response = await axiosInstance.post('/user-farm', dataToSend);
 
@@ -198,11 +194,9 @@ const handleSubmit = async (event) => {
         }
 
     } catch (error) {
-        console.error("Error al procesar la solicitud:", error);
         setErrorMessage(error.message || 'Error creando el usuario.');
     }
 };
-
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
@@ -214,78 +208,87 @@ const handleSubmit = async (event) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Usuario</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Usuario</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
-            <InputGroup>
-              <label>Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Apellido</label>
-              <input
-                type="text"
-                name="apellido"
-                value={formData.apellido}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Contraseña</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Rol</label>
-              <select
-                name="rol_id"
-                value={formData.rol_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione un rol</option>
-                {roles.map((rol) => (
-                  <option key={rol.id} value={rol.id}>{rol.nombre}</option>
-                ))}
-              </select>
-            </InputGroup>
-            <InputGroup>
-              <label>Finca</label>
-              <select
-                name="finca_id"
-                value={formData.finca_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione una finca</option>
-                {fincas.map((finca) => (
-                  <option key={finca.id} value={finca.id}>{finca.nombre}</option>
-                ))}
-              </select>
-            </InputGroup>
-            <SubmitButton type="submit">Crear Usuario</SubmitButton>
+            <FormGrid>
+              {/* Primera columna: Nombre, Apellido, Correo */}
+              <Column>
+                <InputGroup>
+                  <label>Nombre</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <label>Apellido</label>
+                  <input
+                    type="text"
+                    name="apellido"
+                    value={formData.apellido}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+              </Column>
+
+              {/* Segunda columna: Contraseña, Finca, Rol */}
+              <Column>
+                <InputGroup>
+                  <label>Contraseña</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <label>Finca</label>
+                  <select
+                    name="finca_id"
+                    value={formData.finca_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccione una finca</option>
+                    {fincas.map((finca) => (
+                      <option key={finca.id} value={finca.id}>{finca.nombre}</option>
+                    ))}
+                  </select>
+                </InputGroup>
+                <InputGroup>
+                  <label>Rol</label>
+                  <select
+                    name="rol_id"
+                    value={formData.rol_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccione un rol</option>
+                    {roles.map((rol) => (
+                      <option key={rol.id} value={rol.id}>{rol.nombre}</option>
+                    ))}
+                  </select>
+                </InputGroup>
+              </Column>
+            </FormGrid>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>

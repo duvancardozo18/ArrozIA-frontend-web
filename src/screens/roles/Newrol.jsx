@@ -21,31 +21,9 @@ const ModalContent = styled.div`
   padding: 30px;
   border-radius: 20px;
   width: 450px;
-  max-width: 100%;
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
-  transform: translateZ(0);
-  transition: transform 0.3s ease-in-out;
-
-  &:hover {
-    transform: translateY(-10px) scale(1.03) perspective(1000px);
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-  transition: color 0.2s ease-in-out;
-
-  &:hover {
-    color: #ff6b6b;
-  }
+  position: relative;
 `;
 
 const InputGroup = styled.div`
@@ -57,25 +35,21 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input, textarea {
+  input {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
     box-sizing: border-box;
     font-size: 16px;
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
-
-    &:focus {
-      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
-      transform: translateY(-3px);
-      outline: none;
-    }
   }
 `;
 
 const CheckboxGroup = styled.div`
   margin-bottom: 20px;
+  max-height: 200px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
 `;
 
 const CheckboxLabel = styled.label`
@@ -96,13 +70,28 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
     background-color: #218838;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+
+  &:hover {
+    color: #ff6b6b;
   }
 `;
 
@@ -169,7 +158,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Rol</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Rol</h2>
           <form onSubmit={handleSubmit}>
             <InputGroup>
               <label>Nombre del Rol</label>
@@ -181,7 +170,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
                 required
               />
             </InputGroup>
-            <InputGroup>
+            {/* <InputGroup>
               <label>Descripción</label>
               <textarea
                 name="descripcion"
@@ -190,7 +179,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
                 required
                 rows="4"
               />
-            </InputGroup>
+            </InputGroup> */}
             <CheckboxGroup>
               <label>Permisos</label>
               {permissions.map((permiso) => (
@@ -204,7 +193,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
                 </CheckboxLabel>
               ))}
             </CheckboxGroup>
-            <SubmitButton type="submit">Crear Rol</SubmitButton>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>

@@ -4,9 +4,10 @@ import "./AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
 
 const TABLE_HEADS = [
+  "#",
   "Nombre",
-  "Descripción",
-  "Acciones"  // Agregando el encabezado "Acciones"
+  "Acciones",
+  ""  // Agregando el encabezado "Acciones"
 ];
 
 const TableRole = () => {
@@ -40,7 +41,7 @@ const TableRole = () => {
   return (
     <section className="content-area-table">
       <div className="data-table-info">
-        <h4 className="data-table-title">Roles</h4>
+        <h4 className="data-table-title"></h4>
       </div>
       <div className="data-table-diagram">
         {loading ? (
@@ -57,8 +58,10 @@ const TableRole = () => {
             <tbody>
               {tableData.map((dataItem) => (
                 <tr key={dataItem.id}>
+                  <td>{dataItem.id}</td>
                   <td>{dataItem.nombre}</td>
-                  <td>{dataItem.descripcion}</td>
+                  {/* <td>{dataItem.descripcion}</td> */}
+                  
                   <td className="dt-cell-action">
                     <AreaTableActionRoles role={dataItem} onSave={fetchData} />
                   </td>

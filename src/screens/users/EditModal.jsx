@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';  // Asegúrate de que la ruta sea correcta
+import axiosInstance from '../../config/AxiosInstance';
 import EditSuccessModal from './EditSuccessModal';  // Importa el modal de éxito
+
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -20,8 +21,8 @@ const ModalContent = styled.div`
   background: white;
   padding: 30px;
   border-radius: 20px;
-  width: 450px;
-  max-width: 100%;
+  width: 600px;
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
@@ -58,6 +59,7 @@ const CloseButton = styled.button`
 
 const InputGroup = styled.div`
   margin-bottom: 20px;
+  flex: 1;
 
   label {
     display: block;
@@ -82,6 +84,16 @@ const InputGroup = styled.div`
   }
 `;
 
+const FormGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+`;
+
+const Column = styled.div`
+  flex: 1;
+`;
+
 const SubmitButton = styled.button`
   width: 100%;
   padding: 12px;
@@ -100,14 +112,21 @@ const SubmitButton = styled.button`
   }
 `;
 
+
+// Otros componentes estilizados omitidos para brevedad...
+
 const EditModal = ({ show, closeModal, user, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
     email: '',
-    rol_id: '1',
+    password: '',  // Contraseña opcional
+    rol_id: '',
+    finca_id: '',
   });
 
+  const [roles, setRoles] = useState([]);
+  const [fincas, setFincas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -118,29 +137,59 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
         apellido: user.apellido,
         email: user.email,
         rol_id: user.rol_id,
+        finca_id: user.finca_id,
       });
     }
+
+    const fetchRolesAndFincas = async () => {
+      try {
+        const rolesResponse = await axiosInstance.get('/roles');
+        setRoles(rolesResponse.data.roles || []);
+
+        const fincasResponse = await axiosInstance.get('/farms');
+        setFincas(fincasResponse.data || []);
+      } catch (error) {
+        setErrorMessage('Error al cargar roles y fincas. Intente nuevamente.');
+      }
+    };
+
+    fetchRolesAndFincas();
   }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       setErrorMessage('');
-      const response = await axiosInstance.put(`/users/update/${user.id}`, formData);
-      closeModal();  // Cerrar el EditModal
-      setShowSuccessModal(true);  // Mostrar el modal de éxito
-      onSave(response.data);  // Pasar el usuario actualizado a onSave
-    } catch (error) {
-      if (error.response && error.response.status === 400) {
-        setErrorMessage('El correo ya está registrado.');
-      } else {
-        setErrorMessage('Error actualizando el usuario.');
+
+      // Solo enviar el campo de contraseña si se ha modificado
+      const updatedFormData = { ...formData };
+      if (!updatedFormData.password) {
+        delete updatedFormData.password;
       }
+
+      // Actualizar datos personales (nombre, apellido, email, contraseña)
+      await axiosInstance.put(`/users/update/${user.id}`, updatedFormData);
+
+      console.log(formData.finca_id);
+      console.log("finca_id:", formData.finca_id);
+      // Actualizar finca y rol
+      await axiosInstance.put(`/user-farm-rol/update/${user.id}`, {
+        rol_id: parseInt(formData.rol_id),
+        finca_id: parseInt(formData.finca_id)
+      });
+      
+
+      closeModal();
+      setShowSuccessModal(true);  // Mostrar el modal de éxito
+      onSave();  // Actualiza la información del usuario si es necesario
+    } catch (error) {
+      setErrorMessage('Error actualizando el usuario.');
     }
   };
 
@@ -159,48 +208,83 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
             <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Usuario</h2>
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <form onSubmit={handleSubmit}>
-              <InputGroup>
-                <label>Apellido</label>
-                <input
-                  type="text"
-                  name="apellido"
-                  value={formData.apellido}
-                  onChange={handleChange}
-                  required
-                />
-              </InputGroup>
-              <InputGroup>
-                <label>Nombre</label>
-                <input
-                  type="text"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  required
-                />
-              </InputGroup>
-              <InputGroup>
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </InputGroup>
-              <InputGroup>
-                <label>Rol</label>
-                <select
-                  name="rol_id"
-                  value={formData.rol_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="1">Administrador</option>
-                  <option value="2">Usuario</option>
-                </select>
-              </InputGroup>
+              <FormGrid>
+                {/* Primera columna: Nombre, Apellido, Email */}
+                <Column>
+                  <InputGroup>
+                    <label>Nombre</label>
+                    <input
+                      type="text"
+                      name="nombre"
+                      value={formData.nombre}
+                      onChange={handleChange}
+                      required
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <label>Apellido</label>
+                    <input
+                      type="text"
+                      name="apellido"
+                      value={formData.apellido}
+                      onChange={handleChange}
+                      required
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <label>Contraseña (opcional)</label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                    />
+                  </InputGroup>
+                </Column>
+
+                {/* Segunda columna: Finca y Rol */}
+                <Column>
+                  <InputGroup>
+                    <label>Finca</label>
+                    <select
+                      name="finca_id"
+                      value={formData.finca_id}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Seleccione una fincas</option>
+                      {fincas.map((finca) => (
+                        <option key={finca.id} value={finca.id}>{finca.nombre}</option>
+                      ))}
+                    </select>
+
+                  </InputGroup>
+                  <InputGroup>
+                    <label>Rol</label>
+                    <select
+                      name="rol_id"
+                      value={formData.rol_id}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Seleccione un rol</option>
+                      {roles.map((rol) => (
+                        <option key={rol.id} value={rol.id}>{rol.nombre}</option>
+                      ))}
+                    </select>
+                  </InputGroup>
+                </Column>
+              </FormGrid>
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>
             </form>
           </ModalContent>

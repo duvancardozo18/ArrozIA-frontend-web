@@ -22,7 +22,7 @@ const FormContainer = styled.div`
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  width: 90%;
   max-width: 400px;
   text-align: center;
 `;
@@ -113,7 +113,7 @@ const Login = () => {
       login(access_token); // Utiliza la función login del contexto para guardar el token
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('userName', user_name);
-      navigate('/dashboard');
+      navigate('/fincas');
     } catch (error) {
       console.error('Error en el inicio de sesión:', error.response ? error.response.data : error.message);
       setError('Correo o contraseña incorrectos');

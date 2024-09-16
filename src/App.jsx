@@ -41,8 +41,8 @@ function App() {
           <Route element={<BaseLayout />}>
             {/* Rutas protegidas con PrivateRoute */}
             <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
-            <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="view_secure_data" />} />
-            <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="edit_secure_data" />} />
+            <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
+            <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/fincas" element={<PrivateRoute element={<Fincas />} />} />
             <Route path="/permisos" element={<PrivateRoute element={<TablePermisos />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />

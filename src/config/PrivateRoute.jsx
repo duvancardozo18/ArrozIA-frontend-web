@@ -3,7 +3,12 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from './AuthProvider';
 
 const PrivateRoute = ({ element, requiredPermission }) => {
-  const { isAuthenticated, permissions } = useContext(AuthContext);
+  const { isAuthenticated, permissions, loading } = useContext(AuthContext);
+
+  // Mientras se cargan los datos de autenticación y permisos, puedes mostrar un spinner o nulo
+  if (loading) {
+    return null; // O un componente de carga como <Spinner />
+  }
 
   // Verificar si el usuario está autenticado
   if (!isAuthenticated) {

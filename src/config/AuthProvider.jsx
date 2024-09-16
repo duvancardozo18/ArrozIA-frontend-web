@@ -7,6 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access_token'));
   const [userId, setUserId] = useState(null);
   const [permissions, setPermissions] = useState([]);
+  const [role, setRole] = useState(null); 
+  const [loading, setLoading] = useState(true);
 
   const parseJwt = (token) => {
     try {
@@ -26,55 +28,53 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      const decodedToken = parseJwt(token);
-      if (decodedToken && decodedToken.sub) {
-        setUserId(decodedToken.sub);
-        fetchPermissions(decodedToken.sub);
-        setIsAuthenticated(true);
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        const decodedToken = parseJwt(token);
+        if (decodedToken && decodedToken.sub) {
+          setUserId(decodedToken.sub);
+          await fetchUserData(decodedToken.sub);
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
       } else {
         setIsAuthenticated(false);
       }
-    } else {
-      setIsAuthenticated(false);
-    }
+      setLoading(false); 
+    };
+
+    initializeAuth();
   }, []);
 
-  const fetchPermissions = async (userId) => {
+  const fetchUserData = async (userId) => {
     try {
-      const viewResponse = await axiosInstance.get(`/view-secure-data?user_id=${userId}`);
-      const editResponse = await axiosInstance.get(`/edit-secure-data?user_id=${userId}`);
-
-      const perms = [];
-      if (viewResponse.status === 200) perms.push("view_secure_data");
-      if (editResponse.status === 200) perms.push("edit_secure_data");
-
-      setPermissions(perms);
+      const response = await axiosInstance.get(`/roles/${userId}/permissions`);
+      if (response.status === 200) {
+        const { role, permissions } = response.data; 
+        setRole(role);
+        setPermissions(permissions);
+      } else {
+        console.error('Error fetching user data:', response.status);
+      }
     } catch (error) {
-      console.error('Error fetching permissions:', error);
+      console.error('Error fetching user data:', error);
     }
   };
 
   const login = (token) => {
+    localStorage.setItem('access_token', token);
+    setIsAuthenticated(true);
     const decodedToken = parseJwt(token);
     if (decodedToken && decodedToken.sub) {
       setUserId(decodedToken.sub);
-      fetchPermissions(decodedToken.sub);
-      localStorage.setItem('access_token', token);
-      setIsAuthenticated(true);
+      fetchUserData(decodedToken.sub);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    setUserId(null);
-    setPermissions([]);
-    setIsAuthenticated(false);
-  };
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, userId, permissions }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId, permissions, role, loading, login }}>
       {children}
     </AuthContext.Provider>
   );
