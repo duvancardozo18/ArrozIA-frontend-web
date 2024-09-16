@@ -99,51 +99,77 @@ const CloseButton = styled.button`
 const EditRoleModal = ({ show, closeModal, role, onSave }) => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [permissions, setPermissions] = useState([]); // Estado para los permisos disponibles desde la base de datos
-  const [selectedPermissions, setSelectedPermissions] = useState([]); // Permisos seleccionados
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // Modal de éxito
+  const [permissions, setPermissions] = useState([]);
+  const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     if (role && role.id) {
       setNombre(role.nombre || '');
       setDescripcion(role.descripcion || '');
 
-      // Cargar permisos actuales del rol desde el nuevo endpoint
-      const fetchPermissionsByRole = async () => {
+      const fetchPermissions = async () => {
         try {
-          const response = await axiosInstance.get(`/roles/${role.id}/permissions`);
-          const rolePermissions = response.data.permissions || []; // Asumiendo que la respuesta es { permissions: [...] }
+          const [allPermissionsResponse, rolePermissionsResponse] = await Promise.all([
+            axiosInstance.get('/permissions'),
+            axiosInstance.get(`/roles/${role.id}/permissions`)
+          ]);
 
-          setSelectedPermissions(rolePermissions.map(permiso => permiso.id)); // Mapear solo los IDs de los permisos
-          setPermissions(rolePermissions); // Establecer los permisos para mostrarlos
-          console.log('Permisos específicos del rol:', rolePermissions);
+          const allPermissions = allPermissionsResponse.data.permissions || [];
+          const rolePermissionNames = rolePermissionsResponse.data.permissions || [];
+
+          const permissionNameToId = {};
+          allPermissions.forEach(permiso => {
+            permissionNameToId[permiso.nombre] = Number(permiso.id);
+          });
+
+          const rolePermissionIds = rolePermissionNames.map(permisoNombre => {
+            const id = permissionNameToId[permisoNombre];
+            if (isNaN(id)) {
+              console.warn('ID de permiso inválido para permiso:', permisoNombre);
+            }
+            return id;
+          }).filter(id => !isNaN(id));
+
+          const allPermissionsWithNumberIds = allPermissions.map(permiso => ({
+            ...permiso,
+            id: Number(permiso.id),
+          }));
+
+          setPermissions(allPermissionsWithNumberIds);
+          setSelectedPermissions(rolePermissionIds);
         } catch (error) {
-          console.error("Error al obtener los permisos del rol:", error);
+          console.error("Error al obtener los permisos:", error);
         }
       };
 
-      fetchPermissionsByRole();
+      fetchPermissions();
     }
   }, [role]);
 
-  const handleCheckboxChange = (e) => {
+  const handleCheckboxChange = async (e) => {
     const { value, checked } = e.target;
-    const permisoId = parseInt(value, 10); // Asegúrate de que el valor sea un número
-    setSelectedPermissions((prevState) => {
-      let updatedPermissions;
-      if (checked) {
-        // Añadir el permiso si está seleccionado
-        updatedPermissions = [...prevState, permisoId];
-      } else {
-        // Remover el permiso si está desmarcado
-        updatedPermissions = prevState.filter((id) => id !== permisoId);
+    const permisoId = Number(value);
+  
+    if (checked) {
+      // Agregar el permiso al rol
+      try {
+        await axiosInstance.post(`/roles/${role.id}/permissions/${permisoId}`);
+        setSelectedPermissions((prevState) => [...prevState, permisoId]);
+      } catch (error) {
+        console.error(`Error al agregar el permiso con ID ${permisoId}:`, error);
       }
-
-      console.log(`Permiso ${permisoId} ${checked ? 'seleccionado' : 'deseleccionado'}`);
-      console.log('Permisos seleccionados actualizados:', updatedPermissions);
-      return updatedPermissions;
-    });
+    } else {
+      // Eliminar el permiso del rol
+      try {
+        await axiosInstance.delete(`/roles/${role.id}/permissions/${permisoId}`);
+        setSelectedPermissions((prevState) => prevState.filter((id) => id !== permisoId));
+      } catch (error) {
+        console.error(`Error al eliminar el permiso con ID ${permisoId}:`, error);
+      }
+    }
   };
+  
 
   const handleUpdateRole = async () => {
     if (!role || !role.id) {
@@ -157,9 +183,8 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
         descripcion, 
         permisos: selectedPermissions // Enviar permisos seleccionados (IDs)
       });
-      console.log("Respuesta del backend:", response.data);
       onSave();
-      setShowSuccessModal(true); // Muestra el modal de éxito
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al actualizar el rol:", error);
     }
@@ -167,15 +192,14 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    closeModal(); // Cierra el modal de edición
-
+    closeModal();
     setTimeout(() => {
       window.location.reload();
-    }, 100); // Retraso de 100ms para que el refresco parezca instantáneo
+    }, 100);
   };
 
   const handleCloseModal = () => {
-    setSelectedPermissions([]); // Reiniciar los permisos seleccionados
+    setSelectedPermissions([]);
     closeModal();
   };
 
@@ -203,15 +227,15 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
                 <CheckboxLabel key={index}>
                   <input
                     type="checkbox"
-                    value={permiso.id} // El valor es el ID del permiso
-                    checked={selectedPermissions.includes(permiso.id)} // Verifica si el ID está seleccionado
+                    value={permiso.id}
+                    checked={selectedPermissions.includes(permiso.id)}
                     onChange={handleCheckboxChange}
                   />
-                  {permiso.name} {/* Muestra el nombre del permiso */}
+                  {permiso.nombre}
                 </CheckboxLabel>
               ))
             ) : (
-              <p>No permissions available</p> // En caso de que no haya permisos
+              <p>No hay permisos disponibles</p>
             )}
           </CheckboxGroup>
 
