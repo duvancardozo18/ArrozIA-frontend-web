@@ -1,11 +1,12 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000', // Cambia esto al URL de tu backend
+  baseURL: import.meta.env.VITE_API_BASE_URL, // Usa la variable de entorno
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
 // Interceptor de solicitud para agregar el token de autenticación
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -19,6 +20,7 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 // Interceptor de respuesta para manejar errores globalmente
 axiosInstance.interceptors.response.use(
   (response) => response, // Retorna la respuesta si no hay errores
@@ -31,4 +33,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error); // Retornar el error para manejarlo localmente si es necesario
   }
 );
+
 export default axiosInstance;
