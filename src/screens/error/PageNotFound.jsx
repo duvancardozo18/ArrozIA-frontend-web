@@ -1,10 +1,18 @@
+// src/components/PageNotFound.jsx
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './PageNotFound.css'; // Asegúrate de crear este archivo de estilos
 
 const PageNotFound = () => {
   return (
-    <div>
-      Page Not Found
+    <div className="not-found-container">
+      <h1>404</h1>
+      <p>Página no encontrada</p>
+      <Link to="/" className="home-link">
+        Volver al inicio
+      </Link>
     </div>
-  )
-}
+  );
+};
 
-export default PageNotFound
+export default PageNotFound;

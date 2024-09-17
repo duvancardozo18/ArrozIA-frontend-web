@@ -26,6 +26,20 @@ function App() {
     }
   }, [theme]);
 
+  const themeToggleButton = (
+    <button
+      type="button"
+      className="theme-toggle-btn"
+      onClick={toggleTheme}
+    >
+      <img
+        className="theme-icon"
+        src={theme === LIGHT_THEME ? SunIcon : MoonIcon}
+        alt="theme icon"
+      />
+    </button>
+  );
+
   return (
     <AuthProvider>
       <Router>
@@ -43,31 +57,16 @@ function App() {
           <Route path="/Reset_Password/:token" element={<ResetPasswordForm />} />
 
           {/* Rutas protegidas envueltas en BaseLayout */}
-          <Route element={<BaseLayout />}>
-
-
-            {/* Rutas protegidas con PrivateRoute */}
+          <Route element={<PrivateRoute element={<BaseLayout />} />}>
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="ver_usuarios" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="ver_roles" />} />
             <Route path="/farms" element={<PrivateRoute element={<Fincas />} />} />
             <Route path="/crop" element={<PrivateRoute element={<CropMain />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
-
-            <Route path="*" element={<PageNotFound />} />
           </Route>
-        </Routes>
 
-        <button
-          type="button"
-          className="theme-toggle-btn"
-          onClick={toggleTheme}
-        >
-          <img
-            className="theme-icon"
-            src={theme === LIGHT_THEME ? SunIcon : MoonIcon}
-            alt="theme icon"
-          />
-        </button>
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
       </Router>
     </AuthProvider>
   );
