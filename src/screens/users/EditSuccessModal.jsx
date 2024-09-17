@@ -78,7 +78,8 @@ const CloseButton = styled.button`
 `;
 
 const EditSuccessModal = ({ show, closeModal }) => {
-  if (!show) return null;
+  if (!show ) return null; 
+
 
   return (
     <ModalOverlay>

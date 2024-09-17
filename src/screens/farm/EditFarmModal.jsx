@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
+import axiosInstance from '../../config/AxiosInstance';  // Asegúrate de que la ruta sea correcta
+import EditFarmSuccessModal from './EditFarmSuccesModal';  // Importa el modal de éxito
+
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -30,6 +32,31 @@ const ModalContent = styled.div`
   }
 `;
 
+const ErrorMessage = styled.p`
+  color: #ff6b6b;
+  font-size: 18px;  
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;  
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #ff6b6b;
+  }
+`;
+
 const InputGroup = styled.div`
   margin-bottom: 20px;
 
@@ -46,6 +73,13 @@ const InputGroup = styled.div`
     border: 1px solid #ddd;
     box-sizing: border-box;
     font-size: 16px;
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+
+    &:focus {
+      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
+      transform: translateY(-3px);
+      outline: none;
+    }
   }
 `;
 
@@ -57,6 +91,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
+  font-family: 'Roboto', sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -66,118 +101,125 @@ const SubmitButton = styled.button`
   }
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  color: #333;
-  cursor: pointer;
-  transition: color 0.3s ease-in-out;
+const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    ubicacion: '',
+    area_total: '' || null,
+    latitud: '' || null,
+    longitud: '' || null
+  });
 
-  &:hover {
-    color: #ff6b6b;
-  }
-`;
-
-const EditFarmModal = ({ show, closeModal, finca, onSave }) => {
-  const [nombre, setNombre] = useState('');
-  const [ubicacion, setUbicacion] = useState('');
-  const [areaTotal, setAreaTotal] = useState('');
-  const [latitud, setLatitud] = useState('');
-  const [longitud, setLongitud] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    if (finca && finca.id) {
-      setNombre(finca.nombre || '');
-      setUbicacion(finca.ubicacion || '');
-      setAreaTotal(finca.area_total || '');
-      setLatitud(finca.latitud || '');
-      setLongitud(finca.longitud || '');
-    } else {
-      console.error("No se pudo editar la finca: ID de finca indefinido.");
+    if (farm) {
+      setFormData({
+        nombre: farm.nombre,
+        ubicacion: farm.ubicacion,
+        area_total: farm.area_total,
+        latitud: farm.latitud,
+        longitud: farm.longitud,
+      });
     }
-  }, [finca]);
+  }, [farm]);
 
-  const handleUpdateFarm = async () => {
-    if (!finca || !finca.id) {
-      console.error("No se pudo editar la finca: ID de finca indefinido.");
-      return;
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-    const fincaData = {
-      nombre,
-      ubicacion,
-      area_total: Number(areaTotal),
-      latitud: latitud === '' ? null : latitud,
-      longitud: longitud === '' ? null : longitud,
-    };
-
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     try {
-      const response = await axiosInstance.put(`/update/farm/${finca.id}`, fincaData);
-      console.log("Respuesta del backend:", response.data);
-      onSave(); // Llama a la función onSave para actualizar la lista de fincas
-      closeModal();
-      alert("Finca editada correctamente");
+      setErrorMessage('');
+      const response = await axiosInstance.put(`/update/farm/${farm.id}`, formData);
+      closeModal();  // Cerrar el EditModal
+      setShowSuccessModal(true);
+      // Llamar a onSave antes de mostrar el modal de éxito
+      onSave(response.data);
+      
+      // Mostrar el modal de éxito
+      setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error al actualizar la finca:", error);
+      setErrorMessage('Error actualizando la finca.');
     }
   };
 
-  if (!show) return null;
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+  };
 
+  if (!show && !showSuccessModal) return null;
   return (
-    <ModalOverlay>
-      <ModalContent>
-        <CloseButton onClick={closeModal}>×</CloseButton>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Finca</h2>
-        <InputGroup>
-          <label>Nombre de la finca</label>
-          <input
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            required
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Ubicación</label>
-          <input
-            type="text"
-            value={ubicacion}
-            onChange={(e) => setUbicacion(e.target.value)}
-            required
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Área Total (Opcional)</label>
-          <input
-            type="number"
-            value={areaTotal}
-            onChange={(e) => setAreaTotal(e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Latitud (Opcional)</label>
-          <input
-            type="text"
-            value={latitud}
-            onChange={(e) => setLatitud(e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Longitud (Opcional)</label>
-          <input
-            type="text"
-            value={longitud}
-            onChange={(e) => setLongitud(e.target.value)}
-          />
-        </InputGroup>
-        <SubmitButton onClick={handleUpdateFarm}>Guardar Cambios</SubmitButton>
-      </ModalContent>
-    </ModalOverlay>
+    <>
+      {show && (
+        <ModalOverlay>
+          <ModalContent>
+            <CloseButton onClick={closeModal}>×</CloseButton>
+            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Finca</h2>
+            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+            <form onSubmit={handleSubmit}>
+              <InputGroup>
+                <label>Nombre de la Finca</label>
+                <input
+                  type="text"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleChange}
+                  required
+                />
+              </InputGroup>
+              <InputGroup>
+                <label>Ubicación</label>
+                <input
+                  type="text"
+                  name="ubicacion"
+                  value={formData.ubicacion}
+                  onChange={handleChange}
+                  required
+                />
+              </InputGroup>
+              <InputGroup>
+                <label>Área Total (Opcional)</label>
+                <input
+                  type="number"
+                  name="area_total"
+                  value={formData.area_total}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
+                <label>Latitud (Opcional)</label>
+                <input
+                  type="text"
+                  name="latitud"
+                  value={formData.latitud}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
+                <label>Longitud (Opcional)</label>
+                <input
+                  type="text"
+                  name="longitud"
+                  value={formData.longitud}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <SubmitButton type="submit">Guardar Cambios</SubmitButton>
+            </form>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+      {showSuccessModal && (
+        <EditFarmSuccessModal 
+          show={showSuccessModal} 
+          closeModal={handleCloseSuccessModal} 
+        />
+      )}
+    </>
   );
 };
 

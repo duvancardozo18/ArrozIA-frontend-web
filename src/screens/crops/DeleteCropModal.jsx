@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import DeleteSuccessModal from './DeleteSuccesModal';  // Asegúrate de que la ruta sea correcta
+import DeleteSuccessModal from './DeleteSuccesModal'; // Asegúrate de que la ruta sea correcta
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -76,22 +76,22 @@ const ConfirmButton = styled.button`
   }
 `;
 
-const DeleteFarmModal = ({ show, onClose, onConfirm }) => {
+const DeleteCropModal = ({ show, onClose, onConfirm }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleDelete = async (event) => {
-    event.preventDefault();  // Previene el refresco de la página
+    event.preventDefault(); // Previene el refresco de la página
     try {
-      await onConfirm();  // Llama a la función de eliminación
-      setShowSuccessModal(true);  // Muestra el modal de éxito después de eliminar
+      await onConfirm(); // Llama a la función de eliminación
+      setShowSuccessModal(true); // Muestra el modal de éxito después de eliminar
     } catch (error) {
-      console.error("Error deleting farm:", error);
+      console.error('Error deleting crop:', error);
     }
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onClose();  // Cierra el modal principal después de cerrar el modal de éxito
+    onClose(); // Cierra el modal principal después de cerrar el modal de éxito
   };
 
   return (
@@ -100,7 +100,7 @@ const DeleteFarmModal = ({ show, onClose, onConfirm }) => {
         <ModalOverlay>
           <ModalContent>
             <ModalTitle>Confirmar Eliminación</ModalTitle>
-            <ModalText>¿Estás seguro de que deseas eliminar esta finca?</ModalText>
+            <ModalText>¿Estás seguro de que deseas eliminar este cultivo?</ModalText>
             <ModalButtons>
               <CancelButton onClick={onClose}>Cancelar</CancelButton>
               <ConfirmButton onClick={handleDelete}>Eliminar</ConfirmButton>
@@ -109,11 +109,11 @@ const DeleteFarmModal = ({ show, onClose, onConfirm }) => {
         </ModalOverlay>
       )}
 
-      {/* {showSuccessModal && (
+      {showSuccessModal && (
         <DeleteSuccessModal show={showSuccessModal} closeModal={closeSuccessModal} />
-      )} */}
+      )}
     </>
   );
 };
 
-export default DeleteFarmModal;
+export default DeleteCropModal;

@@ -3,12 +3,12 @@ import AgricultureIcon from '@mui/icons-material/Agriculture';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-const FarmCard = ({ finca, onDelete, onEdit, onNavigate, isSelected }) => {
+const FarmCard = ({ farm, onDelete, onEdit, onNavigate, isSelected }) => {
 
   useEffect(() => {
     // Muestra en la consola los datos de la finca que se están pasando al componente
-    console.log("Datos de la finca recibidos:", finca);
-  }, [finca]);
+    console.log("Datos de la finca recibidos:", farm);
+  }, [farm]);
 
   const handleNavigate = () => {
     // Llama a la función de navegación
@@ -36,8 +36,8 @@ const FarmCard = ({ finca, onDelete, onEdit, onNavigate, isSelected }) => {
       </div>
       <div className="content">
         <div className="info">
-          <h3>{finca.nombre}</h3>
-          <small className="text-muted">{finca.ubicacion}</small>
+          <h3>{farm.nombre}</h3>
+          <small className="text-muted">{farm.ubicacion}</small>
         </div>
       </div>
       <div className="actions">
@@ -46,7 +46,7 @@ const FarmCard = ({ finca, onDelete, onEdit, onNavigate, isSelected }) => {
           style={{ cursor: 'pointer', color: 'blue' }}
           onClick={(e) => {
             e.stopPropagation(); // Evitar que el clic en el ícono navegue a la tabla de lotes
-            onEdit(finca);
+            onEdit(farm);
           }}
           onMouseEnter={(e) => (e.target.style.color = 'darkblue')}
           onMouseLeave={(e) => (e.target.style.color = 'blue')}
@@ -56,7 +56,7 @@ const FarmCard = ({ finca, onDelete, onEdit, onNavigate, isSelected }) => {
           style={{ cursor: 'pointer', color: 'red' }}
           onClick={(e) => {
             e.stopPropagation(); // Evitar que el clic en el ícono navegue a la tabla de lotes
-            onDelete(finca);
+            onDelete(farm);
           }}
           onMouseEnter={(e) => (e.target.style.color = 'darkred')}
           onMouseLeave={(e) => (e.target.style.color = 'red')}

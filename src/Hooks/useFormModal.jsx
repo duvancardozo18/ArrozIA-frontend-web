@@ -1,41 +1,62 @@
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-
-const MySwal = withReactContent(Swal);
+import React, { useState } from 'react';
 
 const useFormModal = (title, fields, validationCallback) => {
-  const openFormModal = async (defaultValues = {}) => {
-    const htmlFields = fields.map(({ id, placeholder, type = 'text' }) => {
-      return `
-        <input id="${id}" class="swal2-input" placeholder="${placeholder}" 
-               value="${defaultValues[id] || ''}" type="${type}">
-      `;
-    }).join('');
+  const [isOpen, setIsOpen] = useState(false);  // Controla la visibilidad del modal
+  const [formValues, setFormValues] = useState({});  // Almacena los valores del formulario
 
-    const { value: formValues } = await MySwal.fire({
-      title: title,
-      html: htmlFields,
-      focusConfirm: false,
-      preConfirm: () => {
-        const values = fields.reduce((acc, field) => {
-          const value = document.getElementById(field.id).value;
-          acc[field.id] = field.type === 'number' ? parseFloat(value) || null : value;
-          return acc;
-        }, {});
-
-        const error = validationCallback(values);
-        if (error) {
-          Swal.showValidationMessage(error);
-          return null;
-        }
-        return values;
-      }
-    });
-
-    return formValues;
+  const openFormModal = (defaultValues = {}) => {
+    setFormValues(defaultValues);
+    setIsOpen(true);  // Abre el modal
   };
 
-  return { openFormModal };
+  const closeModal = () => {
+    setIsOpen(false);  // Cierra el modal
+  };
+
+  const handleChange = (id, value) => {
+    setFormValues((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = () => {
+    const error = validationCallback(formValues);
+    if (error) {
+      alert(error);  // Muestra el error si hay
+      return;
+    }
+
+    const formData = new FormData();
+    Object.keys(formValues).forEach((key) => {
+      formData.append(key, formValues[key]);
+    });
+
+    closeModal();  // Cierra el modal después de la validación
+    return formData;  // Retorna el FormData
+  };
+
+  const FormModal = () => (
+    isOpen && (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>{title}</h2>
+          {fields.map(({ id, placeholder, type = 'text' }) => (
+            <div key={id}>
+              <input
+                id={id}
+                type={type}
+                placeholder={placeholder}
+                value={formValues[id] || ''}
+                onChange={(e) => handleChange(id, e.target.value)}
+              />
+            </div>
+          ))}
+          <button onClick={handleSubmit}>Submit</button>
+          <button onClick={closeModal}>Close</button>
+        </div>
+      </div>
+    )
+  );
+
+  return { openFormModal, FormModal };
 };
 
 export default useFormModal;

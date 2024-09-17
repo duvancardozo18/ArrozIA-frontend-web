@@ -11,6 +11,7 @@ import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; // Importar AuthProvider
 import PrivateRoute from "./config/PrivateRoute"; // Importar PrivateRoute
 import TablePermisos from "./components/dashboard/areaTable/TablePermisos"; // Importar TablePermisos
+import CropMain from "./components/dashboard/fincas/cultivos/CropMain";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 
@@ -43,11 +44,15 @@ function App() {
 
           {/* Rutas protegidas envueltas en BaseLayout */}
           <Route element={<BaseLayout />}>
+
+
             {/* Rutas protegidas con PrivateRoute */}
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="ver_usuarios" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="ver_roles" />} />
             <Route path="/farms" element={<PrivateRoute element={<Fincas />} />} />
+            <Route path="/crop" element={<PrivateRoute element={<CropMain />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+
             <Route path="*" element={<PageNotFound />} />
           </Route>
         </Routes>

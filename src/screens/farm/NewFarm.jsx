@@ -104,9 +104,9 @@ const NewFarm = ({ closeModal }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     ubicacion: '',
-    area_total: '',
-    latitud: '',
-    longitud: ''
+    area_total: '' || null,
+    latitud: '' || null,
+    longitud: '' || null
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -203,4 +203,3 @@ const NewFarm = ({ closeModal }) => {
 };
 
 export default NewFarm;
-

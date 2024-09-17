@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance'; // Asegúrate de que la ruta sea correcta
+import axiosInstance from '../../config/AxiosInstance';
+import EditAllotmentSuccessModal from './EditAllotmentSuccesModal';
+
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -89,95 +91,111 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
   const [area, setArea] = useState('');
   const [unidadArea, setUnidadArea] = useState('');
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+
   useEffect(() => {
     if (lote && lote.id) {
+      console.log('Datos del lote para editar:', lote); // Asegúrate de que este console.log muestre los datos correctos
       setNombre(lote.nombre || '');
       setLatitud(lote.latitud || '');
       setLongitud(lote.longitud || '');
       setArea(lote.area || '');
-      setUnidadArea(lote.unidadArea || '');
+      setUnidadArea(lote.unidad_area_id || '');  // Si unidadArea es otro campo en el backend
     } else {
       console.error("No se pudo editar el lote: ID de lote indefinido.");
     }
   }, [lote]);
+  
 
   const handleUpdateAllotment = async () => {
     if (!lote || !lote.id) {
       console.error("No se pudo editar el lote: ID de lote indefinido.");
       return;
     }
-
+  
     const loteData = {
       nombre,
       latitud: latitud === '' ? null : latitud,
       longitud: longitud === '' ? null : longitud,
       area: Number(area),
-      unidadArea
+      unidad_area_id: unidadArea
     };
-
+  
     try {
-      const response = await axiosInstance.put(`/update/lote/${lote.id}`, loteData);
+      const response = await axiosInstance.put(`/update/land/${lote.id}`, loteData);
       console.log("Respuesta del backend:", response.data);
-      onSave(); // Llama a la función onSave para actualizar la lista de lotes
-      closeModal();
-      alert("Lote editado correctamente");
+      setShowSuccessModal(true); // Mostrar el modal de éxito
+      onSave(); // Actualiza la lista de lotes después de la edición
     } catch (error) {
       console.error("Error al actualizar el lote:", error);
     }
   };
+  
 
   if (!show) return null;
 
   return (
-    <ModalOverlay>
-      <ModalContent>
-        <CloseButton onClick={closeModal}>×</CloseButton>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Lote</h2>
-        <InputGroup>
-          <label>Nombre del Lote</label>
-          <input
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            required
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Latitud</label>
-          <input
-            type="text"
-            value={latitud}
-            onChange={(e) => setLatitud(e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Longitud</label>
-          <input
-            type="text"
-            value={longitud}
-            onChange={(e) => setLongitud(e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Área</label>
-          <input
-            type="number"
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <label>Unidad de Área</label>
-          <input
-            type="text"
-            value={unidadArea}
-            onChange={(e) => setUnidadArea(e.target.value)}
-          />
-        </InputGroup>
-        <SubmitButton onClick={handleUpdateAllotment}>Guardar Cambios</SubmitButton>
-      </ModalContent>
-    </ModalOverlay>
+    <>
+      <ModalOverlay>
+        <ModalContent>
+          <CloseButton onClick={closeModal}>×</CloseButton>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Lote</h2>
+          <InputGroup>
+            <label>Nombre del Lote</label>
+            <input
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+            />
+          </InputGroup>
+          <InputGroup>
+            <label>Latitud</label>
+            <input
+              type="text"
+              value={latitud}
+              onChange={(e) => setLatitud(e.target.value)}
+            />
+          </InputGroup>
+          <InputGroup>
+            <label>Longitud</label>
+            <input
+              type="text"
+              value={longitud}
+              onChange={(e) => setLongitud(e.target.value)}
+            />
+          </InputGroup>
+          <InputGroup>
+            <label>Área</label>
+            <input
+              type="number"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+            />
+          </InputGroup>
+          <InputGroup>
+            <label>Unidad de Área</label>
+            <input
+              type="text"
+              value={unidadArea}
+              onChange={(e) => setUnidadArea(e.target.value)}
+            />
+          </InputGroup>
+          <SubmitButton onClick={handleUpdateAllotment}>Guardar Cambios</SubmitButton>
+        </ModalContent>
+      </ModalOverlay>
+  
+      {/* Modal de éxito */}
+      {showSuccessModal && (
+        <EditAllotmentSuccessModal
+        show={showSuccessModal}
+        closeModal={() => setShowSuccessModal(false)}
+      />
+      )}
+    </>
   );
+  
 };
 
 export default EditAllotmentModal;

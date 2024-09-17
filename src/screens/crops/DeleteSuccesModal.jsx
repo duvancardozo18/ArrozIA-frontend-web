@@ -78,22 +78,22 @@ const CloseButton = styled.button`
 `;
 
 const DeleteSuccessModal = ({ show, closeModal }) => {
-    if (!show) return null;
-  
-    const handleClose = () => {
-      closeModal();  // Cierra el modal
-      window.location.reload();  // Refresca la página inmediatamente
-    };
-  
-    return (
-      <ModalOverlay>
-        <ModalContent>
-          <SuccessIcon>✓</SuccessIcon>
-          <SuccessMessage>Lote eliminado correctamente</SuccessMessage>
-          <CloseButton onClick={handleClose}>Cerrar</CloseButton>
-        </ModalContent>
-      </ModalOverlay>
-    );
+  if (!show) return null;
+
+  const handleClose = () => {
+    closeModal(); // Cierra el modal
+    window.location.reload(); // Refresca la página inmediatamente
   };
-  
+
+  return (
+    <ModalOverlay>
+      <ModalContent>
+        <SuccessIcon>✓</SuccessIcon>
+        <SuccessMessage>Cultivo eliminado correctamente</SuccessMessage>
+        <CloseButton onClick={handleClose}>Cerrar</CloseButton>
+      </ModalContent>
+    </ModalOverlay>
+  );
+};
+
 export default DeleteSuccessModal;
