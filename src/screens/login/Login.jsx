@@ -94,6 +94,14 @@ const StyledLink = styled.span`
   }
 `;
 
+
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 18px; /* Aumenta el tamaño de la fuente según tus necesidades */
+  font-family: 'Roboto', sans-serif;
+  margin-bottom: 20px; /* Opcional: añade espacio debajo del mensaje */
+`;
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -118,7 +126,7 @@ const Login = () => {
       login(access_token); // Utiliza la función login del contexto para guardar el token
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('userName', user_name);
-      navigate('/fincas');
+      navigate('/farms');
     } catch (error) {
       // Verifica si es un error de tipo 403 y si requiere cambio de contraseña
       if (error.response && error.response.status === 403 && error.response.data.change_password_required) {
@@ -141,7 +149,7 @@ const Login = () => {
       <FormContainer>
         <Logo src={logo} alt="App Logo" />
         <Title>Arroz IA</Title>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         <Input
           type="email"
           placeholder="Correo electrónico"

@@ -84,7 +84,9 @@ const Sidebar = () => {
             width="50"
             height="50"
           />
-          <span className="sidebar-brand-text">ARROZ IA</span>
+        
+        <p style={{ fontSize: '20px', color: '#ABABB5', fontWeight: 'bold' }}>Arroz IA</p>
+
         </div>
         <button className="sidebar-close-btn" onClick={closeSidebar}>
           <MdOutlineClose size={24} />
@@ -94,13 +96,13 @@ const Sidebar = () => {
         <div className="sidebar-menu">
           <ul className="menu-list">
             {/* <MenuItem to="/dashboard" icon={<MdOutlineGridView size={18} />} text="Inicio" /> */}
-            <MenuItem to="/fincas" icon={<MdOutlineBarChart size={20} />} text="Fincas" />
+            <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
 
-            {hasPermission("crear_usuario") && ( // Verificar permisos
-              <MenuItem to="/users" icon={<MdOutlinePeople size={20} />} text="Usuarios" />
+            {hasPermission("ver_usuarios") && ( // Verificar permisos
+              <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
             )}
-            {hasPermission("crear_rol") && ( // Verificar permisos
-              <MenuItem to="/roles" icon={<FaUserCog />} text="Roles" />
+            {hasPermission("ver_roles") && ( // Verificar permisos
+              <MenuItem to="/roles" icon={<FaUserCog size={35}/>} text="Roles" />
             )}
           </ul>
         </div>
@@ -111,9 +113,9 @@ const Sidebar = () => {
             <li className="menu-item">
               <button className="menu-link" onClick={handleLogout}>
                 <span className="menu-link-icon">
-                  <MdOutlineLogout size={20} />
+                  <MdOutlineLogout size={35} />
                 </span>
-                <span className="menu-link-text">Cerrar sesión</span>
+                <span className="menu-link-text"  style={{ fontSize: '16px' }}>Cerrar sesión</span>
               </button>
             </li>
           </ul>
