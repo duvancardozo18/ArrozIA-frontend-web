@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import background from '../../assets/images/background.webp';
-import { Link } from 'react-router-dom'; // Importar Link para la navegación
-import axiosInstance from '../../config/AxiosInstance'; // Asegúrate de que esté configurado correctamente
+import { Link } from 'react-router-dom'; 
+import axiosInstance from '../../config/AxiosInstance'; 
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const ResetContainer = styled.div`
   display: flex;
@@ -112,15 +113,13 @@ const LoadingOverlay = styled.div`
 /* Checkmark */
 const Checkmark = styled.div`
   color: #27ae60;
-  font-size: 48px;
-  margin-bottom: 20px;
+  font-size: 85px;
 `;
 
 /* Icono de Error */
 const ErrorIcon = styled.div`
   color: #e74c3c;
-  font-size: 48px;
-  margin-bottom: 20px;
+  font-size: 88px;
 `;
 
 const Message = styled.p`
@@ -207,14 +206,18 @@ const ResetPassword = () => {
       <FormContainer>
         {success ? (
           <>
-            <Checkmark>✓</Checkmark>
-            <Title>¡Enlace enviado correctamente!</Title>
+            <Checkmark>
+              <FaCheckCircle />
+            </Checkmark>
+            <Title>¡Enlace enviado!</Title>
             <Message>Revisa tu correo electrónico para restablecer tu contraseña.</Message>
             <HomeLink to="/">Volver al inicio</HomeLink>
           </>
         ) : error ? (
           <>
-            <ErrorIcon>✗</ErrorIcon>
+            <ErrorIcon>
+              <FaTimesCircle />
+            </ErrorIcon>
             <Title>Ocurrió un error</Title>
             <Message>{error}</Message>
             <Button onClick={() => setError('')}>Intentar de nuevo</Button>

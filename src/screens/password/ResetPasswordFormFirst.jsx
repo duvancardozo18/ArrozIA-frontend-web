@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import background from '../../assets/images/background.webp';
 import axiosInstance from '../../config/AxiosInstance';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Íconos para éxito y error
 
 const ResetContainer = styled.div`
   display: flex;
@@ -17,26 +18,19 @@ const ResetContainer = styled.div`
   background-position: center;
 `;
 
-const WelcomeMessage = styled.h2`
-  font-size: 20px;
-  font-family: 'Roboto', sans-serif;
-  text-align: center;
-  margin-bottom: 40px;
-`;
-
 const FormContainer = styled.div`
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.95);
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   text-align: center;
+  position: relative;
 `;
 
 const Title = styled.h1`
   font-size: 24px;
-  color: #2c3e50;
   margin-bottom: 10px;
   font-family: 'Roboto', sans-serif;
 `;
@@ -69,12 +63,82 @@ const Button = styled.button`
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
   margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: #219150;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
+
+  &:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+  }
 `;
+
+const WelcomeMessage = styled.h2`
+  font-size: 20px;
+   color: #2c3e50;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  margin-bottom: 30px;
+`;
+
+/* Spinner */
+const Spinner = styled.div`
+  border: 4px solid #f3f3f3; /* Gris claro */
+  border-top: 4px solid #27ae60; /* Verde */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+
+
+/* Checkmark */
+const Checkmark = styled.div`
+  color: #27ae60;
+  font-size: 65px;
+  margin-bottom: 20px;
+`;
+
+/* Icono de Error */
+const ErrorIcon = styled.div`
+  color: #e74c3c;
+  font-size: 80px;
+  margin-bottom: 20px;
+`;
+
+const Message = styled.p`
+  font-size: 20px;
+  color: #2c3e50;
+  font-family: 'Roboto', sans-serif;
+`;
+
+
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+`;
+
 
 const ResetPasswordForm = () => {
   const location = useLocation();
@@ -120,6 +184,10 @@ const ResetPasswordForm = () => {
   const [password, setPassword] = useState(''); 
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -150,6 +218,7 @@ const ResetPasswordForm = () => {
   const handleResetPassword = async () => {
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden.');
+      setIsError(true);
       return;
     }
 
@@ -161,7 +230,10 @@ const ResetPasswordForm = () => {
       primer_login: false,
     };
 
-    console.log('Payload enviado:', payload);
+    setIsLoading(true);
+    setError('');
+    setIsError(false);
+    setIsSuccess(false);
 
     try {
       const response = await axiosInstance.put(`/users/update/${userId}`, payload, {
@@ -171,58 +243,94 @@ const ResetPasswordForm = () => {
       });
 
       if (response.status === 200) {
-        alert('Información actualizada con éxito.');
-        // Opcionalmente, puedes autenticar al usuario aquí
-        // login(accessToken);
-        navigate('/farms');
+        setIsSuccess(true);
+        setTimeout(() => {
+          navigate('/');
+        }, 4000);
       } else {
         setError('Hubo un problema al actualizar la información.');
+        setIsError(true);
+        setTimeout(() => {
+          navigate('/');
+        }, 4000);
       }
     } catch (error) {
       console.error('Error al actualizar la información:', error);
       setError('Hubo un error al procesar tu solicitud.');
+      setIsError(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 4000);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <ResetContainer>
+        <FormContainer>
+          <Checkmark>
+            <FaCheckCircle />
+          </Checkmark>
+          <Message>Información actualizada con éxito. Redireccionado...</Message>
+        </FormContainer>
+      </ResetContainer>
+    );
+  }
+
 
   return (
     <ResetContainer>
       <FormContainer>
-        <Title>Bienvenido - ARROZ IA</Title>
-        <WelcomeMessage>Actualización de datos de usuario</WelcomeMessage>
-        {/* Mostrar mensajes de error */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {isLoading && (
+          <Overlay>
+            <Spinner />
+          </Overlay>
+        )}
+         <Title>Bienvenido - ARROZ IA</Title>
+         <WelcomeMessage>Actualización de Datos</WelcomeMessage>
+         {/* Mostrar mensajes de error */}
+         {error && <p style={{ color: 'red' }}>{error}</p>}
 
         <Input
           type="text"
           placeholder="Nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
+          disabled={isLoading}
         />
         <Input
           type="text"
           placeholder="Apellido"
           value={apellido}
           onChange={(e) => setApellido(e.target.value)}
+          disabled={isLoading}
         />
         <Input
           type="email"
           placeholder="Correo electrónico"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
         />
         <Input
           type="password"
           placeholder="Nueva contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
         />
         <Input
           type="password"
           placeholder="Confirmar nueva contraseña"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          disabled={isLoading}
         />
-        <Button onClick={handleResetPassword}>Guardar cambios</Button>
+        <Button onClick={handleResetPassword} disabled={isLoading}>
+          Guardar cambios
+        </Button>
       </FormContainer>
     </ResetContainer>
   );
