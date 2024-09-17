@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
 import SuccessModal from './SuccesModal';
-
-
+import { useNavigate } from 'react-router-dom';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -102,48 +101,37 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewAllotment = ({ closeModal, selectedFarm }) => {
-  
+const NewCrop = ({ closeModal, selectedAllotment }) => {
   const [formData, setFormData] = useState({
-    finca_id: '', 
-    nombre: '',
-    latitud: '' || null,
-    longitud: '' || null,
-    area: '',
-    unidad_area_id: '' 
+    cropName: '', 
+    varietyId: '',
+    plotId: '',
+    plantingDate: '',
+    estimatedHarvestDate: ''
   });
 
-  const [unidadesAreas, setUnidadesAreas] = useState([]); // Estado para almacenar las unidades de área
+  const [varieties, setVarieties] = useState([]); // Estado para almacenar las variedades de arroz
+  const [plots, setPlots] = useState([]); // Estado para almacenar los lotes
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-
-  
-  
-
-  // Obtener las unidades de área desde el backend
+  // Obtener las variedades y lotes desde el backend
   useEffect(() => {
-    const fetchUnidadesAreas = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get('/unidades-areas'); // Ajusta este endpoint según tu backend
-        setUnidadesAreas(response.data); // Suponiendo que response.data contiene las unidades de área
+        const varietiesResponse = await axiosInstance.get('/varieties/variedades'); // Endpoint para obtener las variedades de arroz
+        setVarieties(varietiesResponse.data);
+
+        const plotsResponse = await axiosInstance.get('/lotes'); // Endpoint para obtener los lotes
+        setPlots(plotsResponse.data);
       } catch (error) {
-        console.error('Error al obtener las unidades de área:', error);
+        console.error('Error al obtener variedades o lotes:', error);
       }
     };
 
-    fetchUnidadesAreas();
+    fetchData();
   }, []);
-
-
-  useEffect(() => {
-    if (selectedFarm) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        finca_id: selectedFarm.id // Asegúrate de que esto se esté asignando correctamente
-      }));
-    }
-  }, [selectedFarm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -152,37 +140,23 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    formData.latitud = formData.latitud || null;
-    formData.longitud = formData.longitud || null;
-  
-    console.log('Datos que se envían:', formData);  // Para depuración
-  
-    if (!formData.finca_id) {
-      setErrorMessage('ID de finca no válido.');
-      return;
-    }
-  
     try {
-      setErrorMessage('');
-      const response = await axiosInstance.post('/register-land', formData);
-      console.log('Lote creado:', response.data);
-
-      setShowSuccessModal(true);
+      const response = await axiosInstance.post('/crops', formData);
+      console.log('Cultivo creado:', response.data);
+      setShowSuccessModal(true);  // Mostrar modal de éxito
     } catch (error) {
-      console.error('Error al crear el lote:', error);
+      console.error('Error al crear el cultivo:', error);
       if (error.response && error.response.status === 400) {
-        setErrorMessage('Error al crear el lote.');
+        setErrorMessage('Error al crear el cultivo.');
       } else {
-        setErrorMessage('Error inesperado al crear el lote.');
+        setErrorMessage('Error inesperado al crear el cultivo.');
       }
     }
   };
-  
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    closeModal();
+    closeModal();  // Cierra el modal principal después del éxito
   };
 
   return (
@@ -190,21 +164,15 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Lote</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Cultivo</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
-            <input
-              type="hidden"
-              name="fincaId"
-              value={formData.finca_id}
-            />
-
             <InputGroup>
-              <label>Nombre del lote</label>
+              <label>Nombre del Cultivo</label>
               <input
                 type="text"
-                name="nombre"
-                value={formData.nombre}
+                name="cropName"
+                value={formData.cropName}
                 onChange={handleChange}
                 maxLength={50}
                 required
@@ -212,59 +180,55 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
             </InputGroup>
 
             <InputGroup>
-              <label>Latitud</label>
-              <input
-                type="number"
-                step="0.00001"
-                name="latitud"
-                value={formData.latitud || ''}  
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Longitud</label>
-              <input
-                type="number"
-                step="0.00001"
-                name="longitud"
-                value={formData.longitud || ''}  
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Área del lote</label>
-              <input
-                type="number"
-                step="0.01"
-                name="area"
-                value={formData.area || ''}  
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Unidad de Área</label>
+              <label>Variedad de Arroz</label>
               <select
-                name="unidad_area_id"
-                value={formData.unidad_area_id}
+                name="varietyId"
+                value={formData.varietyId}
                 onChange={handleChange}
                 required
               >
-                <option value="">Seleccione unidad de área</option>
-                {unidadesAreas.map((unidad) => (
-                  <option key={unidad.id} value={unidad.id}>
-                    {unidad.unidad}
+                <option value="">Seleccione una variedad</option>
+                {varieties.map((variety) => (
+                  <option key={variety.id} value={variety.id}>
+                    {variety.nombre}
                   </option>
                 ))}
               </select>
             </InputGroup>
 
-            <SubmitButton type="submit">Crear Lote</SubmitButton>
+            <InputGroup>
+            <label>Lote Asignado</label>
+              <input
+                type="text"
+                name="plotId"
+                value={selectedAllotment.nombre} // Mostrar el nombre del lote
+                disabled // Deshabilitar el campo para que no sea editable
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <label>Fecha de Siembra</label>
+              <input
+                type="date"
+                name="plantingDate"
+                value={formData.plantingDate}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <label>Fecha Estimada de Cosecha</label>
+              <input
+                type="date"
+                name="estimatedHarvestDate"
+                value={formData.estimatedHarvestDate}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <SubmitButton type="submit">Crear Cultivo</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
@@ -273,4 +237,4 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
   );
 };
 
-export default NewAllotment;
+export default NewCrop;

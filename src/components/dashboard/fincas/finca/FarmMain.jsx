@@ -1,53 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import FarmCard from './FarmCard';
 import AddIcon from '@mui/icons-material/Add';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import axiosInstance from '../../../../config/AxiosInstance';
 import NewFarm from '../../../../screens/farm/NewFarm';
 import EditFarmModal from '../../../../screens/farm/EditFarmModal';
-import DeleteFarmModal from '../../../../screens/farm/DeleteFarmModal';
+import DeleteFarmModal from '../../../../screens/farm/DeleteFarmModal'; // Importar el modal de eliminación
 
-const FarmMain = ({ fincaSeleccionada, setFincaSeleccionada, isDarkMode }) => {
-  const [fincas, setFincas] = useState([]);
+const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
+  const [farms, setFarms] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [editingFinca, setEditingFinca] = useState(null);
-  const [deletingFinca, setDeletingFinca] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Estado para abrir/cerrar modal de eliminación
+  const [editingFarm, setEditingFarm] = useState(null);
+  const [deletingFarm, setDeletingFarm] = useState(null); // Finca que se va a eliminar
 
   useEffect(() => {
-    const fetchFincas = async () => {
+    const fetchFarms = async () => {
       try {
         const response = await axiosInstance.get('/farms');
-        setFincas(response.data);
+        setFarms(response.data);
       } catch (error) {
-        console.error('Error fetching fincas:', error);
+        console.error('Error fetching farms:', error);
       }
     };
 
-    fetchFincas();
+    fetchFarms();
   }, []);
 
-  const handleAddFinca = () => setIsAddModalOpen(true);
+  const handleAddFarm = () => setIsAddModalOpen(true);
 
-  const handleEditFinca = (fincaToEdit) => {
-    setEditingFinca(fincaToEdit);
-    setIsEditModalOpen(true);
-  };
-
-  const handleDeleteFinca = async (farm_id) => {
-    try {
-      await axiosInstance.delete(`/delete/farm/${farm_id}`);
-      setFincas(fincas.filter(finca => finca.id !== farm_id));
-      setIsDeleteModalOpen(false);
-    } catch (error) {
-      console.error('Error deleting finca:', error);
+  const handleEditFarm = (farmToEdit) => {
+    if (farmToEdit && farmToEdit.id) {
+      setEditingFarm(farmToEdit);
+      setIsEditModalOpen(true);
+    } else {
+      console.error('Failed to set the farm for editing: Farm ID is undefined.');
     }
   };
 
-  const confirmDeleteFinca = (finca) => {
-    setDeletingFinca(finca);
-    setIsDeleteModalOpen(true);
+  const handleSaveFarm = (updatedFarm) => {
+    setFarms(farms.map(farm => farm.id === updatedFarm.id ? updatedFarm : farm));
+    setIsEditModalOpen(false);  // Cerrar el modal después de guardar
+  };
+  
+
+  const handleDelete = async (farm_id) => {
+    try {
+      await axiosInstance.delete(`/delete/farm/${farm_id}`);
+      setFarms(farms.filter(farm => farm.id !== farm_id)); // Actualiza la lista de fincas eliminando la seleccionada
+      setIsDeleteModalOpen(false); // Cierra el modal después de eliminar
+    } catch (error) {
+      console.error('Error deleting farm:', error);
+    }
+  };
+
+  const confirmDeleteFarm = (farm) => {
+    setDeletingFarm(farm); // Guarda la finca que se va a eliminar
+    setIsDeleteModalOpen(true); // Abre el modal de confirmación de eliminación
   };
 
   return (
@@ -55,23 +64,25 @@ const FarmMain = ({ fincaSeleccionada, setFincaSeleccionada, isDarkMode }) => {
       <div className="farms">
         <div className="header">
           <h2>Fincas</h2>
-          
         </div>
 
-        {fincas.map((finca) => (
+        {farms.map((farm) => (
           <FarmCard
-            key={finca.id} // Usa el ID de la finca como clave única
-            finca={finca}
-            onDelete={() => confirmDeleteFinca(finca)}
-            onEdit={() => handleEditFinca(finca)}
-            onNavigate={() => setFincaSeleccionada(finca)}
-            isSelected={fincaSeleccionada && fincaSeleccionada.id === finca.id}
-            isDarkMode={isDarkMode}
-          />
+          key={farm.id} // Usa el ID de la finca como clave única
+          farm={farm}
+          onDelete={() => confirmDeleteFarm(farm)} // Abre el modal de confirmación de eliminación
+          onEdit={() => handleEditFarm(farm)} // Abre el modal de edición
+          onNavigate={() => {
+            console.log('Selected farm:', farm); // Aquí mostramos la finca seleccionada en la consola
+            setSelectedFarm(farm); // Guardamos la finca seleccionada en el estado
+          }}
+          isSelected={selectedFarm && selectedFarm.id === farm.id} // Comparación para selección de finca
+          isDarkMode={isDarkMode}
+        />
+        
         ))}
 
-
-        <div className="add-farm" onClick={handleAddFinca}>
+        <div className="add-farm" onClick={handleAddFarm}>
           <div>
             <AddIcon />
             <h3>Agregar Finca</h3>
@@ -79,21 +90,28 @@ const FarmMain = ({ fincaSeleccionada, setFincaSeleccionada, isDarkMode }) => {
         </div>
       </div>
 
-      {isAddModalOpen && <NewFarm closeModal={() => setIsAddModalOpen(false)} />}
-      {isEditModalOpen && (
+      {isAddModalOpen && 
+      <NewFarm closeModal={() => setIsAddModalOpen(false)} />}
+
+      {isEditModalOpen && editingFarm && (
         <EditFarmModal
-          show={isEditModalOpen}
-          closeModal={() => setIsEditModalOpen(false)}
-          finca={editingFinca}
-        />
+        show={isEditModalOpen}
+        closeModal={() => setIsEditModalOpen(false)}
+        farm={editingFarm}
+        onSave={handleSaveFarm}
+      />
+      
       )}
-      {isDeleteModalOpen && (
+
+      {/* Modal para confirmar la eliminación de la finca */}
+      {isDeleteModalOpen && deletingFarm && (
         <DeleteFarmModal
-          show={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={() => handleDeleteFinca(deletingFinca.id)}
+          show={isDeleteModalOpen} // Muestra el modal
+          onClose={() => setIsDeleteModalOpen(false)} // Cierra el modal sin eliminar
+          onConfirm={() => handleDelete(deletingFarm.id)} // Confirma la eliminación
         />
       )}
+
     </div>
   );
 };

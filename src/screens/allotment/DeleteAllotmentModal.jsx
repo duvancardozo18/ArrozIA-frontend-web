@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import DeleteSuccessModal from './DeleteSuccesModal'; // Asegúrate de que la ruta sea correcta
+import DeleteSuccessModal from './DeleteSuccesModal';  // Asegúrate de que la ruta sea correcta
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -76,7 +76,7 @@ const ConfirmButton = styled.button`
   }
 `;
 
-const DeleteAllotmentModal = ({ show, onClose, onConfirm }) => {
+const DeleteAllotementModal = ({ show, onClose, onConfirm }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleDelete = async (event) => {
@@ -85,7 +85,7 @@ const DeleteAllotmentModal = ({ show, onClose, onConfirm }) => {
       await onConfirm();  // Llama a la función de eliminación
       setShowSuccessModal(true);  // Muestra el modal de éxito después de eliminar
     } catch (error) {
-      console.error("Error deleting allotment:", error);
+      console.error("Error deleting allotement:", error);
     }
   };
 
@@ -116,4 +116,4 @@ const DeleteAllotmentModal = ({ show, onClose, onConfirm }) => {
   );
 };
 
-export default DeleteAllotmentModal;
+export default DeleteAllotementModal;

@@ -47,26 +47,26 @@ const SuccessIcon = styled.div`
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 40px;
+  font-size: 50px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
 
 const SuccessMessage = styled.h2`
   font-size: 24px;
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-family: 'Roboto', sans-serif;
 `;
 
 const CloseButton = styled.button`
   margin-top: 20px;
-  padding: 10px 20px;
+  padding: 12px 25px;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   font-family: 'Roboto', sans-serif;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s, transform 0.3s;
@@ -77,23 +77,18 @@ const CloseButton = styled.button`
   }
 `;
 
-const DeleteSuccessModal = ({ show, closeModal }) => {
-    if (!show) return null;
-  
-    const handleClose = () => {
-      closeModal();  // Cierra el modal
-      window.location.reload();  // Refresca la página inmediatamente
-    };
-  
-    return (
-      <ModalOverlay>
-        <ModalContent>
-          <SuccessIcon>✓</SuccessIcon>
-          <SuccessMessage>Lote eliminado correctamente</SuccessMessage>
-          <CloseButton onClick={handleClose}>Cerrar</CloseButton>
-        </ModalContent>
-      </ModalOverlay>
-    );
-  };
-  
-export default DeleteSuccessModal;
+const EditAllotmentSuccessModal = ({ show, closeModal }) => {
+  if (!show) return null; // Solo renderiza el modal si show es true
+
+  return (
+    <ModalOverlay>
+      <ModalContent>
+        <SuccessIcon>✓</SuccessIcon>
+        <SuccessMessage>Cambios guardados correctamente</SuccessMessage>
+        <CloseButton onClick={closeModal}>Cerrar</CloseButton>
+      </ModalContent>
+    </ModalOverlay>
+  );
+};
+
+export default EditAllotmentSuccessModal;
