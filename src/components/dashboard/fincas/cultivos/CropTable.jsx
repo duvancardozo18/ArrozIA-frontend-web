@@ -2,7 +2,7 @@ import React from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import '../../../../screens/farm/Finca.scss';
+import '../../../../screens/farm/finca2.scss';
 
 const CropTable = ({ crops, onAddCrop, onEditCrop, onDeleteCrop, onSelectCrop, selectedCrop }) => {
 
