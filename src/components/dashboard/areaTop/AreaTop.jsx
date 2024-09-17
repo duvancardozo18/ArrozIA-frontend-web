@@ -59,13 +59,13 @@ const AreaTop = ({ title }) => {
           }`}
           onClick={handleInputClick}
         >
-          <DateRange
+          {/* <DateRange
             editableDateInputs={true}
             onChange={(item) => setState([item.selection])}
             moveRangeOnFirstSelection={false}
             ranges={state}
             showMonthAndYearPickers={false}
-          />
+          /> */}
         </div>
       </div>
     </section>

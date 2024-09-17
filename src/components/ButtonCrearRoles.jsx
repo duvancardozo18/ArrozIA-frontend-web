@@ -26,6 +26,9 @@ const Button = styled.button`
   font-size: 16px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s, transform 0.3s;
+  margin-bottom:20px;
+  margin-left: auto; /* Agrega esta línea */
+  display: block;
 
   &:hover {
     background-color: #2980b9;

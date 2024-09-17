@@ -7,15 +7,17 @@ import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
 import { Dashboard, PageNotFound, Users, Login, Roles, Fincas, ResetPassword } from "./screens";
+import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; // Importar AuthProvider
 import PrivateRoute from "./config/PrivateRoute"; // Importar PrivateRoute
 import TablePermisos from "./components/dashboard/areaTable/TablePermisos"; // Importar TablePermisos
 import CropMain from "./components/dashboard/fincas/cultivos/CropMain";
+import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
+import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
 
-  // Agregar la clase dark-mode si el tema oscuro está activado
   useEffect(() => {
     if (theme === DARK_THEME) {
       document.body.classList.add("dark-mode");
@@ -25,18 +27,34 @@ function App() {
   }, [theme]);
 
   return (
-    <AuthProvider> {/* Envolver en AuthProvider */}
+    <AuthProvider>
       <Router>
         <Routes>
+          {/* Ruta pública para el login */}
           <Route path="/" element={<Login />} />
+
+          {/* Ruta pública para la solicitud de restablecimiento de contraseña */}
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/change-password-first" element={<PrivateRoute element={<ResetPasswordFormFirst />} />} />
+        
+
+          {/* Ruta para restablecer la contraseña usando el token */}
+          <Route path="/Reset_Password/:token" element={<ResetPasswordForm />} />
+
+          {/* Rutas protegidas envueltas en BaseLayout */}
           <Route element={<BaseLayout />}>
-            <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
-            <Route path="/users" element={<PrivateRoute element={<Users />} />} />
-            <Route path="/roles" element={<PrivateRoute element={<Roles />} />} />
-            <Route path="/fincas" element={<PrivateRoute element={<Fincas />} />} />
-            <Route path="/permisos" element={<PrivateRoute element={<TablePermisos />} />} /> {/* Nueva ruta para TablePermisos */}
+
+
+            {/* Rutas protegidas con PrivateRoute */}
+           
+            {/* <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} /> */}
+            {/* <Route path="/permisos" element={<PrivateRoute element={<TablePermisos />} />} /> */}
+            <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="ver_usuarios" />} />
+            <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="ver_roles" />} />
+            <Route path="/farms" element={<PrivateRoute element={<Fincas />} />} />
             <Route path="/crop" element={<PrivateRoute element={<CropMain />} />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+
             <Route path="*" element={<PageNotFound />} />
           </Route>
         </Routes>

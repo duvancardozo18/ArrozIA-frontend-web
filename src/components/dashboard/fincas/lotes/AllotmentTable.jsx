@@ -2,7 +2,7 @@ import React from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import '../../../../screens/farm/Finca.scss';
+import '../../../../screens/farm/Finca2.scss';
 
 const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrops, onSelectAllotment, selectedAllotment }) => {
 

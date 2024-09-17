@@ -1,37 +1,37 @@
-import { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
 import { FaUserCog } from "react-icons/fa";
-
-
 import {
-  MdOutlineAttachMoney,
   MdOutlineBarChart,
   MdOutlineClose,
-  MdOutlineCurrencyExchange,
   MdOutlineGridView,
   MdOutlineLogout,
-  MdOutlineMessage,
-  MdOutlinePeople,
   MdOutlineSettings,
-  MdOutlineShoppingBag,
+  MdOutlinePeople,
 } from "react-icons/md";
-import { Link, useLocation } from "react-router-dom"; // Importar useLocation
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.scss";
 import { SidebarContext } from "../../context/SidebarContext";
+import { AuthContext } from "../../config/AuthProvider"; // Importar el contexto de autenticación
 
 const Sidebar = () => {
   const { theme } = useContext(ThemeContext);
   const { isSidebarOpen, closeSidebar } = useContext(SidebarContext);
+  const { userId, permissions } = useContext(AuthContext); // Obtener userId y permisos desde el contexto de autenticación
   const navbarRef = useRef(null);
-  const location = useLocation(); // Usar useLocation para obtener la ruta actual
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Función para determinar si el enlace está activo
   const isActive = (path) => location.pathname === path;
 
-  // Cerrar la barra lateral al hacer clic fuera de ella
+  // Verificar permisos desde el contexto
+  const hasPermission = (permission) => permissions.includes(permission); // Generalizar la verificación de permisos
+
+  // Función para cerrar la barra lateral al hacer clic fuera de ella
   const handleClickOutside = (event) => {
     if (
       navbarRef.current &&
@@ -49,6 +49,28 @@ const Sidebar = () => {
     };
   }, []);
 
+  // Función para manejar el logout
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_id");
+    navigate("/");
+  };
+
+  // Componente para un enlace del menú
+    const MenuItem = ({ to, icon, text }) => (
+      <li className="menu-item">
+        <Link
+          to={to}
+          className={`menu-link ${isActive(to) ? "active" : ""}`}
+          onClick={closeSidebar} // Cerrar el sidebar al hacer clic
+        >
+          <span className="menu-link-icon">{icon}</span>
+          <span className="menu-link-text">{text}</span>
+        </Link>
+      </li>
+    );
+
+
   return (
     <nav
       className={`sidebar ${isSidebarOpen ? "sidebar-show" : ""}`}
@@ -56,13 +78,15 @@ const Sidebar = () => {
     >
       <div className="sidebar-top">
         <div className="sidebar-brand">
-        <img 
-            src={theme === LIGHT_THEME ? LogoBlue : LogoWhite} 
-            alt="Logo" 
-            width="50"  // Agrega el tamaño deseado
-            height="50" // Agrega el tamaño deseado
+          <img
+            src={theme === LIGHT_THEME ? LogoBlue : LogoWhite}
+            alt="Logo"
+            width="50"
+            height="50"
           />
-          <span className="sidebar-brand-text" >ARROZ IA</span>
+        
+        <p style={{ fontSize: '20px', color: '#ABABB5', fontWeight: 'bold' }}>Arroz IA</p>
+
         </div>
         <button className="sidebar-close-btn" onClick={closeSidebar}>
           <MdOutlineClose size={24} />
@@ -71,59 +95,28 @@ const Sidebar = () => {
       <div className="sidebar-body">
         <div className="sidebar-menu">
           <ul className="menu-list">
-            <li className="menu-item">
-              <Link to="/dashboard" className={`menu-link ${isActive('/dashboard') ? 'active' : ''}`}>
-                <span className="menu-link-icon">
-                  <MdOutlineGridView size={18} />
-                </span>
-                <span className="menu-link-text">Inicio</span>
-              </Link>
-            </li>
-            <li className="menu-item">
-              <Link to="/fincas" className={`menu-link ${isActive('/fincas') ? 'active' : ''}`}>
-                <span className="menu-link-icon">
-                  <MdOutlineBarChart size={20} />
-                </span>
-                <span className="menu-link-text">Fincas</span>
-              </Link>
-            </li>
-            <li className="menu-item">
-              <Link to="/users" className={`menu-link ${isActive('/users') ? 'active' : ''}`}>
-                <span className="menu-link-icon">
-                  <MdOutlinePeople size={20} />
-                </span>
-                <span className="menu-link-text">Usuarios</span>
-              </Link>
-            </li>
-            <li className="menu-item">
-              <Link to="/roles" className={`menu-link ${isActive('/roles') ? 'active' : ''}`}>
-                <span className="menu-link-icon">
-                <FaUserCog />
-                
-                </span>
-                <span className="menu-link-text">Roles y permisos</span>
-              </Link>
-            </li>
+            {/* <MenuItem to="/dashboard" icon={<MdOutlineGridView size={18} />} text="Inicio" /> */}
+            <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
+
+            {hasPermission("ver_usuarios") && ( // Verificar permisos
+              <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
+            )}
+            {hasPermission("ver_roles") && ( // Verificar permisos
+              <MenuItem to="/roles" icon={<FaUserCog size={35}/>} text="Roles" />
+            )}
           </ul>
         </div>
 
         <div className="sidebar-menu sidebar-menu2">
           <ul className="menu-list">
+            {/* <MenuItem to="/settings" icon={<MdOutlineSettings size={20} />} text="Settings" /> */}
             <li className="menu-item">
-              <Link to="/" className={`menu-link ${isActive('/settings') ? 'active' : ''}`}>
+              <button className="menu-link" onClick={handleLogout}>
                 <span className="menu-link-icon">
-                  <MdOutlineSettings size={20} />
+                  <MdOutlineLogout size={35} />
                 </span>
-                <span className="menu-link-text">Settings</span>
-              </Link>
-            </li>
-            <li className="menu-item">
-              <Link to="/" className={`menu-link ${isActive('/logout') ? 'active' : ''}`}>
-                <span className="menu-link-icon">
-                  <MdOutlineLogout size={20} />
-                </span>
-                <span className="menu-link-text">Logout</span>
-              </Link>
+                <span className="menu-link-text"  style={{ fontSize: '16px' }}>Cerrar sesión</span>
+              </button>
             </li>
           </ul>
         </div>

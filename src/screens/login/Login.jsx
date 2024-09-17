@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../config/AxiosInstance'; // Importar la instancia de Axios
 import { AuthContext } from '../../config/AuthProvider'; // Importar el contexto de autenticación
 import logo from '../../assets/images/logo.png';
-import background from '../../assets/images/background.jpg';
+import background from '../../assets/images/background.webp';
 
 const LoginContainer = styled.div`
+  position: fixed;  
+  z-index: 101;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,6 +17,7 @@ const LoginContainer = styled.div`
   background-image: url(${background});
   background-size: cover;
   background-position: center;
+  
 `;
 
 const FormContainer = styled.div`
@@ -22,7 +25,7 @@ const FormContainer = styled.div`
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  width: 90%;
   max-width: 400px;
   text-align: center;
 `;
@@ -91,6 +94,14 @@ const StyledLink = styled.span`
   }
 `;
 
+
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 18px; /* Aumenta el tamaño de la fuente según tus necesidades */
+  font-family: 'Roboto', sans-serif;
+  margin-bottom: 20px; /* Opcional: añade espacio debajo del mensaje */
+`;
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -108,24 +119,37 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       const { access_token, refresh_token, user_name } = response.data;
+  
+      // Si no hay necesidad de cambiar la contraseña, continuar con el login normal
       login(access_token); // Utiliza la función login del contexto para guardar el token
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('userName', user_name);
-      navigate('/dashboard');
+      navigate('/farms');
     } catch (error) {
-      console.error('Error en el inicio de sesión:', error.response ? error.response.data : error.message);
-      setError('Correo o contraseña incorrectos');
+      // Verifica si es un error de tipo 403 y si requiere cambio de contraseña
+      if (error.response && error.response.status === 403 && error.response.data.change_password_required) {
+        // Redirigir a la página de cambio de contraseña
+        const { access_token, refresh_token } = error.response.data;
+        navigate('/change-password-first', {
+          state: { accessToken: access_token, refreshToken: refresh_token }
+        });
+      } else {
+        // En caso de otros errores, muestra el mensaje de error estándar
+        console.error('Error en el inicio de sesión:', error.response ? error.response.data : error.message);
+        setError('Correo o contraseña incorrectos');
+      }
     }
   };
+  
 
   return (
     <LoginContainer>
       <FormContainer>
         <Logo src={logo} alt="App Logo" />
         <Title>Arroz IA</Title>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         <Input
           type="email"
           placeholder="Correo electrónico"

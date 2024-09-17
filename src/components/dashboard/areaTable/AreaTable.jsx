@@ -7,7 +7,9 @@ import Newuser from "../../../screens/users/Newuser";  // Asegúrate de que la r
 const TABLE_HEADS = [
   "Nombre",
   "Apellido",
-  "Email",
+  "Correo electrónico",
+  "Finca",
+  "Rol",
   "Acciones",
 ];
 
@@ -16,19 +18,41 @@ const AreaTable = () => {
   const [loading, setLoading] = useState(true);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
 
-  const fetchData = async () => {
+  // Función para obtener todos los usuarios
+  const fetchUsers = async () => {
     try {
+      // Primera llamada a la ruta '/users' para obtener los usuarios
       const response = await axiosInstance.get('/users');
-      setTableData(response.data);
+      const users = response.data;
+
+      // Para cada usuario, llamamos a la ruta '/user-farm-rol/{user_id}' para obtener su finca y rol
+      const usersWithFarmAndRole = await Promise.all(
+        users.map(async (user) => {
+          try {
+            const farmAndRoleResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
+            console.log(`Datos de finca y rol para el usuario ${user.id}:`, farmAndRoleResponse.data);
+            return { 
+              ...user, 
+              finca_id: farmAndRoleResponse.data.finca_id, 
+              rol_id: farmAndRoleResponse.data.rol_id 
+            };
+          } catch (error) {
+            console.error(`Error fetching farm and role for user ${user.id}:`, error);
+            return { ...user, finca_id: null, rol_id: null };  // Si ocurre un error, asignamos finca_id y rol_id como null
+          }
+        })
+      );
+
+      setTableData(usersWithFarmAndRole);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching users:", error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchUsers();
   }, []);
 
   const handleSave = (newUser) => {
@@ -38,30 +62,28 @@ const AreaTable = () => {
 
   return (
     <section className="content-area-table">
-      <div className="data-table-info">
-        <h4 className="data-table-title"></h4>
-      </div>
       <div className="data-table-diagram">
-       
         {loading ? (
           <p>Cargando...</p>
         ) : (
           <table>
             <thead>
               <tr>
-                {TABLE_HEADS?.map((th, index) => (
+                {TABLE_HEADS.map((th, index) => (
                   <th key={index}>{th}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {tableData?.map((dataItem) => (
+              {tableData.map((dataItem) => (
                 <tr key={dataItem.id}>
                   <td>{dataItem.nombre}</td>
                   <td>{dataItem.apellido}</td>
                   <td>{dataItem.email}</td>
+                  <td>{dataItem.finca_id ? dataItem.finca_id : "Sin finca"}</td>
+                  <td>{dataItem.rol_id ? dataItem.rol_id : "Sin rol"}</td>
                   <td className="dt-cell-action">
-                    <AreaTableAction user={dataItem} onSave={fetchData} />
+                    <AreaTableAction user={dataItem} onSave={fetchUsers} />
                   </td>
                 </tr>
               ))}

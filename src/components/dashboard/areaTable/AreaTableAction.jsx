@@ -108,9 +108,7 @@ const AreaTableAction = ({ user, onSave }) => {
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
-      <PermissionButton onClick={handlePermissions}>
-        <HiOutlineCog size={18} />
-      </PermissionButton>
+      
 
       {/* Modal de Edición */}
       <EditModal

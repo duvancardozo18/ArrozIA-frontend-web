@@ -10,7 +10,9 @@ const ButtonStyled = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  
+  margin-bottom:20px;
+  margin-left: auto; /* Agrega esta línea */
+  display: block;
   &:hover {
     background-color: #218838;
   }

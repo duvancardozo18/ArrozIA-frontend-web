@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
-import SuccessModal from './SuccessModal'; 
+import SuccessModal from './SuccessModal';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -20,8 +20,8 @@ const ModalContent = styled.div`
   background: white;
   padding: 30px;
   border-radius: 20px;
-  width: 450px;
-  max-width: 100%;
+  width: 600px; /* Ajustar el ancho para las dos columnas */
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
@@ -33,12 +33,11 @@ const ModalContent = styled.div`
 
 const ErrorMessage = styled.p`
   color: #ff6b6b;
-  font-size: 18px;  // Incrementar el tamaño de la fuente
+  font-size: 18px;
   margin-bottom: 20px;
   text-align: center;
-  font-weight: bold;  // Hacer que el texto sea más grueso
+  font-weight: bold;
 `;
-
 
 const CloseButton = styled.button`
   position: absolute;
@@ -59,6 +58,7 @@ const CloseButton = styled.button`
 
 const InputGroup = styled.div`
   margin-bottom: 20px;
+  flex: 1;
 
   label {
     display: block;
@@ -83,6 +83,16 @@ const InputGroup = styled.div`
   }
 `;
 
+const FormGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+`;
+
+const Column = styled.div`
+  flex: 1;
+`;
+
 const SubmitButton = styled.button`
   width: 100%;
   padding: 12px;
@@ -101,42 +111,96 @@ const SubmitButton = styled.button`
   }
 `;
 
-const Newuser = ({ closeModal }) => {
+const NewUser = ({ closeModal }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
     email: '',
     password: '',
-    rol_id: '1',
+    rol_id: '', 
+    finca_id: ''
   });
 
+  const [roles, setRoles] = useState([]);
+  const [fincas, setFincas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(''); // Estado para manejar mensajes de error
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const fetchRolesAndFincas = async () => {
+      try {
+        const rolesResponse = await axiosInstance.get('/roles');
+        setRoles(rolesResponse.data.roles || []);
+
+        const fincasResponse = await axiosInstance.get('/farms');
+        setFincas(fincasResponse.data || []);
+
+      } catch (error) {
+        console.error("Error fetching roles and fincas:", error);
+        setErrorMessage("Error al cargar roles y fincas. Intente nuevamente.");
+      }
+    };
+
+    fetchRolesAndFincas();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
-  const handleSubmit = async (event) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+};
+
+const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      setErrorMessage(''); // Limpiar cualquier mensaje de error previo
-      const response = await axiosInstance.post('/register', formData); // Enviar datos al backend
-      console.log('Usuario creado:', response.data);
-      setShowSuccessModal(true);
+        setErrorMessage('');
+
+        if (!formData.nombre || !formData.apellido || !formData.email || !formData.password || !formData.rol_id || !formData.finca_id) {
+            throw new Error("Todos los campos son obligatorios.");
+        }
+
+        const userResponse = await axiosInstance.post('/register', {
+            nombre: formData.nombre,
+            apellido: formData.apellido,
+            email: formData.email,
+            password: formData.password,
+        });
+
+        const userId = userResponse.data.id;
+
+        if (!userId) {
+            throw new Error("No se pudo obtener el ID del usuario.");
+        }
+
+        const dataToSend = {
+            usuario_id: parseInt(userId, 10),
+            rol_id: parseInt(formData.rol_id, 10),
+            finca_id: parseInt(formData.finca_id, 10),
+        };
+
+        if (isNaN(dataToSend.finca_id)) {
+            throw new Error("La finca seleccionada no es válida.");
+        }
+
+        const response = await axiosInstance.post('/user-farm', dataToSend);
+
+        if (response.status === 200 || response.status === 201) {
+            setShowSuccessModal(true);
+        } else {
+            throw new Error("Error al establecer la relación usuario-finca-rol.");
+        }
+
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        setErrorMessage('El correo ya está registrado.'); // Establece el mensaje de error
-      } else {
-        setErrorMessage('Error creando el usuario.'); // Otro error inesperado
-      }
+        setErrorMessage(error.message || 'Error creando el usuario.');
     }
-  };
+};
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    closeModal(); // Cierra el modal principal también
+    closeModal();
   };
 
   return (
@@ -144,63 +208,87 @@ const Newuser = ({ closeModal }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Usuario</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Usuario</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
-            <InputGroup>
-              <label>Apellido</label>
-              <input
-                type="text"
-                name="apellido"
-                value={formData.apellido}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Contraseña</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Rol</label>
-              <select
-                name="rol_id"
-                value={formData.rol_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="1">Administrador</option>
-                <option value="2">Usuario</option>
-                {/* Agrega más roles según tu necesidad */}
-              </select>
-            </InputGroup>
-            <SubmitButton type="submit">Crear Usuario</SubmitButton>
+            <FormGrid>
+              {/* Primera columna: Nombre, Apellido, Correo */}
+              <Column>
+                <InputGroup>
+                  <label>Nombre</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <label>Apellido</label>
+                  <input
+                    type="text"
+                    name="apellido"
+                    value={formData.apellido}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+              </Column>
+
+              {/* Segunda columna: Contraseña, Finca, Rol */}
+              <Column>
+                <InputGroup>
+                  <label>Contraseña</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <label>Finca</label>
+                  <select
+                    name="finca_id"
+                    value={formData.finca_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccione una finca</option>
+                    {fincas.map((finca) => (
+                      <option key={finca.id} value={finca.id}>{finca.nombre}</option>
+                    ))}
+                  </select>
+                </InputGroup>
+                <InputGroup>
+                  <label>Rol</label>
+                  <select
+                    name="rol_id"
+                    value={formData.rol_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccione un rol</option>
+                    {roles.map((rol) => (
+                      <option key={rol.id} value={rol.id}>{rol.nombre}</option>
+                    ))}
+                  </select>
+                </InputGroup>
+              </Column>
+            </FormGrid>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
@@ -209,4 +297,4 @@ const Newuser = ({ closeModal }) => {
   );
 };
 
-export default Newuser;
+export default NewUser;

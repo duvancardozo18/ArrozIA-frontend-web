@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
 import SuccessModal from './RoleSuccessModal';  // Asegúrate de que la ruta sea correcta
@@ -21,31 +21,9 @@ const ModalContent = styled.div`
   padding: 30px;
   border-radius: 20px;
   width: 450px;
-  max-width: 100%;
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
-  transform: translateZ(0);
-  transition: transform 0.3s ease-in-out;
-
-  &:hover {
-    transform: translateY(-10px) scale(1.03) perspective(1000px);
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-  transition: color 0.2s ease-in-out;
-
-  &:hover {
-    color: #ff6b6b;
-  }
+  position: relative;
 `;
 
 const InputGroup = styled.div`
@@ -57,20 +35,30 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input, textarea {
+  input {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
     box-sizing: border-box;
     font-size: 16px;
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+`;
 
-    &:focus {
-      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
-      transform: translateY(-3px);
-      outline: none;
-    }
+const CheckboxGroup = styled.div`
+  margin-bottom: 20px;
+  max-height: 200px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  input {
+    margin-right: 10px;
   }
 `;
 
@@ -82,7 +70,6 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -92,17 +79,59 @@ const SubmitButton = styled.button`
   }
 `;
 
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+
+  &:hover {
+    color: #ff6b6b;
+  }
+`;
+
 const NewRol = ({ show, closeModal, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: '',
-    descripcion: ''
+    descripcion: '',
+    permisos: []  // Nuevo campo para almacenar permisos seleccionados
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [permissions, setPermissions] = useState([]); // Estado para almacenar permisos disponibles
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        const response = await axiosInstance.get('/permissions'); // Cambia la ruta si es necesario
+        setPermissions(response.data.permissions); // Asegúrate de que la respuesta tenga la lista de permisos
+      } catch (error) {
+        console.error("Error fetching permissions:", error);
+      }
+    };
+
+    fetchPermissions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prevState) => {
+      const permisos = checked
+        ? [...prevState.permisos, value]
+        : prevState.permisos.filter((permiso) => permiso !== value);
+
+      return { ...prevState, permisos };
+    });
   };
 
   const handleSubmit = async (event) => {
@@ -119,6 +148,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal(); // Cierra el modal principal también
+    onSave(); // Refresca la tabla de roles
   };
 
   if (!show) return null;
@@ -128,7 +158,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Rol</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Rol</h2>
           <form onSubmit={handleSubmit}>
             <InputGroup>
               <label>Nombre del Rol</label>
@@ -140,7 +170,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
                 required
               />
             </InputGroup>
-            <InputGroup>
+            {/* <InputGroup>
               <label>Descripción</label>
               <textarea
                 name="descripcion"
@@ -149,8 +179,21 @@ const NewRol = ({ show, closeModal, onSave }) => {
                 required
                 rows="4"
               />
-            </InputGroup>
-            <SubmitButton type="submit">Crear Rol</SubmitButton>
+            </InputGroup> */}
+            <CheckboxGroup>
+              <label>Permisos</label>
+              {permissions.map((permiso) => (
+                <CheckboxLabel key={permiso.id}>
+                  <input
+                    type="checkbox"
+                    value={permiso.id}
+                    onChange={handleCheckboxChange}
+                  />
+                  {permiso.nombre}
+                </CheckboxLabel>
+              ))}
+            </CheckboxGroup>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
