@@ -1,9 +1,8 @@
-import { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import background from '../../assets/images/background.webp';
 import axiosInstance from '../../config/AxiosInstance';
-import { AuthContext } from '../../config/AuthProvider'; // Asegúrate de que el contexto esté disponible
 
 const ResetContainer = styled.div`
   display: flex;
@@ -78,8 +77,42 @@ const Button = styled.button`
 `;
 
 const ResetPasswordForm = () => {
-  const { userId, token } = useContext(AuthContext); // Obtener userId y token desde AuthContext
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const { accessToken, refreshToken } = location.state || {};
+
+  if (!accessToken || !refreshToken) {
+    console.error('Faltan tokens para cambiar la contraseña.');
+    navigate('/');
+    return null;
+  }
+
+  const parseJwt = (token) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Error parsing JWT:', error);
+      return null;
+    }
+  };
+
+  const decodedToken = parseJwt(accessToken);
+  const userId = decodedToken ? decodedToken.sub : null;
+
+  if (!userId) {
+    console.error('Token de acceso inválido.');
+    navigate('/');
+    return null;
+  }
 
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
@@ -88,13 +121,12 @@ const ResetPasswordForm = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Efecto para obtener los datos del usuario al montar el componente
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axiosInstance.get(`/users/${userId}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
 
@@ -112,10 +144,8 @@ const ResetPasswordForm = () => {
       }
     };
 
-    if (userId) {
-      fetchUserData();
-    }
-  }, [userId, token]);
+    fetchUserData();
+  }, [userId, accessToken]);
 
   const handleResetPassword = async () => {
     if (password !== confirmPassword) {
@@ -136,13 +166,15 @@ const ResetPasswordForm = () => {
     try {
       const response = await axiosInstance.put(`/users/update/${userId}`, payload, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
       if (response.status === 200) {
         alert('Información actualizada con éxito.');
-        navigate('/');
+        // Opcionalmente, puedes autenticar al usuario aquí
+        // login(accessToken);
+        navigate('/farms');
       } else {
         setError('Hubo un problema al actualizar la información.');
       }

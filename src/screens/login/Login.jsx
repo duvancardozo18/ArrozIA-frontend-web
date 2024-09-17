@@ -111,6 +111,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
+      console.log('Iniciando sesión con:', email, password);
       const response = await axiosInstance.post('/login', {
         email: email.trim(),
         password: password.trim(),
@@ -120,6 +121,7 @@ const Login = () => {
         },
       });
   
+      console.log('Respuesta del servidor:', response.data);
       const { access_token, refresh_token, user_name } = response.data;
   
       // Si no hay necesidad de cambiar la contraseña, continuar con el login normal
@@ -128,19 +130,28 @@ const Login = () => {
       localStorage.setItem('userName', user_name);
       navigate('/farms');
     } catch (error) {
-      // Verifica si es un error de tipo 403 y si requiere cambio de contraseña
-      if (error.response && error.response.status === 403 && error.response.data.change_password_required) {
-        // Redirigir a la página de cambio de contraseña
+      if (error.response) {
+        console.log('Error Status:', error.response.status);
+        console.log('Error Data:', error.response.data);
+        console.log('change_password_required:', error.response.data.change_password_required);
+      }
+    
+      if (
+        error.response &&
+        error.response.status === 403 &&
+        (error.response.data.change_password_required === true || error.response.data.change_password_required === 'true')
+      ) {
         const { access_token, refresh_token } = error.response.data;
+        console.log('Redirigiendo a cambio de contraseña...');
         navigate('/change-password-first', {
           state: { accessToken: access_token, refreshToken: refresh_token }
         });
       } else {
-        // En caso de otros errores, muestra el mensaje de error estándar
         console.error('Error en el inicio de sesión:', error.response ? error.response.data : error.message);
         setError('Correo o contraseña incorrectos');
       }
     }
+    
   };
   
 

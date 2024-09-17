@@ -34,8 +34,9 @@ function App() {
 
           {/* Ruta pública para la solicitud de restablecimiento de contraseña */}
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/change-password-first" element={<PrivateRoute element={<ResetPasswordFormFirst />} />} />
-        
+          
+          {/* Ruta pública para cambio de contraseña en primer login */}
+          <Route path="/change-password-first" element={<ResetPasswordFormFirst />} />
 
           {/* Ruta para restablecer la contraseña usando el token */}
           <Route path="/Reset_Password/:token" element={<ResetPasswordForm />} />
@@ -43,9 +44,6 @@ function App() {
           {/* Rutas protegidas envueltas en BaseLayout */}
           <Route element={<BaseLayout />}>
             {/* Rutas protegidas con PrivateRoute */}
-           
-            {/* <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} /> */}
-            {/* <Route path="/permisos" element={<PrivateRoute element={<TablePermisos />} />} /> */}
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="ver_usuarios" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="ver_roles" />} />
             <Route path="/farms" element={<PrivateRoute element={<Fincas />} />} />
