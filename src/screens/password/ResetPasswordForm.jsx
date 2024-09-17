@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import background from '../../assets/images/background.jpg';
+import background from '../../assets/images/background.webp';
 import axiosInstance from '../../config/AxiosInstance'; // Asegúrate de que esté configurado correctamente
 
 const ResetContainer = styled.div`
@@ -18,7 +18,7 @@ const ResetContainer = styled.div`
 `;
 
 const FormContainer = styled.div`
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);

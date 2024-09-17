@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import background from '../../assets/images/background.jpg';
+import background from '../../assets/images/background.webp';
 import { Link } from 'react-router-dom'; // Importar Link para la navegación
 import axiosInstance from '../../config/AxiosInstance'; // Asegúrate de que esté configurado correctamente
 
@@ -19,7 +19,7 @@ const ResetContainer = styled.div`
 
 const FormContainer = styled.div`
   position: relative; /* Agregado para posicionar el overlay */
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 40px;
   border-radius: 15px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
