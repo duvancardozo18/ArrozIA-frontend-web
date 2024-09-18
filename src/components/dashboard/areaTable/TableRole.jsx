@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import AreaTableActionRoles from "./AreaTableActionRoles"; // Asegúrate de que este sea el nombre correcto del archivo
-import "./AreaTable.scss";
+import "../../../css/AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
+import Newuser from "../../../screens/users/Newuser"; 
 
 const TABLE_HEADS = [
   "#",
@@ -13,6 +14,7 @@ const TABLE_HEADS = [
 const TableRole = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
 
   const fetchData = async () => {  // Mover la función fuera del useEffect para reutilizarla
     try {
@@ -71,6 +73,13 @@ const TableRole = () => {
           </table>
         )}
       </div>
+            {/* Modal para crear un nuevo usuario */}
+          {showNewUserModal && (
+        <Newuser
+          closeModal={() => setShowNewUserModal(false)}
+          onSave={handleSave}
+        />
+      )}
     </section>
   );
 };

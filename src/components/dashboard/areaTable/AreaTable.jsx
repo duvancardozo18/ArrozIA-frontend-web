@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AreaTableAction from "./AreaTableAction";
-import "./AreaTable.scss";
+import "../../../css/AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';
 import Newuser from "../../../screens/users/Newuser";  // Asegúrate de que la ruta sea correcta
 

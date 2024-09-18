@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AreaTableActionPermisos from "./AreaTableActionPermisos";
-import "./AreaTable.scss";
+import "../../../css/AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
 
 const TABLE_HEADS = [

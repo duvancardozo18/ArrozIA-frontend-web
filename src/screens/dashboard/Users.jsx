@@ -1,8 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import { AreaCards, AreaCharts, AreaTable, AreaTop } from "../../components";
-import ButtonCrear from '../../components/ButtonCrear';
+import ButtonCrear from '../../components/dashboard/ButtonCreate';
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from 'react-router-dom';
+import NewUser from '../../screens/users/Newuser';
 
 const Usars = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -29,7 +30,7 @@ const Usars = () => {
      
     </div>
       <AreaTop title="Usuarios" />
-      <ButtonCrear />
+      <ButtonCrear buttonText="Crear usuario" ModalComponent={NewUser}/>
       <AreaTable />
     </div>
   );

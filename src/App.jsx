@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import "./App.scss";
+import "./css/App.scss";
 import { ThemeContext } from "./context/ThemeContext";
 import { DARK_THEME, LIGHT_THEME } from "./constants/themeConstants";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -58,8 +58,8 @@ function App() {
 
           {/* Rutas protegidas envueltas en BaseLayout */}
           <Route element={<PrivateRoute element={<BaseLayout />} />}>
-            <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="ver_usuarios" />} />
-            <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="ver_roles" />} />
+            <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
+            <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Fincas />} />} />
             <Route path="/crop" element={<PrivateRoute element={<CropMain />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />

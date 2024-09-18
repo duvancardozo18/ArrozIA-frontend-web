@@ -96,6 +96,8 @@ const CloseButton = styled.button`
 `;
 
 const NewRol = ({ show, closeModal, onSave }) => {
+  
+  
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -151,8 +153,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
     onSave(); // Refresca la tabla de roles
   };
 
-  if (!show) return null;
-
+  if (show) return null;
   return (
     <>
       <ModalOverlay>

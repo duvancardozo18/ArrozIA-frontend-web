@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Newuser from '../screens/users/Newuser'; // Importa el componente del modal
 
 const ButtonStyled = styled.button`
   padding: 10px 20px;
@@ -10,24 +9,25 @@ const ButtonStyled = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  margin-bottom:20px;
-  margin-left: auto; /* Agrega esta línea */
+  margin-bottom: 20px;
+  margin-left: auto;
   display: block;
+
   &:hover {
     background-color: #218838;
   }
 `;
 
-const ButtonCrear = () => {
+const ButtonCrear = ({ buttonText, ModalComponent }) => {
   const [showModal, setShowModal] = useState(false);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
-
+  console.log("hola")
   return (
     <>
-      <ButtonStyled onClick={openModal}>Crear Usuario</ButtonStyled>
-      {showModal && <Newuser closeModal={closeModal} />} {/* Muestra el modal si showModal es true */}
+      <ButtonStyled onClick={openModal}>{buttonText}</ButtonStyled>
+      {showModal && <ModalComponent closeModal={closeModal} />} {/* Renderiza el modal que recibe como prop */}
     </>
   );
 };

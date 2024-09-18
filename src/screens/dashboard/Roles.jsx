@@ -1,9 +1,11 @@
 import React, { useContext, useEffect } from 'react';
 import { AreaTop } from "../../components";
+import ButtonCrear from '../../components/dashboard/ButtonCreate';
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from 'react-router-dom';
 import TableRole from '../../components/dashboard/areaTable/TableRole';
-import ButtonCrearRoles from '../../components/ButtonCrearRoles';  // Importa el botón
+import NewRol from '../../screens/roles/Newrol';
+
 
 const Roles = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -26,7 +28,7 @@ const Roles = () => {
   return (
     <div className="content-area">
       <AreaTop title="Roles" />
-      <ButtonCrearRoles />  {/* Agrega el botón aquí */}
+      <ButtonCrear  buttonText="Crear Rol" ModalComponent={NewRol}/>  {/* Agrega el botón aquí */}
       <TableRole />
     </div>
   );

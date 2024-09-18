@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
+// import { ThemeContext } from "../../../context/ThemeContext";
 import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
@@ -11,9 +12,10 @@ import {
   MdOutlineLogout,
   MdOutlineSettings,
   MdOutlinePeople,
+  MdOutlinePerson2,
 } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "./Sidebar.scss";
+import "../../css/Sidebar.scss";
 import { SidebarContext } from "../../context/SidebarContext";
 import { AuthContext } from "../../config/AuthProvider"; // Importar el contexto de autenticación
 
@@ -98,10 +100,10 @@ const Sidebar = () => {
             {/* <MenuItem to="/dashboard" icon={<MdOutlineGridView size={18} />} text="Inicio" /> */}
             <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
 
-            {hasPermission("ver_usuarios") && ( // Verificar permisos
+            {hasPermission("crear_usuario") && ( // Verificar permisos
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
             )}
-            {hasPermission("ver_roles") && ( // Verificar permisos
+            {hasPermission("crear_rol") && ( // Verificar permisos
               <MenuItem to="/roles" icon={<FaUserCog size={35}/>} text="Roles" />
             )}
           </ul>
@@ -109,7 +111,7 @@ const Sidebar = () => {
 
         <div className="sidebar-menu sidebar-menu2">
           <ul className="menu-list">
-            {/* <MenuItem to="/settings" icon={<MdOutlineSettings size={20} />} text="Settings" /> */}
+            <MenuItem to="/profile" icon={<MdOutlinePerson2 size={35} />} text="Perfil" />
             <li className="menu-item">
               <button className="menu-link" onClick={handleLogout}>
                 <span className="menu-link-icon">
