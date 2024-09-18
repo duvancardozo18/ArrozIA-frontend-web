@@ -121,7 +121,7 @@ const AreaTableActionRoles = ({ role, onSave }) => {
         }
       } else {
         console.error("Error al eliminar el rol:", error.message);
-        alert("Error: Hubo un problema de red o el servidor no respondió.");
+        alert("Error: Rol asignado a usuarios");
       }
     }
   };

@@ -154,7 +154,7 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
     if (checked) {
       // Agregar el permiso al rol
       try {
-        await axiosInstance.post(`/roles/${role.id}/permissions/${permisoId}`);
+        await axiosInstance.put(`/roles/${role.id}/permissions/${permisoId}`);
         setSelectedPermissions((prevState) => [...prevState, permisoId]);
       } catch (error) {
         console.error(`Error al agregar el permiso con ID ${permisoId}:`, error);

@@ -54,7 +54,7 @@ const SuccessIcon = styled.div`
 const SuccessMessage = styled.h2`
   font-size: 24px;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-family: 'Roboto', sans-serif;
 `;
 
@@ -84,7 +84,7 @@ const EditSuccessRole = ({ show, closeModal }) => {
     <ModalOverlay>
       <ModalContent>
         <SuccessIcon>✓</SuccessIcon>
-        <SuccessMessage>Usuario editado correctamente</SuccessMessage>
+        <SuccessMessage>Rol actualizado Correctamente</SuccessMessage>
         <CloseButton onClick={closeModal}>Cerrar</CloseButton>
       </ModalContent>
     </ModalOverlay>
