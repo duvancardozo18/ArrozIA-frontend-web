@@ -205,7 +205,7 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
         <ModalOverlay>
           <ModalContent>
             <CloseButton onClick={closeModal}>×</CloseButton>
-            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Usuario</h2>
+            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar usuario</h2>
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <form onSubmit={handleSubmit}>
               <FormGrid>
@@ -241,7 +241,11 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
                       required
                     />
                   </InputGroup>
-                  <InputGroup>
+                </Column>
+
+                {/* Segunda columna: Finca y Rol */}
+                <Column>
+                <InputGroup>
                     <label>Contraseña (opcional)</label>
                     <input
                       type="password"
@@ -250,10 +254,6 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
                       onChange={handleChange}
                     />
                   </InputGroup>
-                </Column>
-
-                {/* Segunda columna: Finca y Rol */}
-                <Column>
                   <InputGroup>
                     <label>Finca</label>
                     <select

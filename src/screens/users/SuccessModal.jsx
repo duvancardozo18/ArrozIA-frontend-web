@@ -54,7 +54,7 @@ const SuccessIcon = styled.div`
 const SuccessMessage = styled.h2`
   font-size: 24px;
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 1px;
   font-family: 'Roboto', sans-serif;
 `;
 
@@ -87,7 +87,7 @@ const SuccessModal = ({ closeModal }) => {
     <ModalOverlay>
       <ModalContent>
         <SuccessIcon>✓</SuccessIcon>
-        <SuccessMessage>¡Usuario creado exitosamente!</SuccessMessage>
+        <SuccessMessage>Usuario Creado Exitosamente</SuccessMessage>
         <CloseButton onClick={handleClose}>Cerrar</CloseButton>
       </ModalContent>
     </ModalOverlay>

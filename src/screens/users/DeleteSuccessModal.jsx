@@ -54,7 +54,7 @@ const SuccessIcon = styled.div`
 const SuccessMessage = styled.h2`
   font-size: 24px;
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 1px;
   font-family: 'Roboto', sans-serif;
 `;
 
@@ -89,7 +89,7 @@ const DeleteSuccessModal = ({ show, closeModal }) => {
       <ModalOverlay>
         <ModalContent>
           <SuccessIcon>✓</SuccessIcon>
-          <SuccessMessage>Usuario eliminado correctamente</SuccessMessage>
+          <SuccessMessage>Usuario Eliminado Correctamente</SuccessMessage>
           <CloseButton onClick={handleClose}>Cerrar</CloseButton>
         </ModalContent>
       </ModalOverlay>

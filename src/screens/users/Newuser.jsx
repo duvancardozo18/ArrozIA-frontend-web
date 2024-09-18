@@ -162,7 +162,7 @@ const handleSubmit = async (event) => {
             throw new Error("Todos los campos son obligatorios.");
         }
 
-        const userResponse = await axiosInstance.post('/register', {
+        const userResponse = await axiosInstance.post('users/register', {
             nombre: formData.nombre,
             apellido: formData.apellido,
             email: formData.email,
@@ -208,7 +208,7 @@ const handleSubmit = async (event) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Usuario</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear usuario</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <FormGrid>
