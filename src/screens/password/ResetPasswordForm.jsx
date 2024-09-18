@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import background from '../../assets/images/background.webp';
-import axiosInstance from '../../config/AxiosInstance'; // Asegúrate de que esté configurado correctamente
+import axiosInstance from '../../config/AxiosInstance'; 
+import { FaCheckCircle } from 'react-icons/fa'; 
 
 const ResetContainer = styled.div`
   display: flex;
@@ -69,12 +70,51 @@ const Button = styled.button`
   }
 `;
 
+const SuccessContainer = styled.div`
+  text-align: center;
+  margin-top: 20px;
+`;
+
+const Checkmark = styled.div`
+  color: #27ae60;
+  font-size: 65px;
+  margin-bottom: 20px;
+`;
+
+const SuccessMessage = styled.p`
+  font-size: 20px;
+  color: #2c3e50;
+  font-family: 'Roboto', sans-serif;
+`;
+
 const ResetPasswordForm = () => {
   const { token } = useParams(); // Captura el token desde la URL
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false); 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const response = await axiosInstance.get(`/Reset_Password/${token}`);
+        // Si el token es válido, no hacemos nada y mostramos la página
+        console.log('Token is valid:', response.data);
+      } catch (error) {
+        console.error('Invalid or expired token:', error);
+        // Redirigimos al usuario a la página principal si el token es inválido
+        navigate('/');
+      }
+    };
+  
+    if (!token) {
+      navigate('/'); // Redirigir a la raíz si el token no está presente
+    } else {
+      verifyToken(); // Verificamos el token con el backend
+    }
+  }, [token, navigate]);
+  
 
   const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
@@ -94,8 +134,10 @@ const ResetPasswordForm = () => {
       });
   
       if (response.status === 200) {
-        alert('Contraseña restablecida con éxito.');
-        navigate('/');
+        setIsSuccess(true);
+        setTimeout(() => {
+          navigate('/');
+        }, 3000); 
       } else {
         setError('Hubo un problema al restablecer la contraseña.');
       }
@@ -104,7 +146,21 @@ const ResetPasswordForm = () => {
       setError('Hubo un error al procesar tu solicitud.');
     }
   };
-  
+
+  if (isSuccess) {
+    return (
+      <ResetContainer>
+        <FormContainer>
+          <SuccessContainer>
+            <Checkmark>
+              <FaCheckCircle />
+            </Checkmark>
+            <SuccessMessage>Contraseña restablecida con éxito. Redireccionado...</SuccessMessage>
+          </SuccessContainer>
+        </FormContainer>
+      </ResetContainer>
+    );
+  }
 
   return (
     <ResetContainer>
@@ -125,7 +181,7 @@ const ResetPasswordForm = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <Button onClick={handleResetPassword}>Restablecer contraseña</Button>
+        <Button onClick={handleResetPassword}>Restablecer</Button>
       </FormContainer>
     </ResetContainer>
   );
