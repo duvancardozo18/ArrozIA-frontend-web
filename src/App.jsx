@@ -15,6 +15,9 @@ import CropMain from "./components/dashboard/fincas/cultivos/CropMain";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 
+
+import { Profile} from "./screens";
+
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
 
@@ -63,6 +66,7 @@ function App() {
             <Route path="/farms" element={<PrivateRoute element={<Fincas />} />} />
             <Route path="/crop" element={<PrivateRoute element={<CropMain />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
           <Route path="*" element={<PageNotFound />} />

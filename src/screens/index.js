@@ -5,4 +5,5 @@ export { default as Dashboard } from "./dashboard/Home";
 export { default as Users } from "./dashboard/Users";
 export { default as Roles } from "./dashboard/Roles";
 export { default as Fincas } from "./dashboard/Fincas";
+export { default as Profile } from "./dashboard/Profile";
 
