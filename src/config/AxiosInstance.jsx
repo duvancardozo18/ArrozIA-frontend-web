@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://3.17.27.249:8000', // Usa la variable de entorno
-  // baseURL: import.meta.env.VITE_API_BASE_URL, // Usa la variable de entorno
+  baseURL: import.meta.env.VITE_API_BASE_URL, // Usa la variable de entorno
   headers: {
     'Content-Type': 'application/json',
   },
