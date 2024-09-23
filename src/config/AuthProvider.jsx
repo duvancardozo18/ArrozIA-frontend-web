@@ -1,5 +1,3 @@
-// src/context/AuthProvider.js
-
 import React, { createContext, useState, useEffect } from 'react';
 import axiosInstance from '../config/AxiosInstance';
 
@@ -38,17 +36,38 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Función para inicializar la autenticación
+  const checkBackendStatus = async () => {
+    try {
+      const response = await axiosInstance.get('/'); // Ruta de salud del backend
+      if (response.status === 200) {
+        console.log('Backend está disponible');
+        return true;
+      }
+    } catch (error) {
+      console.error('Backend no está disponible:', error);
+      return false;
+    }
+  };
+  
+  // Función para inicializar la autenticación
   useEffect(() => {
     const initializeAuth = async () => {
+      const backendReady = await checkBackendStatus(); // Verifica si el backend está listo
+      if (!backendReady) {
+        setLoading(false); // Si el backend no está disponible, termina la carga
+        return;
+      }
+  
+      // Continúa con el flujo de autenticación si el backend está disponible
       const token = localStorage.getItem('access_token');
       if (token) {
         const decodedToken = parseJwt(token);
         if (decodedToken && decodedToken.sub) {
           setUserId(decodedToken.sub);
-          setEmail(decodedToken.email || ''); // Asigna el email si está presente en el token
-          setNombre(decodedToken.nombre || ''); // Asigna el nombre si está presente en el token
-          setApellido(decodedToken.apellido || ''); // Asigna el apellido si está presente en el token
-
+          setEmail(decodedToken.email || '');
+          setNombre(decodedToken.nombre || '');
+          setApellido(decodedToken.apellido || '');
+  
           try {
             await fetchUserData(decodedToken.sub); // Llama al backend para obtener datos adicionales
             setIsAuthenticated(true);
@@ -62,11 +81,13 @@ export const AuthProvider = ({ children }) => {
       } else {
         setIsAuthenticated(false);
       }
-      setLoading(false); 
+      setLoading(false);
     };
-
+  
     initializeAuth();
   }, []);
+  
+  
 
   // Función para obtener datos del usuario desde el backend
   const fetchUserData = async (userId) => {
