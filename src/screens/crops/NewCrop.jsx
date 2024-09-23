@@ -105,28 +105,25 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
   const [formData, setFormData] = useState({
     cropName: '', 
     varietyId: '',
-    plotId: '',
+    plotId: selectedAllotment ? selectedAllotment.id : '', // Asegurarte de asignar el ID del lote
     plantingDate: '',
     estimatedHarvestDate: ''
   });
 
   const [varieties, setVarieties] = useState([]); // Estado para almacenar las variedades de arroz
-  const [plots, setPlots] = useState([]); // Estado para almacenar los lotes
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
   const navigate = useNavigate();
 
-  // Obtener las variedades y lotes desde el backend
+  // Obtener las variedades desde el backend
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const varietiesResponse = await axiosInstance.get('/varieties/variedades'); // Endpoint para obtener las variedades de arroz
+        const varietiesResponse = await axiosInstance.get('/list-varieties'); // Endpoint para obtener las variedades de arroz
         setVarieties(varietiesResponse.data);
-
-        const plotsResponse = await axiosInstance.get('/lotes'); // Endpoint para obtener los lotes
-        setPlots(plotsResponse.data);
       } catch (error) {
-        console.error('Error al obtener variedades o lotes:', error);
+        console.error('Error al obtener variedades:', error);
       }
     };
 
@@ -197,11 +194,11 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
             </InputGroup>
 
             <InputGroup>
-            <label>Lote Asignado</label>
+              <label>Lote Asignado</label>
               <input
                 type="text"
                 name="plotId"
-                value={selectedAllotment.nombre} // Mostrar el nombre del lote
+                value={selectedAllotment ? selectedAllotment.nombre : ''} // Mostrar el nombre del lote
                 disabled // Deshabilitar el campo para que no sea editable
               />
             </InputGroup>
@@ -238,3 +235,4 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
 };
 
 export default NewCrop;
+

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const fadeIn = keyframes`
   from {
@@ -78,9 +79,11 @@ const CloseButton = styled.button`
 `;
 
 const SuccessModal = ({ closeModal }) => {
+  const navigate = useNavigate();  // Hook para navegación
+
   const handleClose = () => {
     closeModal();  // Cierra el modal
-    window.location.reload();  // Refresca la página inmediatamente
+    navigate(0);  // Redirige a la misma página para actualizar el contenido
   };
 
   return (

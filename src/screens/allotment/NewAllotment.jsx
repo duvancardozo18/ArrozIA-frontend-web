@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
 import SuccessModal from './SuccesModal';
+import { useNavigate } from 'react-router-dom';  // Importamos useNavigate para la redirección
 
 
 
@@ -102,31 +103,26 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewAllotment = ({ closeModal, selectedFarm }) => {
-  
+const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
   const [formData, setFormData] = useState({
-    finca_id: '', 
+    finca_id: '',
     nombre: '',
     latitud: '' || null,
     longitud: '' || null,
     area: '',
-    unidad_area_id: '' 
+    unidad_area_id: ''
   });
 
-  const [unidadesAreas, setUnidadesAreas] = useState([]); // Estado para almacenar las unidades de área
+  const [unidadesAreas, setUnidadesAreas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-
-  
-  
-
-  // Obtener las unidades de área desde el backend
   useEffect(() => {
     const fetchUnidadesAreas = async () => {
       try {
-        const response = await axiosInstance.get('/unidades-areas'); // Ajusta este endpoint según tu backend
-        setUnidadesAreas(response.data); // Suponiendo que response.data contiene las unidades de área
+        const response = await axiosInstance.get('/unidades-areas');
+        setUnidadesAreas(response.data);
       } catch (error) {
         console.error('Error al obtener las unidades de área:', error);
       }
@@ -135,12 +131,11 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
     fetchUnidadesAreas();
   }, []);
 
-
   useEffect(() => {
     if (selectedFarm) {
       setFormData(prevFormData => ({
         ...prevFormData,
-        finca_id: selectedFarm.id // Asegúrate de que esto se esté asignando correctamente
+        finca_id: selectedFarm.id
       }));
     }
   }, [selectedFarm]);
@@ -152,22 +147,17 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     formData.latitud = formData.latitud || null;
     formData.longitud = formData.longitud || null;
-  
-    console.log('Datos que se envían:', formData);  // Para depuración
-  
+
     if (!formData.finca_id) {
       setErrorMessage('ID de finca no válido.');
       return;
     }
-  
+
     try {
       setErrorMessage('');
-      const response = await axiosInstance.post('/register-land', formData);
-      console.log('Lote creado:', response.data);
-
+      await axiosInstance.post('/register-land', formData);
       setShowSuccessModal(true);
     } catch (error) {
       console.error('Error al crear el lote:', error);
@@ -178,11 +168,12 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
       }
     }
   };
-  
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();
+    refreshLands();  // Actualiza la lista de lotes
+    navigate(`/farms`, { state: { selectedFarm } });  // Redirige a la lista de lotes con la finca seleccionada
   };
 
   return (
@@ -217,7 +208,7 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
                 type="number"
                 step="0.00001"
                 name="latitud"
-                value={formData.latitud || ''}  
+                value={formData.latitud || ''}
                 onChange={handleChange}
                 required
               />
@@ -229,7 +220,7 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
                 type="number"
                 step="0.00001"
                 name="longitud"
-                value={formData.longitud || ''}  
+                value={formData.longitud || ''}
                 onChange={handleChange}
                 required
               />
@@ -241,7 +232,7 @@ const NewAllotment = ({ closeModal, selectedFarm }) => {
                 type="number"
                 step="0.01"
                 name="area"
-                value={formData.area || ''}  
+                value={formData.area || ''}
                 onChange={handleChange}
                 required
               />

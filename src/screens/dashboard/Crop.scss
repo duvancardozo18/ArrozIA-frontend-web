@@ -1,0 +1,96 @@
+.content-area {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+    background-color: #f4f7fa;
+  }
+  
+  .layout {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+  }
+  
+  .crop-table-container {
+    flex: 1;
+    margin-right: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .crop-table-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .crop-details-container {
+    flex: 1;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .crop-details-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .crop-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .crop-table th, .crop-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .crop-table th {
+    background-color: #f8f9fa;
+    font-weight: 700;
+    color: #555;
+  }
+  
+  .crop-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .crop-table td button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .crop-table td button:hover {
+    background-color: #0056b3;
+  }
+  
+  .crop-details {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .crop-details p {
+    margin-bottom: 10px;
+  }
+  
+  .crop-details label {
+    font-weight: bold;
+    color: #333;
+  }
+  

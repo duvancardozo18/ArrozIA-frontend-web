@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
 import EditAllotmentSuccessModal from './EditAllotmentSuccesModal';
 
-
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -41,7 +40,7 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input {
+  input, select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -90,30 +89,42 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
   const [longitud, setLongitud] = useState('');
   const [area, setArea] = useState('');
   const [unidadArea, setUnidadArea] = useState('');
+  const [unidadesAreas, setUnidadesAreas] = useState([]); // Lista de unidades de área
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  useEffect(() => {
+    const fetchUnidadesAreas = async () => {
+      try {
+        const response = await axiosInstance.get('/unidades-areas');
+        setUnidadesAreas(response.data); // Cargar las opciones de unidad de área
+      } catch (error) {
+        console.error('Error al obtener las unidades de área:', error);
+      }
+    };
+
+    fetchUnidadesAreas();
+  }, []);
 
   useEffect(() => {
     if (lote && lote.id) {
-      console.log('Datos del lote para editar:', lote); // Asegúrate de que este console.log muestre los datos correctos
+      console.log('Datos del lote para editar:', lote);
       setNombre(lote.nombre || '');
       setLatitud(lote.latitud || '');
       setLongitud(lote.longitud || '');
       setArea(lote.area || '');
-      setUnidadArea(lote.unidad_area_id || '');  // Si unidadArea es otro campo en el backend
+      setUnidadArea(lote.unidad_area_id || '');
     } else {
       console.error("No se pudo editar el lote: ID de lote indefinido.");
     }
   }, [lote]);
-  
 
   const handleUpdateAllotment = async () => {
     if (!lote || !lote.id) {
       console.error("No se pudo editar el lote: ID de lote indefinido.");
       return;
     }
-  
+
     const loteData = {
       nombre,
       latitud: latitud === '' ? null : latitud,
@@ -121,17 +132,16 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
       area: Number(area),
       unidad_area_id: unidadArea
     };
-  
+
     try {
       const response = await axiosInstance.put(`/update/land/${lote.id}`, loteData);
       console.log("Respuesta del backend:", response.data);
-      setShowSuccessModal(true); // Mostrar el modal de éxito
-      onSave(); // Actualiza la lista de lotes después de la edición
+      setShowSuccessModal(true);
+      onSave(); 
     } catch (error) {
       console.error("Error al actualizar el lote:", error);
     }
   };
-  
 
   if (!show) return null;
 
@@ -176,27 +186,31 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
           </InputGroup>
           <InputGroup>
             <label>Unidad de Área</label>
-            <input
-              type="text"
+            <select
               value={unidadArea}
               onChange={(e) => setUnidadArea(e.target.value)}
-            />
+              required
+            >
+              <option value="">Seleccione unidad de área</option>
+              {unidadesAreas.map((unidad) => (
+                <option key={unidad.id} value={unidad.id}>
+                  {unidad.unidad}
+                </option>
+              ))}
+            </select>
           </InputGroup>
           <SubmitButton onClick={handleUpdateAllotment}>Guardar Cambios</SubmitButton>
         </ModalContent>
       </ModalOverlay>
-  
-      {/* Modal de éxito */}
+
       {showSuccessModal && (
         <EditAllotmentSuccessModal
-        show={showSuccessModal}
-        closeModal={() => setShowSuccessModal(false)}
-      />
+          show={showSuccessModal}
+          closeModal={() => setShowSuccessModal(false)}
+        />
       )}
     </>
   );
-  
 };
 
 export default EditAllotmentModal;
-
