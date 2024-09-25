@@ -23,7 +23,6 @@ const ButtonCrear = ({ buttonText, ModalComponent }) => {
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
-  console.log("hola")
   return (
     <>
       <ButtonStyled onClick={openModal}>{buttonText}</ButtonStyled>

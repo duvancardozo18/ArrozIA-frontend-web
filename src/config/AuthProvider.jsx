@@ -6,13 +6,12 @@ export const AuthContext = createContext();
 
 // Componente proveedor de autenticación
 export const AuthProvider = ({ children }) => {
-  // Estados para gestionar la autenticación y los datos del usuario
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access_token'));
   const [userId, setUserId] = useState(null);
-  const [fincaId, setFincaId] = useState(null); // Estado para finca_id
-  const [nombre, setNombre] = useState(''); // Estado para el nombre
-  const [apellido, setApellido] = useState(''); // Estado para el apellido
-  const [email, setEmail] = useState(null); // Estado para el email
+  const [fincaId, setFincaId] = useState(null); 
+  const [nombre, setNombre] = useState(''); 
+  const [apellido, setApellido] = useState(''); 
+  const [email, setEmail] = useState(null); 
   const [permissions, setPermissions] = useState([]);
   const [role, setRole] = useState(null); 
   const [loading, setLoading] = useState(true);
@@ -40,11 +39,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axiosInstance.get('/'); // Ruta de salud del backend
       if (response.status === 200) {
-        console.log('Backend está disponible');
+        // console.log('Backend está disponible');
         return true;
       }
     } catch (error) {
-      console.error('Backend no está disponible:', error);
+      // console.error('Backend no está disponible:', error);
       return false;
     }
   };
@@ -92,7 +91,6 @@ export const AuthProvider = ({ children }) => {
   // Función para obtener datos del usuario desde el backend
   const fetchUserData = async (userId) => {
     try {
-      // 1. Obtener el rol a través de /user-farm-rol/{userId}
       const roleResponse = await axiosInstance.get(`/user-farm-rol/${userId}`);
       
       if (roleResponse.status === 200) {
@@ -125,9 +123,9 @@ export const AuthProvider = ({ children }) => {
     const decodedToken = parseJwt(token);
     if (decodedToken && decodedToken.sub) {
       setUserId(decodedToken.sub);
-      setEmail(decodedToken.email || ''); // Asigna el email si está presente
-      setNombre(decodedToken.nombre || ''); // Asigna el nombre si está presente
-      setApellido(decodedToken.apellido || ''); // Asigna el apellido si está presente
+      setEmail(decodedToken.email || ''); 
+      setNombre(decodedToken.nombre || ''); 
+      setApellido(decodedToken.apellido || ''); 
       await fetchUserData(decodedToken.sub);
     }
   };

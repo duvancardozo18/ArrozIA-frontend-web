@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
-import SuccessModal from './RoleSuccessModal';  // Asegúrate de que la ruta sea correcta
+import SuccessModal from './RoleSuccessModal';  
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -101,7 +101,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
-    permisos: []  // Nuevo campo para almacenar permisos seleccionados
+    permisos: [] 
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -110,10 +110,10 @@ const NewRol = ({ show, closeModal, onSave }) => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const response = await axiosInstance.get('/permissions'); // Cambia la ruta si es necesario
-        setPermissions(response.data.permissions); // Asegúrate de que la respuesta tenga la lista de permisos
+        const response = await axiosInstance.get('/permissions'); 
+        setPermissions(response.data.permissions); 
       } catch (error) {
-        console.error("Error fetching permissions:", error);
+        // console.error("Error fetching permissions:", error);
       }
     };
 
@@ -139,8 +139,8 @@ const NewRol = ({ show, closeModal, onSave }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axiosInstance.post('/roles', formData); // Enviar datos al backend
-      console.log('Rol creado:', response.data);
+      const response = await axiosInstance.post('/roles', formData); 
+      // console.log('Rol creado:', response.data);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error creando el rol:", error);

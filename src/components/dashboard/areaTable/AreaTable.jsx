@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AreaTableAction from "./AreaTableAction";
 import "../../../css/AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';
-import Newuser from "../../../screens/users/Newuser";  // Asegúrate de que la ruta sea correcta
+import Newuser from "../../../screens/users/Newuser";  
 
 const TABLE_HEADS = [
   "Nombre",
@@ -30,7 +30,7 @@ const AreaTable = () => {
         users.map(async (user) => {
           try {
             const farmAndRoleResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
-            console.log(`Datos de finca y rol para el usuario ${user.id}:`, farmAndRoleResponse.data);
+            // console.log(`Datos de finca y rol para el usuario ${user.id}:`, farmAndRoleResponse.data);
             return { 
               ...user, 
               finca_id: farmAndRoleResponse.data.finca_id, 

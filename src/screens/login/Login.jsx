@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../config/AxiosInstance'; // Importar la instancia de Axios
-import { AuthContext } from '../../config/AuthProvider'; // Importar el contexto de autenticación
+import axiosInstance from '../../config/AxiosInstance'; 
+import { AuthContext } from '../../config/AuthProvider'; 
 import logo from '../../assets/images/logo.png';
 import background from '../../assets/images/background.webp';
 
@@ -111,7 +111,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      console.log('Iniciando sesión con:', email, password);
+      // console.log('Iniciando sesión con:', email, password);
       const response = await axiosInstance.post('/login', {
         email: email.trim(),
         password: password.trim(),
@@ -121,7 +121,7 @@ const Login = () => {
         },
       });
   
-      console.log('Respuesta del servidor:', response.data);
+      // console.log('Respuesta del servidor:', response.data);
       const { access_token, refresh_token, user_name } = response.data;
   
       // Si no hay necesidad de cambiar la contraseña, continuar con el login normal
@@ -131,9 +131,9 @@ const Login = () => {
       navigate('/farms');
     } catch (error) {
       if (error.response) {
-        console.log('Error Status:', error.response.status);
-        console.log('Error Data:', error.response.data);
-        console.log('change_password_required:', error.response.data.change_password_required);
+        // console.log('Error Status:', error.response.status);
+        // console.log('Error Data:', error.response.data);
+        // console.log('change_password_required:', error.response.data.change_password_required);
       }
     
       if (

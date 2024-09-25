@@ -162,7 +162,7 @@ const handleSubmit = async (event) => {
             throw new Error("Todos los campos son obligatorios.");
         }
 
-        const userResponse = await axiosInstance.post('/register', {
+        const userResponse = await axiosInstance.post('/users/register', {
             nombre: formData.nombre,
             apellido: formData.apellido,
             email: formData.email,
@@ -189,6 +189,16 @@ const handleSubmit = async (event) => {
 
         if (response.status === 200 || response.status === 201) {
             setShowSuccessModal(true);
+            // Agregar el nuevo usuario a la lista de usuarios sin recargar la página
+            onSave({
+             id: userId,
+             nombre: formData.nombre,
+             apellido: formData.apellido,
+             email: formData.email,
+             finca_id: dataToSend.finca_id,
+             rol_id: dataToSend.rol_id
+            });
+
         } else {
             throw new Error("Error al establecer la relación usuario-finca-rol.");
         }
