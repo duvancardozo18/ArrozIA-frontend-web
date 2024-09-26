@@ -1,7 +1,7 @@
 // src/components/PageNotFound.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './PageNotFound.css'; // Asegúrate de crear este archivo de estilos
+import '../../css/Unauthorized.scss'; // Asegúrate de crear este archivo de estilos
 
 const PageNotFound = () => {
   return (
