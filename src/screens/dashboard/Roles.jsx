@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import  Header  from "../../components/dashboard/Header";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import { AuthContext } from "../../config/AuthProvider";
@@ -8,6 +8,7 @@ import NewRol from "../../components/modal/CreateRolModal";
 
 const Roles = () => {
   const { isAuthenticated } = useContext(AuthContext);
+  const [refreshTable, setRefreshTable] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token"); // Obtén el token desde localStorage
@@ -24,12 +25,15 @@ const Roles = () => {
     return <Navigate to="/" replace />;
   }
 
+  const handleSave = () => {
+    setRefreshTable((prev) => !prev);
+  };
+
   return (
     <div className="content-area">
       <Header title="Roles" />
-      <ButtonCrear buttonText="Crear Rol" ModalComponent={NewRol} />{" "}
-      {/* Agrega el botón aquí */}
-      <TableRole />
+      <ButtonCrear buttonText="Crear Rol" ModalComponent={NewRol} onSave={handleSave}/>
+      <TableRole refresh={refreshTable} />
     </div>
   );
 };

@@ -138,7 +138,6 @@ const AreaTableActionRoles = ({ role, onSave }) => {
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
     onSave();
-    window.location.reload(); // Refresca la página al cerrar el modal
   };
 
   const handlePermissions = () => {

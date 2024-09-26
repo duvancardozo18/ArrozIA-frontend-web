@@ -11,12 +11,12 @@ const TABLE_HEADS = [
   ""  // Agregando el encabezado "Acciones"
 ];
 
-const TableRole = () => {
+const TableRole = ({ refresh }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showNewUserModal, setShowNewUserModal] = useState(false);
+ 
 
-  const fetchData = async () => {  // Mover la función fuera del useEffect para reutilizarla
+  const fetchData = async () => {  
     try {
       const response = await axiosInstance.get('/roles');
       const data = response.data;
@@ -37,8 +37,8 @@ const TableRole = () => {
   };
 
   useEffect(() => {
-    fetchData();  // Llamar a la función fetchData cuando el componente se monta
-  }, []);
+    fetchData();  
+  }, [refresh]);
 
   return (
     <section className="content-area-table">

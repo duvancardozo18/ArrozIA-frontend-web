@@ -209,9 +209,6 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
   };
 
   const handleCloseModal = () => {
@@ -219,7 +216,7 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
     closeModal();
   };
 
-  if (!show) return null;
+  if (!show && !showSuccessModal) return null;
 
   return (
     <>
