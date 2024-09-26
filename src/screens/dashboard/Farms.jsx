@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { AreaTop } from "../../components";
+import Header  from "../../components/dashboard/Header";
 import { AuthContext } from "../../config/AuthProvider";
 import FarmMain from '../../components/dashboard/fincas/finca/FarmMain'; 
 import AllotmentMain from '../../components/dashboard/fincas/lotes/AllotmentMain';
-import './Fincas.scss';
+import '../../css/Farms.scss';
 import { Navigate } from 'react-router-dom';
 
-const Fincas = () => {
+const Farms = () => {
   const { isAuthenticated } = useContext(AuthContext);
   const [selectedFarm, setSelectedFarm] = useState(() => {
     // Intentar recuperar la finca seleccionada del almacenamiento local (opcional)
@@ -38,7 +38,7 @@ const Fincas = () => {
 
   return (
     <div className="content-area">
-      <AreaTop title="Fincas, Lotes y Cultivos" />
+      <Header title="Fincas" />
       <div className="layout">
         <AllotmentMain 
           selectedFarm={selectedFarm}  
@@ -54,4 +54,4 @@ const Fincas = () => {
   );
 };
 
-export default Fincas;
+export default Farms;

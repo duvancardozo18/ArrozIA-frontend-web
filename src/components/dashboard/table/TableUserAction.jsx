@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
-import axiosInstance from '../../../config/AxiosInstance';
+import EditModal from "../../modal/EditUserModal";
+import DeleteModal from "../../modal/DeleteModal";
+import SuccessModal from "../../modal/SuccessModal"; 
+import axiosInstance from "../../../config/AxiosInstance";
 
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`;
 
 const ActionButton = styled.button`
   padding: 10px 15px;
@@ -43,10 +38,12 @@ const DeleteButton = styled(ActionButton)`
   background-color: #e74c3c;
 `;
 
-const AreaTableActionPermisos = ({ permiso, onSave }) => {
+
+
+const AreaTableAction = ({ user, onSave }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false); 
 
   const openEditModal = () => setShowEditModal(true);
   const closeEditModal = () => setShowEditModal(false);
@@ -56,19 +53,22 @@ const AreaTableActionPermisos = ({ permiso, onSave }) => {
 
   const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`/permisos/${permiso.id}`);
-      setShowSuccessModal(true);
+      // Cierra el modal de eliminación primero antes de proceder
       closeDeleteModal();
+      await axiosInstance.delete(`/users/delete/${user.id}`);
+      setShowSuccessModal(true); // Muestra el modal de éxito después de eliminar
     } catch (error) {
-      console.error("Error deleting permiso:", error);
+      console.error("Error deleting user:", error);
     }
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave(); // Refresca la tabla de permisos después de cerrar el modal de éxito
+    onSave(); // Refresca la tabla de usuarios después de cerrar el modal de éxito
   };
 
+
+  // Asegúrate de que el modal de éxito solo se muestra después de eliminar
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       <EditButton onClick={openEditModal}>
@@ -80,9 +80,35 @@ const AreaTableActionPermisos = ({ permiso, onSave }) => {
         Eliminar
       </DeleteButton>
 
-      {/* Aquí deberías agregar los modales de edición y eliminación, como en el caso de los roles */}
+      {/* Modal de Edición */}
+      <EditModal
+        show={showEditModal}
+        closeModal={closeEditModal}
+        user={user}
+        onSave={onSave}
+      />
+
+      {/* Modal de Confirmación de Eliminación */}
+      <DeleteModal
+        show={showDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        title="Eliminar Usuario"
+        message="¿Estás seguro que deseas eliminar el Usuario? Esta acción no se puede deshacer."
+        cancelText="No, cancelar"
+        confirmText="Sí, eliminar"
+      />
+
+      {/* Modal de Éxito */}
+      {showSuccessModal && (
+        <SuccessModal
+          show={showSuccessModal}
+          onClose={closeSuccessModal}
+          message="¡Usuario Eliminado!"
+        />
+      )}
     </div>
   );
 };
 
-export default AreaTableActionPermisos;
+export default AreaTableAction;

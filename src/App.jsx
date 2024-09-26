@@ -6,11 +6,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { Dashboard, PageNotFound, Users, Login, Roles, Fincas, ResetPassword } from "./screens";
+import { PageNotFound, Users, Login, Roles, Farms, ResetPassword } from "./screens";
 import Unauthorized from "./config/Unauthorized";
-import { AuthProvider } from "./config/AuthProvider"; // Importar AuthProvider
-import PrivateRoute from "./config/PrivateRoute"; // Importar PrivateRoute
-import TablePermisos from "./components/dashboard/areaTable/TablePermisos"; // Importar TablePermisos
+import { AuthProvider } from "./config/AuthProvider"; 
+import PrivateRoute from "./config/PrivateRoute"; 
 import CropMain from "./components/dashboard/fincas/cultivos/CropMain";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
@@ -63,7 +62,7 @@ function App() {
           <Route element={<PrivateRoute element={<BaseLayout />} />}>
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
-            <Route path="/farms" element={<PrivateRoute element={<Fincas />} />} />
+            <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
             <Route path="/crop" element={<PrivateRoute element={<CropMain />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/profile" element={<Profile />} />

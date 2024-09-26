@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { HiOutlinePencil, HiOutlineTrash, HiOutlineCog } from "react-icons/hi";
+import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import EditRoleModal from "../../../screens/roles/EditRoleModal2";
-import DeleteModal from "../../../screens/roles/DeleteModal";
-import DeleteSuccessModal from "../../../screens/roles/DeleteSuccessModal";
-import axiosInstance from '../../../config/AxiosInstance';
+import EditRoleModal from "../../modal/EditRolModal";
+import DeleteModal from "../../modal/DeleteModal";
+import DeleteSuccessModal from "../../modal/SuccessModal";
+import axiosInstance from "../../../config/AxiosInstance";
 
 const rotate = keyframes`
   from {
@@ -49,12 +49,13 @@ const DeleteButton = styled(ActionButton)`
 
 const PermissionButton = styled(ActionButton)`
   background-color: #f39c12;
-  border-radius: 50%; 
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px;
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, background-color 0.3s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     background-color: #e67e22;
@@ -78,7 +79,9 @@ const AreaTableActionRoles = ({ role, onSave }) => {
       console.log("Opening edit modal for role:", role);
       setShowEditModal(true);
     } else {
-      console.error("No se pudo abrir el modal de edición: ID de rol indefinido.");
+      console.error(
+        "No se pudo abrir el modal de edición: ID de rol indefinido."
+      );
     }
   };
 
@@ -89,7 +92,9 @@ const AreaTableActionRoles = ({ role, onSave }) => {
       console.log("Opening delete modal for role:", role);
       setShowDeleteModal(true);
     } else {
-      console.error("No se pudo abrir el modal de eliminación: ID de rol indefinido.");
+      console.error(
+        "No se pudo abrir el modal de eliminación: ID de rol indefinido."
+      );
     }
   };
 
@@ -113,8 +118,12 @@ const AreaTableActionRoles = ({ role, onSave }) => {
           console.error("Rol no encontrado o ya eliminado.");
           alert("Error: El rol no fue encontrado o ya ha sido eliminado.");
         } else if (error.response.status === 400) {
-          console.error("No se puede eliminar el rol debido a registros relacionados.");
-          alert("Error: No se puede eliminar el rol debido a registros relacionados.");
+          console.error(
+            "No se puede eliminar el rol debido a registros relacionados."
+          );
+          alert(
+            "Error: No se puede eliminar el rol debido a registros relacionados."
+          );
         } else {
           console.error("Error al eliminar el rol:", error.response.data);
           alert("Error: Hubo un problema al eliminar el rol.");
@@ -133,7 +142,7 @@ const AreaTableActionRoles = ({ role, onSave }) => {
   };
 
   const handlePermissions = () => {
-    navigate('/roles/permissions', { state: { role } });
+    navigate("/roles/permissions", { state: { role } });
   };
 
   return (
@@ -146,7 +155,6 @@ const AreaTableActionRoles = ({ role, onSave }) => {
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
-      
 
       {/* Modal de Edición para Roles */}
       {showEditModal && (
@@ -163,8 +171,11 @@ const AreaTableActionRoles = ({ role, onSave }) => {
         <DeleteModal
           show={showDeleteModal}
           onClose={closeDeleteModal}
-          roleId={role.id}
           onConfirm={handleDelete}
+          title="Eliminar Rol"
+          message="¿Estás seguro de que deseas eliminar el Rol? Esta acción no se puede deshacer."
+          cancelText="No, cancelar"
+          confirmText="Sí, eliminar"
         />
       )}
 
@@ -172,7 +183,8 @@ const AreaTableActionRoles = ({ role, onSave }) => {
       {showSuccessModal && (
         <DeleteSuccessModal
           show={showSuccessModal}
-          closeModal={closeSuccessModal}
+          onClose={closeSuccessModal}
+          message="¡Rol Eliminado!"
         />
       )}
     </div>

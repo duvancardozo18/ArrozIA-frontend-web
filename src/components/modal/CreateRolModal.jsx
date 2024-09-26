@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
-import SuccessModal from './RoleSuccessModal';  
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../config/AxiosInstance";
+import SuccessModal from "../../components/modal/SuccessModal";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -47,9 +47,9 @@ const InputGroup = styled.div`
 
 const CheckboxGroup = styled.div`
   margin-bottom: 20px;
-  max-height: 200px; 
-  overflow-y: auto; 
-  padding-right: 10px; 
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 10px;
 `;
 
 const CheckboxLabel = styled.label`
@@ -96,12 +96,10 @@ const CloseButton = styled.button`
 `;
 
 const NewRol = ({ show, closeModal, onSave }) => {
-  
-  
   const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    permisos: [] 
+    nombre: "",
+    descripcion: "",
+    permisos: [],
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -110,8 +108,8 @@ const NewRol = ({ show, closeModal, onSave }) => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const response = await axiosInstance.get('/permissions'); 
-        setPermissions(response.data.permissions); 
+        const response = await axiosInstance.get("/permissions");
+        setPermissions(response.data.permissions);
       } catch (error) {
         // console.error("Error fetching permissions:", error);
       }
@@ -139,7 +137,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axiosInstance.post('/roles', formData); 
+      const response = await axiosInstance.post("/roles", formData);
       // console.log('Rol creado:', response.data);
       setShowSuccessModal(true);
     } catch (error) {
@@ -159,7 +157,9 @@ const NewRol = ({ show, closeModal, onSave }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Rol</h2>
+          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Crear Rol
+          </h2>
           <form onSubmit={handleSubmit}>
             <InputGroup>
               <label>Nombre del Rol</label>
@@ -198,7 +198,12 @@ const NewRol = ({ show, closeModal, onSave }) => {
           </form>
         </ModalContent>
       </ModalOverlay>
-      {showSuccessModal && <SuccessModal closeModal={handleCloseSuccessModal} />}
+      {showSuccessModal && (
+        <SuccessModal
+          onClose={handleCloseSuccessModal}
+          message="¡Rol Creado!"
+        />
+      )}
     </>
   );
 };

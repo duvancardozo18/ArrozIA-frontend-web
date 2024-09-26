@@ -1,12 +1,12 @@
 // AreaTop.js
 import { MdOutlineMenu } from "react-icons/md";
-import "../../../css/AreaTop.scss";
+import "../../css/Header.scss";
 import { useContext, useEffect, useRef, useState } from "react";
-import { SidebarContext } from "../../../context/SidebarContext";
+import { SidebarContext } from "../../context/SidebarContext";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { addDays } from "date-fns";
-import { DateRange } from "react-date-range";
+
 
 const AreaTop = ({ title }) => { 
   const { openSidebar } = useContext(SidebarContext);

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../config/AuthProvider";
-import { AreaTop } from "../../components";
+import  Header  from "../../components/dashboard/Header";
 import {
   TextField,
   Button,
@@ -102,7 +102,7 @@ const ProfileForm = () => {
   return (
     <Box sx={{ maxWidth: 1200, margin: "0 auto", padding: 2 }}>
       <div className="content-area">
-        <AreaTop title="Perfil" />
+        <Header title="Perfil" />
       </div>
       {loading ? (
         <Typography align="center">Cargando...</Typography>

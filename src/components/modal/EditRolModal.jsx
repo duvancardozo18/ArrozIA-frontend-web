@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
-import EditSuccessRole from './EditSuccessRole'; // Importa el modal de éxito
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../config/AxiosInstance";
+import EditSuccessRole from "../../components/modal/SuccessModal";
 
 // Estilos para el modal, input y botones
 const ModalOverlay = styled.div`
@@ -48,9 +48,9 @@ const InputGroup = styled.div`
 
 const CheckboxGroup = styled.div`
   margin-bottom: 20px;
-  max-height: 200px; 
-  overflow-y: auto; 
-  padding-right: 10px; 
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 10px;
 `;
 
 const CheckboxLabel = styled.label`
@@ -97,41 +97,48 @@ const CloseButton = styled.button`
 `;
 
 const EditRoleModal = ({ show, closeModal, role, onSave }) => {
-  const [nombre, setNombre] = useState('');
-  const [descripcion, setDescripcion] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     if (role && role.id) {
-      setNombre(role.nombre || '');
-      setDescripcion(role.descripcion || '');
+      setNombre(role.nombre || "");
+      setDescripcion(role.descripcion || "");
 
       const fetchPermissions = async () => {
         try {
-          const [allPermissionsResponse, rolePermissionsResponse] = await Promise.all([
-            axiosInstance.get('/permissions'),
-            axiosInstance.get(`/roles/${role.id}/permissions`)
-          ]);
+          const [allPermissionsResponse, rolePermissionsResponse] =
+            await Promise.all([
+              axiosInstance.get("/permissions"),
+              axiosInstance.get(`/roles/${role.id}/permissions`),
+            ]);
 
           const allPermissions = allPermissionsResponse.data.permissions || [];
-          const rolePermissionNames = rolePermissionsResponse.data.permissions || [];
+          const rolePermissionNames =
+            rolePermissionsResponse.data.permissions || [];
 
           const permissionNameToId = {};
-          allPermissions.forEach(permiso => {
+          allPermissions.forEach((permiso) => {
             permissionNameToId[permiso.nombre] = Number(permiso.id);
           });
 
-          const rolePermissionIds = rolePermissionNames.map(permisoNombre => {
-            const id = permissionNameToId[permisoNombre];
-            if (isNaN(id)) {
-              console.warn('ID de permiso inválido para permiso:', permisoNombre);
-            }
-            return id;
-          }).filter(id => !isNaN(id));
+          const rolePermissionIds = rolePermissionNames
+            .map((permisoNombre) => {
+              const id = permissionNameToId[permisoNombre];
+              if (isNaN(id)) {
+                console.warn(
+                  "ID de permiso inválido para permiso:",
+                  permisoNombre
+                );
+              }
+              return id;
+            })
+            .filter((id) => !isNaN(id));
 
-          const allPermissionsWithNumberIds = allPermissions.map(permiso => ({
+          const allPermissionsWithNumberIds = allPermissions.map((permiso) => ({
             ...permiso,
             id: Number(permiso.id),
           }));
@@ -150,26 +157,35 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
   const handleCheckboxChange = async (e) => {
     const { value, checked } = e.target;
     const permisoId = Number(value);
-  
+
     if (checked) {
       // Agregar el permiso al rol
       try {
         await axiosInstance.put(`/roles/${role.id}/permissions/${permisoId}`);
         setSelectedPermissions((prevState) => [...prevState, permisoId]);
       } catch (error) {
-        console.error(`Error al agregar el permiso con ID ${permisoId}:`, error);
+        console.error(
+          `Error al agregar el permiso con ID ${permisoId}:`,
+          error
+        );
       }
     } else {
       // Eliminar el permiso del rol
       try {
-        await axiosInstance.delete(`/roles/${role.id}/permissions/${permisoId}`);
-        setSelectedPermissions((prevState) => prevState.filter((id) => id !== permisoId));
+        await axiosInstance.delete(
+          `/roles/${role.id}/permissions/${permisoId}`
+        );
+        setSelectedPermissions((prevState) =>
+          prevState.filter((id) => id !== permisoId)
+        );
       } catch (error) {
-        console.error(`Error al eliminar el permiso con ID ${permisoId}:`, error);
+        console.error(
+          `Error al eliminar el permiso con ID ${permisoId}:`,
+          error
+        );
       }
     }
   };
-  
 
   const handleUpdateRole = async () => {
     if (!role || !role.id) {
@@ -178,10 +194,10 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
     }
 
     try {
-      const response = await axiosInstance.put(`/roles/${role.id}`, { 
-        nombre, 
-        descripcion, 
-        permisos: selectedPermissions // Enviar permisos seleccionados (IDs)
+      const response = await axiosInstance.put(`/roles/${role.id}`, {
+        nombre,
+        descripcion,
+        permisos: selectedPermissions, // Enviar permisos seleccionados (IDs)
       });
       onSave();
       setShowSuccessModal(true);
@@ -210,7 +226,9 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={handleCloseModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Rol</h2>
+          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Editar Rol
+          </h2>
           <InputGroup>
             <label>Nombre del rol</label>
             <input
@@ -239,12 +257,18 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
             )}
           </CheckboxGroup>
 
-          <SubmitButton onClick={handleUpdateRole}>Guardar Cambios</SubmitButton>
+          <SubmitButton onClick={handleUpdateRole}>
+            Guardar Cambios
+          </SubmitButton>
         </ModalContent>
       </ModalOverlay>
 
       {showSuccessModal && (
-        <EditSuccessRole show={showSuccessModal} closeModal={handleCloseSuccessModal} />
+        <EditSuccessRole
+          show={showSuccessModal}
+          onClose={handleCloseSuccessModal}
+          message="¡Rol Actualizado!"
+        />
       )}
     </>
   );

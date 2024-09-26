@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AreaTable, AreaTop } from "../../components";
+import Header  from "../../components/dashboard/Header";
+import AreaTable  from "../../components/dashboard/table/TableUser";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
@@ -24,7 +25,7 @@ const Usars = () => {
 
   return (
     <div className="content-area">
-      <AreaTop title="Usuarios" />
+      <Header title="Usuarios" />
       <ButtonCrear
         buttonText="Crear usuario"
         ModalComponent={NewUser}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AreaTableAction from "./AreaTableAction";
+import AreaTableAction from "./TableUserAction";
 import "../../../css/AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';
 
