@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import AreaTableAction from "./AreaTableAction";
 import "../../../css/AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';
-import Newuser from "../../../screens/users/Newuser";  
 
 const TABLE_HEADS = [
   "Nombre",
@@ -13,24 +12,19 @@ const TABLE_HEADS = [
   "Acciones",
 ];
 
-const AreaTable = () => {
+const AreaTable = ({ refresh }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showNewUserModal, setShowNewUserModal] = useState(false);
 
-  // Función para obtener todos los usuarios
   const fetchUsers = async () => {
     try {
-      // Primera llamada a la ruta '/users' para obtener los usuarios
       const response = await axiosInstance.get('/users');
       const users = response.data;
 
-      // Para cada usuario, llamamos a la ruta '/user-farm-rol/{user_id}' para obtener su finca y rol
       const usersWithFarmAndRole = await Promise.all(
         users.map(async (user) => {
           try {
             const farmAndRoleResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
-            // console.log(`Datos de finca y rol para el usuario ${user.id}:`, farmAndRoleResponse.data);
             return { 
               ...user, 
               finca_id: farmAndRoleResponse.data.finca_id, 
@@ -38,7 +32,7 @@ const AreaTable = () => {
             };
           } catch (error) {
             console.error(`Error fetching farm and role for user ${user.id}:`, error);
-            return { ...user, finca_id: null, rol_id: null };  // Si ocurre un error, asignamos finca_id y rol_id como null
+            return { ...user, finca_id: null, rol_id: null };
           }
         })
       );
@@ -53,12 +47,7 @@ const AreaTable = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
-
-  const handleSave = (newUser) => {
-    setTableData((prevData) => [...prevData, newUser]);  // Añade el nuevo usuario a la tabla
-    setShowNewUserModal(false);  // Cierra el modal después de guardar
-  };
+  }, [refresh]);
 
   return (
     <section className="content-area-table">
@@ -91,14 +80,6 @@ const AreaTable = () => {
           </table>
         )}
       </div>
-
-      {/* Modal para crear un nuevo usuario */}
-      {showNewUserModal && (
-        <Newuser
-          closeModal={() => setShowNewUserModal(false)}
-          onSave={handleSave}
-        />
-      )}
     </section>
   );
 };

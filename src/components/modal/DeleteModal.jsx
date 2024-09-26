@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import DeleteSuccessModal from './DeleteSuccessModal';  // Asegúrate de que la ruta sea correcta
+import React, { useState } from "react";
+import styled from "styled-components";
+
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -76,14 +76,22 @@ const ConfirmButton = styled.button`
   }
 `;
 
-const DeleteModal = ({ show, onClose, onConfirm }) => {
+const DeleteModal = ({ 
+  show, 
+  onClose, 
+  onConfirm, 
+  title, 
+  message, 
+  cancelText, 
+  confirmText 
+}) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleDelete = async (event) => {
-    event.preventDefault();  // Previene el refresco de la página
+    event.preventDefault(); // Previene el refresco de la página
     try {
-      await onConfirm();  // Llama a la función de eliminación
-      setShowSuccessModal(true);  // Muestra el modal de éxito después de eliminar
+      await onConfirm(); // Llama a la función de eliminación
+      setShowSuccessModal(true); // Muestra el modal de éxito después de eliminar
     } catch (error) {
       console.error("Error deleting user:", error);
     }
@@ -91,7 +99,7 @@ const DeleteModal = ({ show, onClose, onConfirm }) => {
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onClose();  // Cierra el modal principal después de cerrar el modal de éxito
+    onClose(); // Cierra el modal principal después de cerrar el modal de éxito
   };
 
   return (
@@ -99,21 +107,19 @@ const DeleteModal = ({ show, onClose, onConfirm }) => {
       {show && !showSuccessModal && (
         <ModalOverlay>
           <ModalContent>
-            <ModalTitle>Confirmar Eliminación</ModalTitle>
-            <ModalText>¿Estás seguro de que deseas eliminar este usuario?</ModalText>
+            <ModalTitle>{title}</ModalTitle>
+            <ModalText>{message}</ModalText>
             <ModalButtons>
-              <CancelButton onClick={onClose}>Cancelar</CancelButton>
-              <ConfirmButton onClick={handleDelete}>Eliminar</ConfirmButton>
+              <CancelButton onClick={onClose}>{cancelText}</CancelButton>
+              <ConfirmButton onClick={handleDelete}>{confirmText}</ConfirmButton>
             </ModalButtons>
           </ModalContent>
         </ModalOverlay>
       )}
 
-      {showSuccessModal && (
-        <DeleteSuccessModal show={showSuccessModal} closeModal={closeSuccessModal} />
-      )}
     </>
   );
 };
+
 
 export default DeleteModal;

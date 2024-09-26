@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
-import SuccessModal from './SuccessModal';
+// NewUser.jsx
+
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../config/AxiosInstance";
+import SuccessModal from "./SuccessModal";
+import PropTypes from "prop-types";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -20,7 +23,7 @@ const ModalContent = styled.div`
   background: white;
   padding: 30px;
   border-radius: 20px;
-  width: 600px; /* Ajustar el ancho para las dos columnas */
+  width: 600px; /* Adjust the width for two columns */
   max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
@@ -66,7 +69,8 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input, select {
+  input,
+  select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -101,7 +105,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -111,30 +115,30 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewUser = ({ closeModal }) => {
+
+const NewUser = ({ closeModal, onSave = () => {} }) => {
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    email: '',
-    password: '',
-    rol_id: '', 
-    finca_id: ''
+    nombre: "",
+    apellido: "",
+    email: "",
+    password: "",
+    rol_id: "",
+    finca_id: "",
   });
 
   const [roles, setRoles] = useState([]);
   const [fincas, setFincas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchRolesAndFincas = async () => {
       try {
-        const rolesResponse = await axiosInstance.get('/roles');
+        const rolesResponse = await axiosInstance.get("/roles");
         setRoles(rolesResponse.data.roles || []);
 
-        const fincasResponse = await axiosInstance.get('/farms');
+        const fincasResponse = await axiosInstance.get("/farms");
         setFincas(fincasResponse.data || []);
-
       } catch (error) {
         console.error("Error fetching roles and fincas:", error);
         setErrorMessage("Error al cargar roles y fincas. Intente nuevamente.");
@@ -147,70 +151,70 @@ const NewUser = ({ closeModal }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
-};
+  };
 
-const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-        setErrorMessage('');
+      setErrorMessage("");
 
-        if (!formData.nombre || !formData.apellido || !formData.email || !formData.password || !formData.rol_id || !formData.finca_id) {
-            throw new Error("Todos los campos son obligatorios.");
-        }
+      // Validate that all fields are filled
+      if (
+        !formData.nombre ||
+        !formData.apellido ||
+        !formData.email ||
+        !formData.password ||
+        !formData.rol_id ||
+        !formData.finca_id
+      ) {
+        throw new Error("Todos los campos son obligatorios.");
+      }
 
-        const userResponse = await axiosInstance.post('/users/register', {
-            nombre: formData.nombre,
-            apellido: formData.apellido,
-            email: formData.email,
-            password: formData.password,
-        });
+      // Register the user
+      const userResponse = await axiosInstance.post("/users/register", {
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        email: formData.email,
+        password: formData.password,
+      });
 
-        const userId = userResponse.data.id;
+      const userId = userResponse.data.id;
 
-        if (!userId) {
-            throw new Error("No se pudo obtener el ID del usuario.");
-        }
+      if (!userId) {
+        throw new Error("No se pudo obtener el ID del usuario.");
+      }
 
-        const dataToSend = {
-            usuario_id: parseInt(userId, 10),
-            rol_id: parseInt(formData.rol_id, 10),
-            finca_id: parseInt(formData.finca_id, 10),
-        };
+      // Establish the user-farm-role relationship
+      const dataToSend = {
+        usuario_id: parseInt(userId, 10),
+        rol_id: parseInt(formData.rol_id, 10),
+        finca_id: parseInt(formData.finca_id, 10),
+      };
 
-        if (isNaN(dataToSend.finca_id)) {
-            throw new Error("La finca seleccionada no es válida.");
-        }
+      if (isNaN(dataToSend.finca_id)) {
+        throw new Error("La finca seleccionada no es válida.");
+      }
 
-        const response = await axiosInstance.post('/user-farm', dataToSend);
+      const response = await axiosInstance.post("/user-farm", dataToSend);
 
-        if (response.status === 200 || response.status === 201) {
-            setShowSuccessModal(true);
-            // Agregar el nuevo usuario a la lista de usuarios sin recargar la página
-            onSave({
-             id: userId,
-             nombre: formData.nombre,
-             apellido: formData.apellido,
-             email: formData.email,
-             finca_id: dataToSend.finca_id,
-             rol_id: dataToSend.rol_id
-            });
-
-        } else {
-            throw new Error("Error al establecer la relación usuario-finca-rol.");
-        }
-
+      if (response.status === 200 || response.status === 201) {
+        setShowSuccessModal(true);
+      } else {
+        throw new Error("Error al establecer la relación usuario-finca-rol.");
+      }
     } catch (error) {
-        setErrorMessage(error.message || 'Error creando el usuario.');
+      setErrorMessage(error.message || "Error creando el usuario.");
     }
-};
+  };
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();
+    onSave(); // Safely call onSave
   };
 
   return (
@@ -218,11 +222,13 @@ const handleSubmit = async (event) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Usuario</h2>
+          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Crear Usuario
+          </h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <FormGrid>
-              {/* Primera columna: Nombre, Apellido, Correo */}
+              {/* First column: Nombre, Apellido, Email */}
               <Column>
                 <InputGroup>
                   <label>Nombre</label>
@@ -256,7 +262,7 @@ const handleSubmit = async (event) => {
                 </InputGroup>
               </Column>
 
-              {/* Segunda columna: Contraseña, Finca, Rol */}
+              {/* Second column: Contraseña, Finca, Rol */}
               <Column>
                 <InputGroup>
                   <label>Contraseña</label>
@@ -278,7 +284,9 @@ const handleSubmit = async (event) => {
                   >
                     <option value="">Seleccione una finca</option>
                     {fincas.map((finca) => (
-                      <option key={finca.id} value={finca.id}>{finca.nombre}</option>
+                      <option key={finca.id} value={finca.id}>
+                        {finca.nombre}
+                      </option>
                     ))}
                   </select>
                 </InputGroup>
@@ -292,7 +300,9 @@ const handleSubmit = async (event) => {
                   >
                     <option value="">Seleccione un rol</option>
                     {roles.map((rol) => (
-                      <option key={rol.id} value={rol.id}>{rol.nombre}</option>
+                      <option key={rol.id} value={rol.id}>
+                        {rol.nombre}
+                      </option>
                     ))}
                   </select>
                 </InputGroup>
@@ -302,9 +312,19 @@ const handleSubmit = async (event) => {
           </form>
         </ModalContent>
       </ModalOverlay>
-      {showSuccessModal && <SuccessModal closeModal={handleCloseSuccessModal} />}
+      {showSuccessModal && (
+        <SuccessModal
+          onClose={handleCloseSuccessModal}
+          message="¡Usuario Creado!"
+        />
+      )}
     </>
   );
+};
+
+NewUser.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
 };
 
 export default NewUser;

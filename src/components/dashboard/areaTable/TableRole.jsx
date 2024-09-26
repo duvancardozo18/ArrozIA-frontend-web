@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AreaTableActionRoles from "./AreaTableActionRoles"; // Asegúrate de que este sea el nombre correcto del archivo
 import "../../../css/AreaTable.scss";
 import axiosInstance from '../../../config/AxiosInstance';  // Importar la instancia de Axios
-import Newuser from "../../../screens/users/Newuser"; 
+import Newuser from "../../modal/CreateUserModal"; 
 
 const TABLE_HEADS = [
   "#",

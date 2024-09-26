@@ -1,20 +1,11 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { HiOutlinePencil, HiOutlineTrash, HiOutlineCog } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
-import EditModal from "../../../screens/users/EditModal";
-import DeleteModal from "../../../screens/users/DeleteModal";
-import DeleteSuccessModal from "../../../screens/users/DeleteSuccessModal";  // Asegúrate de que la ruta sea correcta
-import axiosInstance from '../../../config/AxiosInstance';
+import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
+import EditModal from "../../modal/EditUserModal";
+import DeleteModal from "../../modal/DeleteModal";
+import SuccessModal from "../../modal/SuccessModal"; 
+import axiosInstance from "../../../config/AxiosInstance";
 
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`;
 
 const ActionButton = styled.button`
   padding: 10px 15px;
@@ -47,31 +38,12 @@ const DeleteButton = styled(ActionButton)`
   background-color: #e74c3c;
 `;
 
-const PermissionButton = styled(ActionButton)`
-  background-color: #f39c12;
-  border-radius: 50%; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.2s ease;
 
-  &:hover {
-    background-color: #e67e22;
-    transform: scale(1.1) translateY(-3px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-  }
-
-  &:hover svg {
-    animation: ${rotate} 1s linear infinite;
-  }
-`;
 
 const AreaTableAction = ({ user, onSave }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);  // Estado para manejar el modal de éxito
-  const navigate = useNavigate();
+  const [showSuccessModal, setShowSuccessModal] = useState(false); 
 
   const openEditModal = () => setShowEditModal(true);
   const closeEditModal = () => setShowEditModal(false);
@@ -81,9 +53,10 @@ const AreaTableAction = ({ user, onSave }) => {
 
   const handleDelete = async () => {
     try {
+      // Cierra el modal de eliminación primero antes de proceder
+      closeDeleteModal();
       await axiosInstance.delete(`/users/delete/${user.id}`);
-      setShowSuccessModal(true);  // Muestra el modal de éxito después de eliminar
-      closeDeleteModal();  // Cierra el modal de eliminación
+      setShowSuccessModal(true); // Muestra el modal de éxito después de eliminar
     } catch (error) {
       console.error("Error deleting user:", error);
     }
@@ -94,10 +67,8 @@ const AreaTableAction = ({ user, onSave }) => {
     onSave(); // Refresca la tabla de usuarios después de cerrar el modal de éxito
   };
 
-  const handlePermissions = () => {
-    navigate('/permisos', { state: { user } });
-  };
 
+  // Asegúrate de que el modal de éxito solo se muestra después de eliminar
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       <EditButton onClick={openEditModal}>
@@ -108,7 +79,6 @@ const AreaTableAction = ({ user, onSave }) => {
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
-      
 
       {/* Modal de Edición */}
       <EditModal
@@ -123,13 +93,20 @@ const AreaTableAction = ({ user, onSave }) => {
         show={showDeleteModal}
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
+        title="Eliminar Usuario"
+        message="¿Estás seguro de que deseas eliminar este Usuario? Esta acción no se puede deshacer."
+        cancelText="No, cancelar"
+        confirmText="Sí, eliminar"
       />
 
       {/* Modal de Éxito */}
-      <DeleteSuccessModal
-        show={showSuccessModal}
-        closeModal={closeSuccessModal}
-      />
+      {showSuccessModal && (
+        <SuccessModal
+          show={showSuccessModal}
+          onClose={closeSuccessModal}
+          message="¡Usuario Eliminado!"
+        />
+      )}
     </div>
   );
 };

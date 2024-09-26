@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
-import EditSuccessModal from './EditSuccessModal';  // Importa el modal de éxito
+import EditSuccessModal from './SuccessModal';  // Importa el modal de éxito
 
 
 const ModalOverlay = styled.div`
@@ -293,7 +293,8 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
       {showSuccessModal && (
         <EditSuccessModal 
           show={showSuccessModal} 
-          closeModal={handleCloseSuccessModal} 
+          onClose={handleCloseSuccessModal} 
+          message="¡Información Actualizada!"
         />
       )}
     </>

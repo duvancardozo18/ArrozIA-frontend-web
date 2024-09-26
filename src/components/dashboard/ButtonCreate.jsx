@@ -18,15 +18,19 @@ const ButtonStyled = styled.button`
   }
 `;
 
-const ButtonCrear = ({ buttonText, ModalComponent }) => {
+
+const ButtonCrear = ({ buttonText, ModalComponent, onSave }) => {
   const [showModal, setShowModal] = useState(false);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
+
   return (
     <>
       <ButtonStyled onClick={openModal}>{buttonText}</ButtonStyled>
-      {showModal && <ModalComponent closeModal={closeModal} />} {/* Renderiza el modal que recibe como prop */}
+      {showModal && (
+        <ModalComponent closeModal={closeModal} onSave={onSave} />
+      )}
     </>
   );
 };

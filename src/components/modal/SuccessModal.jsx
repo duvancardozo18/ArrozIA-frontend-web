@@ -77,17 +77,17 @@ const CloseButton = styled.button`
   }
 `;
 
-const SuccessModal = ({ closeModal }) => {
+const SuccessModal = ({ message, onClose }) => {
   const handleClose = () => {
-    closeModal();  // Cierra el modal
-    window.location.reload();  // Refresca la página inmediatamente
+    if (onClose) onClose(); // Ejecuta la función de cierre si está definida
+    // window.location.reload(); // Refresca la página
   };
 
   return (
     <ModalOverlay>
       <ModalContent>
         <SuccessIcon>✓</SuccessIcon>
-        <SuccessMessage>Usuario Creado Exitosamente</SuccessMessage>
+        <SuccessMessage>{message || 'Operation Successful'}</SuccessMessage>
         <CloseButton onClick={handleClose}>Cerrar</CloseButton>
       </ModalContent>
     </ModalOverlay>
