@@ -3,8 +3,8 @@ import  Header  from "../../components/dashboard/Header";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
-import TableRole from "../../components/dashboard/table/TableRole";
-import NewRol from "../../components/modal/CreateRolModal";
+import TableRole from "../../components/dashboard/roles/TableRole";
+import NewRol from "../../components/dashboard/roles/CreateRolModal";
 
 const Roles = () => {
   const { isAuthenticated } = useContext(AuthContext);

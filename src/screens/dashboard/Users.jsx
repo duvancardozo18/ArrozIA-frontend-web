@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import Header  from "../../components/dashboard/Header";
-import AreaTable  from "../../components/dashboard/table/TableUser";
+import AreaTable  from "../../components/dashboard/users/TableUser";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
-import NewUser from "../../components/modal/CreateUserModal";
+import NewUser from "../../components/dashboard/users/CreateUserModal";
 
 const Usars = () => {
   const { isAuthenticated } = useContext(AuthContext);

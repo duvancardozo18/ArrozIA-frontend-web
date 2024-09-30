@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axiosInstance from "../../config/AxiosInstance";
-import SuccessModal from "../../components/modal/SuccessModal";
+import axiosInstance from "../../../config/AxiosInstance";
+import SuccessModal from "../../dashboard/modal/SuccessModal";
 
 const ModalOverlay = styled.div`
   position: fixed;

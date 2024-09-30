@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import FarmCard from './FarmCard';
 import AddIcon from '@mui/icons-material/Add';
-import axiosInstance from '../../../../config/AxiosInstance';
-import NewFarm from '../../../../screens/farm/NewFarm';
-import EditFarmModal from '../../../../screens/farm/EditFarmModal';
-import DeleteFarmModal from '../../../../screens/farm/DeleteFarmModal'; // Importar el modal de eliminación
+import axiosInstance from '../../../config/AxiosInstance';
+import NewFarm from '../../../components/dashboard/farms/CreateFarmModal';
+import EditFarmModal from '../../../components/dashboard/farms/EditFarmModal';
+import DeleteFarmModal from '../../dashboard/modal/DeleteModal'; // Importar el modal de eliminación
 
 const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
   const [farms, setFarms] = useState([]);

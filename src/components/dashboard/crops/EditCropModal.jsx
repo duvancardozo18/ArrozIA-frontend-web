@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
-import EditCropSuccessModal from './EditCropSuccesModal'; // Modal de éxito para cultivos
+import axiosInstance from '../../../config/AxiosInstance';
+import EditCropSuccessModal from '../modal/SuccessModal'; // Modal de éxito para cultivos
 
 const ModalOverlay = styled.div`
   position: fixed;

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
-import EditAllotmentSuccessModal from './EditAllotmentSuccesModal';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../../config/AxiosInstance";
+import SuccessModal from "../modal/SuccessModal";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -40,7 +40,8 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input, select {
+  input,
+  select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -84,11 +85,11 @@ const CloseButton = styled.button`
 `;
 
 const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
-  const [nombre, setNombre] = useState('');
-  const [latitud, setLatitud] = useState('');
-  const [longitud, setLongitud] = useState('');
-  const [area, setArea] = useState('');
-  const [unidadArea, setUnidadArea] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [latitud, setLatitud] = useState("");
+  const [longitud, setLongitud] = useState("");
+  const [area, setArea] = useState("");
+  const [unidadArea, setUnidadArea] = useState("");
   const [unidadesAreas, setUnidadesAreas] = useState([]); // Lista de unidades de área
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -96,10 +97,10 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
   useEffect(() => {
     const fetchUnidadesAreas = async () => {
       try {
-        const response = await axiosInstance.get('/unidades-areas');
+        const response = await axiosInstance.get("/unidades-areas");
         setUnidadesAreas(response.data); // Cargar las opciones de unidad de área
       } catch (error) {
-        console.error('Error al obtener las unidades de área:', error);
+        console.error("Error al obtener las unidades de área:", error);
       }
     };
 
@@ -108,12 +109,12 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
 
   useEffect(() => {
     if (lote && lote.id) {
-      console.log('Datos del lote para editar:', lote);
-      setNombre(lote.nombre || '');
-      setLatitud(lote.latitud || '');
-      setLongitud(lote.longitud || '');
-      setArea(lote.area || '');
-      setUnidadArea(lote.unidad_area_id || '');
+      console.log("Datos del lote para editar:", lote);
+      setNombre(lote.nombre || "");
+      setLatitud(lote.latitud || "");
+      setLongitud(lote.longitud || "");
+      setArea(lote.area || "");
+      setUnidadArea(lote.unidad_area_id || "");
     } else {
       console.error("No se pudo editar el lote: ID de lote indefinido.");
     }
@@ -124,33 +125,44 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
       console.error("No se pudo editar el lote: ID de lote indefinido.");
       return;
     }
-
+  
     const loteData = {
       nombre,
-      latitud: latitud === '' ? null : latitud,
-      longitud: longitud === '' ? null : longitud,
+      latitud: latitud === "" ? null : latitud,
+      longitud: longitud === "" ? null : longitud,
       area: Number(area),
-      unidad_area_id: unidadArea
+      unidad_area_id: unidadArea,
     };
-
+  
     try {
-      const response = await axiosInstance.put(`/update/land/${lote.id}`, loteData);
-      console.log("Respuesta del backend:", response.data);
-      setShowSuccessModal(true);
-      onSave(); 
+      const response = await axiosInstance.put(
+        `/update/land/${lote.id}`,
+        loteData
+      );
+      setShowSuccessModal(true); // Mostrar el modal de éxito
+      onSave(); // Actualiza la información
     } catch (error) {
       console.error("Error al actualizar el lote:", error);
     }
   };
+  
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    closeModal(); // Cierra el modal de edición después de cerrar el modal de éxito
+  };
+  
 
-  if (!show) return null;
+  if (!show && !showSuccessModal) return null;
 
   return (
     <>
+     {show && (
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Lote</h2>
+          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Editar Lote
+          </h2>
           <InputGroup>
             <label>Nombre del Lote</label>
             <input
@@ -199,14 +211,17 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
               ))}
             </select>
           </InputGroup>
-          <SubmitButton onClick={handleUpdateAllotment}>Guardar Cambios</SubmitButton>
+          <SubmitButton type="submit" onClick={handleUpdateAllotment}>
+            Guardar Cambios
+          </SubmitButton>
         </ModalContent>
       </ModalOverlay>
-
+    )}
       {showSuccessModal && (
-        <EditAllotmentSuccessModal
+        <SuccessModal
           show={showSuccessModal}
-          closeModal={() => setShowSuccessModal(false)}
+          onClose={handleCloseSuccessModal}
+          message="¡Lote Editadooo!"
         />
       )}
     </>

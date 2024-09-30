@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import CropTable from './CropTable';
-import NewCrop from '../../../../screens/crops/NewCrop';
-import EditCropModal from '../../../../screens/crops/EditCropModal';
-import DeleteCropModal from '../../../../screens/crops/DeleteCropModal';
-import axiosInstance from '../../../../config/AxiosInstance';
+import NewCrop from './CreateCropModal';
+import EditCropModal from '../../dashboard/crops/EditCropModal';
+import DeleteCropModal from '../../dashboard/modal/DeleteModal';
+import axiosInstance from '../../../config/AxiosInstance';
 import { useLocation } from 'react-router-dom';
 
 const CropMain = () => {

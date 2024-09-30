@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
-import SuccessModal from './SuccesModal';
-import { useNavigate } from 'react-router-dom';  // Importamos useNavigate para la redirección
-
-
+import axiosInstance from '../../../config/AxiosInstance';
+import SuccessModal from '../modal/SuccessModal';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -68,7 +65,7 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input, select {
+  input {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -103,42 +100,17 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
+const NewFarm = ({ closeModal }) => {
   const [formData, setFormData] = useState({
-    finca_id: '',
     nombre: '',
+    ubicacion: '',
+    area_total: '' || null,
     latitud: '' || null,
-    longitud: '' || null,
-    area: '',
-    unidad_area_id: ''
+    longitud: '' || null
   });
 
-  const [unidadesAreas, setUnidadesAreas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUnidadesAreas = async () => {
-      try {
-        const response = await axiosInstance.get('/unidades-areas');
-        setUnidadesAreas(response.data);
-      } catch (error) {
-        console.error('Error al obtener las unidades de área:', error);
-      }
-    };
-
-    fetchUnidadesAreas();
-  }, []);
-
-  useEffect(() => {
-    if (selectedFarm) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        finca_id: selectedFarm.id
-      }));
-    }
-  }, [selectedFarm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -147,24 +119,16 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    formData.latitud = formData.latitud || null;
-    formData.longitud = formData.longitud || null;
-
-    if (!formData.finca_id) {
-      setErrorMessage('ID de finca no válido.');
-      return;
-    }
-
     try {
       setErrorMessage('');
-      await axiosInstance.post('/register-land', formData);
+      const response = await axiosInstance.post('/register-farm', formData); 
+      console.log('Finca creada:', response.data);
       setShowSuccessModal(true);
     } catch (error) {
-      console.error('Error al crear el lote:', error);
       if (error.response && error.response.status === 400) {
-        setErrorMessage('Error al crear el lote.');
+        setErrorMessage('Error al crear la finca.');
       } else {
-        setErrorMessage('Error inesperado al crear el lote.');
+        setErrorMessage('Error inesperado al crear la finca.');
       }
     }
   };
@@ -172,8 +136,6 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();
-    refreshLands();  // Actualiza la lista de lotes
-    navigate(`/farms`, { state: { selectedFarm } });  // Redirige a la lista de lotes con la finca seleccionada
   };
 
   return (
@@ -181,87 +143,63 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Lote</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nueva Finca</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
-            <input
-              type="hidden"
-              name="fincaId"
-              value={formData.finca_id}
-            />
-
             <InputGroup>
-              <label>Nombre del lote</label>
+              <label>Nombre</label>
               <input
                 type="text"
                 name="nombre"
                 value={formData.nombre}
                 onChange={handleChange}
-                maxLength={50}
                 required
               />
             </InputGroup>
-
             <InputGroup>
-              <label>Latitud</label>
+              <label>Ubicación</label>
+              <input
+                type="text"
+                name="ubicacion"
+                value={formData.ubicacion}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+            <InputGroup>
+              <label>Área Total (Opcional)</label>
               <input
                 type="number"
-                step="0.00001"
+                name="area_total"
+                value={formData.area_total}
+                onChange={handleChange}
+              />
+            </InputGroup>
+            <InputGroup>
+              <label>Latitud (Opcional)</label>
+              <input
+                type="text"
                 name="latitud"
-                value={formData.latitud || ''}
+                value={formData.latitud}
                 onChange={handleChange}
-                required
               />
             </InputGroup>
-
             <InputGroup>
-              <label>Longitud</label>
+              <label>Longitud (Opcional)</label>
               <input
-                type="number"
-                step="0.00001"
+                type="text"
                 name="longitud"
-                value={formData.longitud || ''}
+                value={formData.longitud}
                 onChange={handleChange}
-                required
               />
             </InputGroup>
-
-            <InputGroup>
-              <label>Área del lote</label>
-              <input
-                type="number"
-                step="0.01"
-                name="area"
-                value={formData.area || ''}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Unidad de Área</label>
-              <select
-                name="unidad_area_id"
-                value={formData.unidad_area_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione unidad de área</option>
-                {unidadesAreas.map((unidad) => (
-                  <option key={unidad.id} value={unidad.id}>
-                    {unidad.unidad}
-                  </option>
-                ))}
-              </select>
-            </InputGroup>
-
-            <SubmitButton type="submit">Crear Lote</SubmitButton>
+            <SubmitButton type="submit">Crear Finca</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
-      {showSuccessModal && <SuccessModal closeModal={handleCloseSuccessModal} />}
+      {showSuccessModal && <SuccessModal message="¡Finca Creada x432!" onClose={handleCloseSuccessModal} />}
     </>
   );
 };
 
-export default NewAllotment;
+export default NewFarm;

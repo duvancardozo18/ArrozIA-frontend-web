@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axiosInstance from "../../config/AxiosInstance";
-import SuccessModal from "./SuccessModal";
+import axiosInstance from "../../../config/AxiosInstance";
+import SuccessModal from "../modal/SuccessModal";
 import PropTypes from "prop-types";
 
 const ModalOverlay = styled.div`

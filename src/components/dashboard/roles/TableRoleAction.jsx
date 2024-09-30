@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import EditRoleModal from "../../modal/EditRolModal";
-import DeleteModal from "../../modal/DeleteModal";
-import DeleteSuccessModal from "../../modal/SuccessModal";
+import EditRoleModal from "../../dashboard/roles/EditRolModal";
+import DeleteModal from "../modal/DeleteModal";
+import DeleteSuccessModal from "../modal/SuccessModal";
 import axiosInstance from "../../../config/AxiosInstance";
 
 const rotate = keyframes`

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axiosInstance from "../../config/AxiosInstance";
-import EditSuccessRole from "../../components/modal/SuccessModal";
+import axiosInstance from "../../../config/AxiosInstance";
+import EditSuccessRole from "../../dashboard/modal/SuccessModal";
 
 // Estilos para el modal, input y botones
 const ModalOverlay = styled.div`

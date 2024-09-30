@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
-import EditModal from "../../modal/EditUserModal";
-import DeleteModal from "../../modal/DeleteModal";
-import SuccessModal from "../../modal/SuccessModal"; 
+import EditModal from "../../dashboard/users/EditUserModal";
+import DeleteModal from "../modal/DeleteModal";
+import SuccessModal from "../modal/SuccessModal"; 
 import axiosInstance from "../../../config/AxiosInstance";
 
 

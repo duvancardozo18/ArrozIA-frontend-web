@@ -10,7 +10,7 @@ import { PageNotFound, Users, Login, Roles, Farms, ResetPassword } from "./scree
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
-import CropMain from "./components/dashboard/fincas/cultivos/CropMain";
+import CropMain from "./components/dashboard/crops/CropMain";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 

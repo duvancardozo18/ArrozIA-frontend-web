@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../config/AxiosInstance';
-import SuccessModal from './SuccesModal';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../../config/AxiosInstance";
+import SuccessModal from "../../dashboard/modal/SuccessModal";
+import { useNavigate } from "react-router-dom"; // Importamos useNavigate para la redirección
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -66,7 +66,8 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input, select {
+  input,
+  select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -91,7 +92,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -101,34 +102,42 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewCrop = ({ closeModal, selectedAllotment }) => {
+const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
   const [formData, setFormData] = useState({
-    cropName: '', 
-    varietyId: '',
-    plotId: selectedAllotment ? selectedAllotment.id : '', // Asegurarte de asignar el ID del lote
-    plantingDate: '',
-    estimatedHarvestDate: ''
+    finca_id: "",
+    nombre: "",
+    latitud: "" || null,
+    longitud: "" || null,
+    area: "",
+    unidad_area_id: "",
   });
 
-  const [varieties, setVarieties] = useState([]); // Estado para almacenar las variedades de arroz
+  const [unidadesAreas, setUnidadesAreas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  // Obtener las variedades desde el backend
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUnidadesAreas = async () => {
       try {
-        const varietiesResponse = await axiosInstance.get('/list-varieties'); // Endpoint para obtener las variedades de arroz
-        setVarieties(varietiesResponse.data);
+        const response = await axiosInstance.get("/unidades-areas");
+        setUnidadesAreas(response.data);
       } catch (error) {
-        console.error('Error al obtener variedades:', error);
+        console.error("Error al obtener las unidades de área:", error);
       }
     };
 
-    fetchData();
+    fetchUnidadesAreas();
   }, []);
+
+  useEffect(() => {
+    if (selectedFarm) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        finca_id: selectedFarm.id,
+      }));
+    }
+  }, [selectedFarm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -137,23 +146,33 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    formData.latitud = formData.latitud || null;
+    formData.longitud = formData.longitud || null;
+
+    if (!formData.finca_id) {
+      setErrorMessage("ID de finca no válido.");
+      return;
+    }
+
     try {
-      const response = await axiosInstance.post('/crops', formData);
-      console.log('Cultivo creado:', response.data);
-      setShowSuccessModal(true);  // Mostrar modal de éxito
+      setErrorMessage("");
+      await axiosInstance.post("/register-land", formData);
+      setShowSuccessModal(true);
     } catch (error) {
-      console.error('Error al crear el cultivo:', error);
+      console.error("Error al crear el lote:", error);
       if (error.response && error.response.status === 400) {
-        setErrorMessage('Error al crear el cultivo.');
+        setErrorMessage("Error al crear el lote.");
       } else {
-        setErrorMessage('Error inesperado al crear el cultivo.');
+        setErrorMessage("Error inesperado al crear el lote.");
       }
     }
   };
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    closeModal();  // Cierra el modal principal después del éxito
+    closeModal();
+    refreshLands(); // Actualiza la lista de lotes
+    navigate(`/farms`, { state: { selectedFarm } }); // Redirige a la lista de lotes con la finca seleccionada
   };
 
   return (
@@ -161,15 +180,19 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Cultivo</h2>
+          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Crear Nuevo Lote
+          </h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
+            <input type="hidden" name="fincaId" value={formData.finca_id} />
+
             <InputGroup>
-              <label>Nombre del Cultivo</label>
+              <label>Nombre del lote</label>
               <input
                 type="text"
-                name="cropName"
-                value={formData.cropName}
+                name="nombre"
+                value={formData.nombre}
                 onChange={handleChange}
                 maxLength={50}
                 required
@@ -177,62 +200,70 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
             </InputGroup>
 
             <InputGroup>
-              <label>Variedad de Arroz</label>
+              <label>Latitud</label>
+              <input
+                type="number"
+                step="0.00001"
+                name="latitud"
+                value={formData.latitud || ""}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <label>Longitud</label>
+              <input
+                type="number"
+                step="0.00001"
+                name="longitud"
+                value={formData.longitud || ""}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <label>Área del lote</label>
+              <input
+                type="number"
+                step="0.01"
+                name="area"
+                value={formData.area || ""}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <label>Unidad de Área</label>
               <select
-                name="varietyId"
-                value={formData.varietyId}
+                name="unidad_area_id"
+                value={formData.unidad_area_id}
                 onChange={handleChange}
                 required
               >
-                <option value="">Seleccione una variedad</option>
-                {varieties.map((variety) => (
-                  <option key={variety.id} value={variety.id}>
-                    {variety.nombre}
+                <option value="">Seleccione unidad de área</option>
+                {unidadesAreas.map((unidad) => (
+                  <option key={unidad.id} value={unidad.id}>
+                    {unidad.unidad}
                   </option>
                 ))}
               </select>
             </InputGroup>
 
-            <InputGroup>
-              <label>Lote Asignado</label>
-              <input
-                type="text"
-                name="plotId"
-                value={selectedAllotment ? selectedAllotment.nombre : ''} // Mostrar el nombre del lote
-                disabled // Deshabilitar el campo para que no sea editable
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Fecha de Siembra</label>
-              <input
-                type="date"
-                name="plantingDate"
-                value={formData.plantingDate}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Fecha Estimada de Cosecha</label>
-              <input
-                type="date"
-                name="estimatedHarvestDate"
-                value={formData.estimatedHarvestDate}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <SubmitButton type="submit">Crear Cultivo</SubmitButton>
+            <SubmitButton type="submit">Crear Lote</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
-      {showSuccessModal && <SuccessModal closeModal={handleCloseSuccessModal} />}
+      {showSuccessModal && (
+         <SuccessModal
+         onClose={handleCloseSuccessModal}
+         message="¡Lote Creado!"
+       />
+      )}
     </>
   );
 };
 
-export default NewCrop;
-
+export default NewAllotment;
