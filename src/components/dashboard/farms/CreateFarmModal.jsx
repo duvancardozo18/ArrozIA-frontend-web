@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axiosInstance from '../../../config/AxiosInstance';
 import SuccessModal from '../modal/SuccessModal';
+import MapsLeaflet from './MapsLeaflet'
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -21,7 +22,7 @@ const ModalContent = styled.div`
   padding: 30px;
   border-radius: 20px;
   width: 450px;
-  max-width: 100%;
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
@@ -100,13 +101,13 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewFarm = ({ closeModal }) => {
+const NewFarm = ({ closeModal, addFarm }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     ubicacion: '',
-    area_total: '' || null,
-    latitud: '' || null,
-    longitud: '' || null
+    area_total: '',
+    latitud: '',
+    longitud: ''
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -121,8 +122,8 @@ const NewFarm = ({ closeModal }) => {
     event.preventDefault();
     try {
       setErrorMessage('');
-      const response = await axiosInstance.post('/register-farm', formData); 
-      console.log('Finca creada:', response.data);
+      const response = await axiosInstance.post('/register-farm', formData);
+      addFarm(response.data); // Llama a la función para agregar la finca al estado en `FarmMain`
       setShowSuccessModal(true);
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -143,7 +144,7 @@ const NewFarm = ({ closeModal }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nueva Finca</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Finca</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <InputGroup>
@@ -157,17 +158,7 @@ const NewFarm = ({ closeModal }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Ubicación</label>
-              <input
-                type="text"
-                name="ubicacion"
-                value={formData.ubicacion}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Área Total (Opcional)</label>
+              <label>Área Total</label>
               <input
                 type="number"
                 name="area_total"
@@ -176,7 +167,17 @@ const NewFarm = ({ closeModal }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Latitud (Opcional)</label>
+              <label>Municipio / Vereda</label>
+              <input
+                type="text"
+                name="ubicacion"
+                value={formData.ubicacion}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+            {/* <InputGroup>
+              <label>Latitud </label>
               <input
                 type="text"
                 name="latitud"
@@ -185,19 +186,24 @@ const NewFarm = ({ closeModal }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Longitud (Opcional)</label>
+              <label>Longitud </label>
               <input
                 type="text"
                 name="longitud"
                 value={formData.longitud}
                 onChange={handleChange}
               />
-            </InputGroup>
+            </InputGroup> */}
+           
+            <InputGroup>
+              <label>Ubicación</label>
+            </InputGroup> 
+            <MapsLeaflet formData={formData} setFormData={setFormData} />
             <SubmitButton type="submit">Crear Finca</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
-      {showSuccessModal && <SuccessModal message="¡Finca Creada x432!" onClose={handleCloseSuccessModal} />}
+      {showSuccessModal && <SuccessModal message="¡Finca Creada!" onClose={handleCloseSuccessModal} />}
     </>
   );
 };
