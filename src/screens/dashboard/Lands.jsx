@@ -23,7 +23,7 @@ const AllotmentMain = ({ selectedFarm }) => {
     const fetchLands = async () => {
       try {
         const response = await axiosInstance.get("/lands");
-        selectedFarm === null ? console.log("hola") : console.log(selectedFarm);
+        // selectedFarm === null ? console.log("hola") : console.log(selectedFarm);
         setLands(response.data);
       } catch (error) {
         console.error("Error fetching lands:", error);
@@ -41,7 +41,7 @@ const AllotmentMain = ({ selectedFarm }) => {
   // Abrir el modal para editar un lote
   const handleEditLote = (lote) => {
     if (lote && lote.id) {
-      console.log("Lote que se está editando:", lote); // Verifica el lote en la consola
+      // console.log("Lote que se está editando:", lote); // Verifica el lote en la consola
       setEditingLote(lote); // Solo necesitas una llamada a setEditingLote
       setIsEditModalOpen(true); // Abre el modal de edición
     } else {
@@ -54,16 +54,12 @@ const AllotmentMain = ({ selectedFarm }) => {
   // Guardar el lote seleccionado
   const handleSelectAllotment = (lote) => {
     setSelectedAllotment(lote); // Guarda el lote seleccionado
-    console.log("Lote seleccionado:", lote);
+    // console.log("Lote seleccionado:", lote);
   };
 
-  // const handleSaveLote = async () => {
-  //   setIsEditModalOpen(false);
-  //   await fetchLands(); // Llamar a fetchLands para actualizar los lotes
-  // };
 
   const handleDelete = async (land_id) => {
-    console.log("Deleting lote ID:", land_id); // Verifica si el ID es correcto
+    // console.log("Deleting lote ID:", land_id); // Verifica si el ID es correcto
     try {
       await axiosInstance.delete(`/delete/land/${land_id}`);
       setLands(lands.filter((lote) => lote.id !== land_id)); // Actualizar la lista después de eliminar
@@ -79,7 +75,7 @@ const AllotmentMain = ({ selectedFarm }) => {
   };
 
   const id = selectedFarm?.id || "Ubicación no disponible";
-  console.log(id);
+  // console.log(id);
 
   // Redirigir a "CropsMain"
   const handleViewCrops = async () => {
@@ -156,7 +152,7 @@ const AllotmentMain = ({ selectedFarm }) => {
                 confirmText="Sí, eliminar"
                 onClose={() => setIsDeleteModalOpen(false)} // Cierra el modal sin eliminar
                 onConfirm={() => {
-                  console.log("Deleting Lote ID:", deletingLote.id); // Verifica que el ID sea correcto
+                  // console.log("Deleting Lote ID:", deletingLote.id); // Verifica que el ID sea correcto
                   handleDelete(deletingLote.id); // Llama a la función para eliminar el lote
                 }}
               />

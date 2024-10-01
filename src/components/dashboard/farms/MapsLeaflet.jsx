@@ -20,6 +20,7 @@ export default function MapsLeaflet({ formData, setFormData }) {
 
   // Actualiza el estado de formData cuando cambie la posición
   const handlePositionChange = (newPosition) => {
+    // console.log('Nueva posición:', newPosition);
     setPosition(newPosition);
     setFormData({
       ...formData,

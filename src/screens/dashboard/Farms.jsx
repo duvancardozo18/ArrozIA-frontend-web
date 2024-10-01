@@ -18,11 +18,6 @@ const Farms = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (token) {
-      console.log("Token found in localStorage:", token);
-    } else {
-      console.log("No token found in localStorage");
-    }
   }, []);
 
   // Guardar selectedFarm en el almacenamiento local para que persista entre cargas de página

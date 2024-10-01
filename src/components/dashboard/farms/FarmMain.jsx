@@ -14,25 +14,28 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
   const [editingFarm, setEditingFarm] = useState(null);
   const [deletingFarm, setDeletingFarm] = useState(null);
 
-  useEffect(() => {
-    const fetchFarms = async () => {
-      try {
-        const response = await axiosInstance.get("/farms");
-        setFarms(response.data);
-      } catch (error) {
-        console.error("Error fetching farms:", error);
-      }
-    };
+  const fetchFarms = async () => {
+    try {
+      const response = await axiosInstance.get("/farms");
+      setFarms(response.data);
+    } catch (error) {
+      console.error("Error fetching farms:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchFarms();
   }, []);
 
   const handleAddFarm = () => setIsAddModalOpen(true);
 
-  // Función para agregar nueva finca al estado
-  const addFarm = (newFarm) => {
-    setFarms([...farms, newFarm]);
-    setIsAddModalOpen(false);
+  const addFarm = async () => {
+    try {
+      await fetchFarms(); // Refresh farm list from the server
+      setIsAddModalOpen(false); // Close modal after adding
+    } catch (error) {
+      console.error("Error fetching farms after adding a new one:", error);
+    }
   };
 
   const handleEditFarm = (farmToEdit) => {
@@ -46,26 +49,28 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
     }
   };
 
-  const handleSaveFarm = (updatedFarm) => {
-    setFarms(
-      farms.map((farm) => (farm.id === updatedFarm.id ? updatedFarm : farm))
-    );
-    setIsEditModalOpen(false); // Cerrar el modal después de guardar
+  const handleSaveFarm = async (updatedFarm) => {
+    try {
+      await fetchFarms(); // Refresh farm list from the server
+      setIsEditModalOpen(false); // Close modal after saving
+    } catch (error) {
+      console.error("Error fetching farms after updating:", error);
+    }
   };
 
   const handleDelete = async (farm_id) => {
     try {
       await axiosInstance.delete(`/delete/farm/${farm_id}`);
-      setFarms(farms.filter((farm) => farm.id !== farm_id)); // Actualiza la lista de fincas eliminando la seleccionada
-      setIsDeleteModalOpen(false); // Cierra el modal después de eliminar
+      await fetchFarms(); // Refresh farm list from the server
+      setIsDeleteModalOpen(false); // Close modal after deleting
     } catch (error) {
       console.error("Error deleting farm:", error);
     }
   };
 
   const confirmDeleteFarm = (farm) => {
-    setDeletingFarm(farm); // Guarda la finca que se va a eliminar
-    setIsDeleteModalOpen(true); // Abre el modal de confirmación de eliminación
+    setDeletingFarm(farm);
+    setIsDeleteModalOpen(true);
   };
 
   return (
@@ -84,7 +89,7 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
 
         {farms.map((farm, index) => (
           <FarmCard
-            key={farm.id || index} // Usa el índice solo si `farm.id` no está disponible
+            key={farm.id || index}
             farm={farm}
             onDelete={() => confirmDeleteFarm(farm)}
             onEdit={() => handleEditFarm(farm)}
@@ -98,7 +103,7 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
       {isAddModalOpen && (
         <NewFarm
           closeModal={() => setIsAddModalOpen(false)}
-          addFarm={addFarm} // Pasar la función para agregar la finca
+          addFarm={addFarm} // Pass addFarm to refresh list after creating
         />
       )}
 

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../../config/AxiosInstance';
-import SuccessModal from '../modal/SuccessModal';
-import MapsLeaflet from './MapsLeaflet'
+import React, { useState } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../../config/AxiosInstance";
+import SuccessModal from "../modal/SuccessModal";
+import MapsLeaflet from "./MapsLeaflet";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -103,15 +103,15 @@ const SubmitButton = styled.button`
 
 const NewFarm = ({ closeModal, addFarm }) => {
   const [formData, setFormData] = useState({
-    nombre: '',
-    ubicacion: '',
-    area_total: '',
-    latitud: '',
-    longitud: ''
+    nombre: "",
+    ubicacion: "",
+    area_total: "",
+    latitud: null,
+    longitud: null,
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -121,22 +121,23 @@ const NewFarm = ({ closeModal, addFarm }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      setErrorMessage('');
-      const response = await axiosInstance.post('/register-farm', formData);
-      addFarm(response.data); // Llama a la función para agregar la finca al estado en `FarmMain`
+      setErrorMessage("");
+      const response = await axiosInstance.post("/register-farm", formData);
       setShowSuccessModal(true);
+      // addFarm(response.data); // Refresh farm list after creating
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        setErrorMessage('Error al crear la finca.');
+        setErrorMessage("Error al crear la finca.");
       } else {
-        setErrorMessage('Error inesperado al crear la finca.');
+        setErrorMessage("Error inesperado al crear la finca.");
       }
     }
   };
 
-  const handleCloseSuccessModal = () => {
+  const handleCloseSuccessModal = async () => {
     setShowSuccessModal(false);
-    closeModal();
+    await addFarm(); 
+    closeModal(); 
   };
 
   return (
@@ -144,7 +145,7 @@ const NewFarm = ({ closeModal, addFarm }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Finca</h2>
+          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Crear Finca</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <InputGroup>
@@ -176,28 +177,9 @@ const NewFarm = ({ closeModal, addFarm }) => {
                 required
               />
             </InputGroup>
-            {/* <InputGroup>
-              <label>Latitud </label>
-              <input
-                type="text"
-                name="latitud"
-                value={formData.latitud}
-                onChange={handleChange}
-              />
+            <InputGroup>
+              <label>Ubicación (Opcional)</label>
             </InputGroup>
-            <InputGroup>
-              <label>Longitud </label>
-              <input
-                type="text"
-                name="longitud"
-                value={formData.longitud}
-                onChange={handleChange}
-              />
-            </InputGroup> */}
-           
-            <InputGroup>
-              <label>Ubicación</label>
-            </InputGroup> 
             <MapsLeaflet formData={formData} setFormData={setFormData} />
             <SubmitButton type="submit">Crear Finca</SubmitButton>
           </form>
