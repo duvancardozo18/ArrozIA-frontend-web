@@ -91,16 +91,16 @@ export const AuthProvider = ({ children }) => {
   // Función para obtener datos del usuario desde el backend
   const fetchUserData = async (userId) => {
     try {
-      const roleResponse = await axiosInstance.get(`/user-farm-rol/${userId}`);
+      const roleResponse = await axiosInstance.get(`/user-roles/user/${userId}`);
       
       if (roleResponse.status === 200) {
-        const { rol_id, finca_id } = roleResponse.data;
-        
-        setFincaId(finca_id || null); // Actualiza finca_id si está disponible
+        const { rol_id } = roleResponse.data;
+        //const { rol_id, finca_id } = roleResponse.data;
+        //setFincaId(finca_id || null); 
 
         // 2. Obtener el rol y permisos utilizando el rol_id
         const roleDetailsResponse = await axiosInstance.get(`/roles/${rol_id}/permissions`);
-        
+         
         if (roleDetailsResponse.status === 200) {
           const { role, permissions } = roleDetailsResponse.data;
           setRole(role);

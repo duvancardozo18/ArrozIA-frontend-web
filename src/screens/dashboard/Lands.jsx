@@ -105,7 +105,7 @@ const AllotmentMain = ({ selectedFarm }) => {
         {selectedFarm ? (
           <>
             {/* Mostrar el texto con el nombre de la finca seleccionada */}
-            <h2>Finca - {selectedFarm.nombre}</h2><br />
+            <h2>Finca - {selectedFarm.nombre}</h2>
             <h3>Gestión de Lotes</h3>
 
             <AllotmentTable
