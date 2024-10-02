@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axiosInstance from '../../../config/AxiosInstance';  // Asegúrate de que la ruta sea correcta
-import EditFarmSuccessModal from '../modal/SuccessModal';  // Importa el modal de éxito
-
+import axiosInstance from '../../../config/AxiosInstance';  
+import SuccessModal from '../modal/SuccessModal';  
+import MapsLeaflet from "./MapsLeaflet";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -22,7 +22,7 @@ const ModalContent = styled.div`
   padding: 30px;
   border-radius: 20px;
   width: 450px;
-  max-width: 100%;
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
@@ -103,11 +103,11 @@ const SubmitButton = styled.button`
 
 const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
   const [formData, setFormData] = useState({
-    nombre: '',
-    ubicacion: '',
-    area_total: '' || null,
-    latitud: '' || null,
-    longitud: '' || null
+    nombre: "",
+    ubicacion: "",
+    area_total: "",
+    latitud: null,
+    longitud: null,
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -135,13 +135,12 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
     try {
       setErrorMessage('');
       const response = await axiosInstance.put(`/update/farm/${farm.id}`, formData);
-      closeModal();  // Cerrar el EditModal
-      setShowSuccessModal(true);
-      // Llamar a onSave antes de mostrar el modal de éxito
-      onSave(response.data);
       
-      // Mostrar el modal de éxito
-      setShowSuccessModal(true);
+    // Mostrar el modal de éxito antes de cerrar el modal de edición
+    setShowSuccessModal(true);
+    onSave(response.data);
+   
+    
     } catch (error) {
       setErrorMessage('Error actualizando la finca.');
     }
@@ -149,6 +148,7 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
+    closeModal();  // Cerrar el EditModal después
   };
 
   if (!show && !showSuccessModal) return null;
@@ -172,6 +172,15 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
                 />
               </InputGroup>
               <InputGroup>
+                <label>Área Total</label>
+                <input
+                  type="number"
+                  name="area_total"
+                  value={formData.area_total}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
                 <label>Ubicación</label>
                 <input
                   type="text"
@@ -182,43 +191,15 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
                 />
               </InputGroup>
               <InputGroup>
-                <label>Área Total (Opcional)</label>
-                <input
-                  type="number"
-                  name="area_total"
-                  value={formData.area_total}
-                  onChange={handleChange}
-                />
-              </InputGroup>
-              <InputGroup>
-                <label>Latitud (Opcional)</label>
-                <input
-                  type="text"
-                  name="latitud"
-                  value={formData.latitud}
-                  onChange={handleChange}
-                />
-              </InputGroup>
-              <InputGroup>
-                <label>Longitud (Opcional)</label>
-                <input
-                  type="text"
-                  name="longitud"
-                  value={formData.longitud}
-                  onChange={handleChange}
-                />
-              </InputGroup>
+              <label>Ubicación (Opcional)</label>
+            </InputGroup>
+            <MapsLeaflet formData={formData} setFormData={setFormData} />
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>
             </form>
           </ModalContent>
         </ModalOverlay>
       )}
-      {showSuccessModal && (
-        <EditFarmSuccessModal 
-          show={showSuccessModal} 
-          closeModal={handleCloseSuccessModal} 
-        />
-      )}
+     {showSuccessModal && <SuccessModal message="¡Cambios Guardados!" onClose={handleCloseSuccessModal} />}
     </>
   );
 };
