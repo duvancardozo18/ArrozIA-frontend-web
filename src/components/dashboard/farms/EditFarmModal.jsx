@@ -172,7 +172,7 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
                 />
               </InputGroup>
               <InputGroup>
-                <label>Área Total</label>
+                <label>Área Total (m²)</label>
                 <input
                   type="number"
                   name="area_total"
@@ -181,7 +181,7 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
                 />
               </InputGroup>
               <InputGroup>
-                <label>Ubicación</label>
+                <label>Municipio / Vereda</label>
                 <input
                   type="text"
                   name="ubicacion"
@@ -191,7 +191,7 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
                 />
               </InputGroup>
               <InputGroup>
-              <label>Ubicación (Opcional)</label>
+              <label>Ubicación</label>
             </InputGroup>
             <MapsLeaflet formData={formData} setFormData={setFormData} />
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>

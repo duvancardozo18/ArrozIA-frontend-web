@@ -103,7 +103,7 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
+const NewAllotment = ({ closeModal, selectedFarm, fetchLands }) => {
   const [formData, setFormData] = useState({
     finca_id: "",
     nombre: "",
@@ -157,7 +157,7 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();
-    refreshLands(); // Actualiza la lista de lotes
+    fetchLands(); // Actualiza la lista de lotes
     navigate(`/farms`, { state: { selectedFarm } }); // Redirige a la lista de lotes con la finca seleccionada
   };
 
@@ -185,7 +185,7 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Área del lote</label>
+              <label>Área del lote (m²)</label>
               <input
                 type="number"
                 step="0.01"
@@ -198,7 +198,7 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
             <MapsLeaflet formData={formData} setFormData={setFormData} />
 
 
-            <SubmitButton type="submit">Crear Lote</SubmitButton>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>

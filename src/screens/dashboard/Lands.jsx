@@ -18,18 +18,17 @@ const AllotmentMain = ({ selectedFarm }) => {
   const navigate = useNavigate(); // Hook para redireccionar
 
   //traer los lotes de la finca seleccionada
-  // Función para obtener los lotes del backend
-  useEffect(() => {
-    const fetchLands = async () => {
-      try {
-        const response = await axiosInstance.get("/lands");
-        // selectedFarm === null ? console.log("hola") : console.log(selectedFarm);
-        setLands(response.data);
-      } catch (error) {
-        console.error("Error fetching lands:", error);
-      }
-    };
+  const fetchLands = async () => {
+    try {
+      const response = await axiosInstance.get("/lands");
+      setLands(response.data);
+    } catch (error) {
+      console.error("Error fetching lands:", error);
+    }
+  };
 
+  // Llama fetchLands dentro del useEffect
+  useEffect(() => {
     fetchLands();
   }, []);
 
@@ -126,8 +125,10 @@ const AllotmentMain = ({ selectedFarm }) => {
                 closeModal={() => setIsAddModalOpen(false)}
                 onSave={() => {
                   setIsAddModalOpen(false);
+                  fetchLands();
                 }}
-                selectedFarm={selectedFarm} // PASA selectedFarm como prop al modal
+                selectedFarm={selectedFarm} // Pasa selectedFarm como prop al modal
+                fetchLands={fetchLands} // Pasa la prop
               />
             )}
 

@@ -159,7 +159,7 @@ const NewFarm = ({ closeModal, addFarm }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Área Total</label>
+              <label>Área Total (m²)</label>
               <input
                 type="number"
                 name="area_total"
@@ -178,10 +178,10 @@ const NewFarm = ({ closeModal, addFarm }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Ubicación (Opcional)</label>
+              <label>Ubicación</label>
             </InputGroup>
             <MapsLeaflet formData={formData} setFormData={setFormData} />
-            <SubmitButton type="submit">Crear Finca</SubmitButton>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>

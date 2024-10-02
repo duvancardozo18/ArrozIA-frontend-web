@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../config/AxiosInstance";
+import MapsLeaflet from "../farms/MapsLeaflet";
 import SuccessModal from "../modal/SuccessModal";
 
 const ModalOverlay = styled.div`
@@ -89,23 +90,12 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
   const [latitud, setLatitud] = useState("");
   const [longitud, setLongitud] = useState("");
   const [area, setArea] = useState("");
-  const [unidadArea, setUnidadArea] = useState("");
-  const [unidadesAreas, setUnidadesAreas] = useState([]); // Lista de unidades de área
-
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [formData, setFormData] = useState({
+    latitud: "",
+    longitud: ""
+  });
 
-  useEffect(() => {
-    const fetchUnidadesAreas = async () => {
-      try {
-        const response = await axiosInstance.get("/unidades-areas");
-        setUnidadesAreas(response.data); // Cargar las opciones de unidad de área
-      } catch (error) {
-        console.error("Error al obtener las unidades de área:", error);
-      }
-    };
-
-    fetchUnidadesAreas();
-  }, []);
 
   useEffect(() => {
     if (lote && lote.id) {
@@ -114,7 +104,6 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
       setLatitud(lote.latitud || "");
       setLongitud(lote.longitud || "");
       setArea(lote.area || "");
-      setUnidadArea(lote.unidad_area_id || "");
     } else {
       console.error("No se pudo editar el lote: ID de lote indefinido.");
     }
@@ -131,7 +120,6 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
       latitud: latitud === "" ? null : latitud,
       longitud: longitud === "" ? null : longitud,
       area: Number(area),
-      unidad_area_id: unidadArea,
     };
   
     try {
@@ -173,44 +161,15 @@ const EditAllotmentModal = ({ show, closeModal, lote, onSave }) => {
             />
           </InputGroup>
           <InputGroup>
-            <label>Latitud</label>
-            <input
-              type="text"
-              value={latitud}
-              onChange={(e) => setLatitud(e.target.value)}
-            />
-          </InputGroup>
-          <InputGroup>
-            <label>Longitud</label>
-            <input
-              type="text"
-              value={longitud}
-              onChange={(e) => setLongitud(e.target.value)}
-            />
-          </InputGroup>
-          <InputGroup>
-            <label>Área</label>
+            <label>Área del lote (m²)</label>
             <input
               type="number"
               value={area}
               onChange={(e) => setArea(e.target.value)}
             />
           </InputGroup>
-          <InputGroup>
-            <label>Unidad de Área</label>
-            <select
-              value={unidadArea}
-              onChange={(e) => setUnidadArea(e.target.value)}
-              required
-            >
-              <option value="">Seleccione unidad de área</option>
-              {unidadesAreas.map((unidad) => (
-                <option key={unidad.id} value={unidad.id}>
-                  {unidad.unidad}
-                </option>
-              ))}
-            </select>
-          </InputGroup>
+          <MapsLeaflet formData={formData} setFormData={setFormData} />
+
           <SubmitButton type="submit" onClick={handleUpdateAllotment}>
             Guardar Cambios
           </SubmitButton>

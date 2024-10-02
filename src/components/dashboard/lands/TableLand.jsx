@@ -18,17 +18,34 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
     transition: '0.3s',
   };
 
+  
   const buttonHoverStyle = {
     backgroundColor: '#14B814',
     boxShadow: '0 0 0 5px rgba(20, 184, 20, 0.4)',  // Un verde más claro y con transparencia
     color: '#fff',
   };
 
+  const buttonCreate = {
+    padding: '10px 20px',
+    backgroundColor: '#28a745',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    marginBottom: '20px',
+    marginLeft: 'auto',
+    marginRight: '30px',
+    display: 'block',
+  };
+  
+
+  
   return (
     <div className="lote-table-container">
       <div className="header">
-        <button onClick={onAddLote} className="add-lote-btn">
-          <AddCircleIcon />
+        <button  style={buttonCreate} onClick={onAddLote} className="add-lote-btn">
+          Crear Lote
         </button>
       </div>
       <hr className="separator" />
