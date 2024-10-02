@@ -35,13 +35,9 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
       <table className="lote-table">
         <thead>
           <tr>
-            <th>Cultivos</th>
-            <th>Nombre del lote</th>
-            <th>Latitud</th>
-            <th>Longitud</th>
-            <th>Área</th>
-            <th>Unidad de área</th>
+            <th>Lote</th>
             <th>Acciones</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -55,6 +51,15 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
                   cursor: 'pointer'
                 }}
               >
+                <td>{lote.nombre}</td>
+                <td>
+                  <button onClick={(e) => { e.stopPropagation(); onEditLote(lote); }}>
+                    <EditIcon style={{ color: '#007BFF' }} />
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); onDeleteLote(lote); }}>
+                    <DeleteIcon style={{ color: '#FF4D4F' }} />
+                  </button>
+                </td>
                 <td>
                   <button
                     onClick={onViewCrops}
@@ -67,19 +72,6 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
                     }}
                   >
                     Gestionar Cultivo
-                  </button>
-                </td>
-                <td>{lote.nombre}</td>
-                <td>{lote.latitud}</td>
-                <td>{lote.longitud}</td>
-                <td>{lote.area}</td>
-                <td>{lote.unidad_area ? lote.unidad_area.unidad : 'Sin unidad'}</td>
-                <td>
-                  <button onClick={(e) => { e.stopPropagation(); onEditLote(lote); }}>
-                    <EditIcon style={{ color: '#007BFF' }} />
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); onDeleteLote(lote); }}>
-                    <DeleteIcon style={{ color: '#FF4D4F' }} />
                   </button>
                 </td>
               </tr>

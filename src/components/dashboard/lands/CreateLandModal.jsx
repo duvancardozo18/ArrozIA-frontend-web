@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../config/AxiosInstance";
 import SuccessModal from "../../dashboard/modal/SuccessModal";
-import { useNavigate } from "react-router-dom"; // Importamos useNavigate para la redirección
+import MapsLeaflet from "../farms/MapsLeaflet";
+import { useNavigate } from "react-router-dom";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -22,7 +23,7 @@ const ModalContent = styled.div`
   padding: 30px;
   border-radius: 20px;
   width: 450px;
-  max-width: 100%;
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
@@ -109,26 +110,11 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
     latitud: "" || null,
     longitud: "" || null,
     area: "",
-    unidad_area_id: "",
   });
 
-  const [unidadesAreas, setUnidadesAreas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUnidadesAreas = async () => {
-      try {
-        const response = await axiosInstance.get("/unidades-areas");
-        setUnidadesAreas(response.data);
-      } catch (error) {
-        console.error("Error al obtener las unidades de área:", error);
-      }
-    };
-
-    fetchUnidadesAreas();
-  }, []);
 
   useEffect(() => {
     if (selectedFarm) {
@@ -181,7 +167,7 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
           <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-            Crear Nuevo Lote
+            Crear Lote
           </h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
@@ -198,31 +184,6 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
                 required
               />
             </InputGroup>
-
-            <InputGroup>
-              <label>Latitud</label>
-              <input
-                type="number"
-                step="0.00001"
-                name="latitud"
-                value={formData.latitud || ""}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Longitud</label>
-              <input
-                type="number"
-                step="0.00001"
-                name="longitud"
-                value={formData.longitud || ""}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
             <InputGroup>
               <label>Área del lote</label>
               <input
@@ -234,33 +195,18 @@ const NewAllotment = ({ closeModal, selectedFarm, refreshLands }) => {
                 required
               />
             </InputGroup>
+            <MapsLeaflet formData={formData} setFormData={setFormData} />
 
-            <InputGroup>
-              <label>Unidad de Área</label>
-              <select
-                name="unidad_area_id"
-                value={formData.unidad_area_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione unidad de área</option>
-                {unidadesAreas.map((unidad) => (
-                  <option key={unidad.id} value={unidad.id}>
-                    {unidad.unidad}
-                  </option>
-                ))}
-              </select>
-            </InputGroup>
 
             <SubmitButton type="submit">Crear Lote</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
       {showSuccessModal && (
-         <SuccessModal
-         onClose={handleCloseSuccessModal}
-         message="¡Lote Creado!"
-       />
+        <SuccessModal
+          onClose={handleCloseSuccessModal}
+          message="¡Lote Creado!"
+        />
       )}
     </>
   );
