@@ -1,5 +1,3 @@
-// NewUser.jsx
-
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../config/AxiosInstance";
@@ -23,7 +21,7 @@ const ModalContent = styled.div`
   background: white;
   padding: 30px;
   border-radius: 20px;
-  width: 600px; /* Adjust the width for two columns */
+  width: 600px;
   max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
@@ -115,7 +113,6 @@ const SubmitButton = styled.button`
   }
 `;
 
-
 const NewUser = ({ closeModal, onSave = () => {} }) => {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -161,55 +158,68 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
     event.preventDefault();
     try {
       setErrorMessage("");
-
-      // Validate that all fields are filled
+  
+      // Validar que todos los campos obligatorios estén llenos
       if (
         !formData.nombre ||
         !formData.apellido ||
         !formData.email ||
         !formData.password ||
-        !formData.rol_id ||
-        !formData.finca_id
+        !formData.rol_id
       ) {
         throw new Error("Todos los campos son obligatorios.");
       }
-
-      // Register the user
+  
+      // Registrar el usuario
       const userResponse = await axiosInstance.post("/users/register", {
         nombre: formData.nombre,
         apellido: formData.apellido,
         email: formData.email,
         password: formData.password,
       });
-
+  
       const userId = userResponse.data.id;
-
+  
       if (!userId) {
         throw new Error("No se pudo obtener el ID del usuario.");
       }
-
-      // Establish the user-farm-role relationship
-      const dataToSend = {
+  
+      // Registrar el rol del usuario en /user-roles/register
+      const roleResponse = await axiosInstance.post("/user-roles/register", {
         usuario_id: parseInt(userId, 10),
         rol_id: parseInt(formData.rol_id, 10),
-        finca_id: parseInt(formData.finca_id, 10),
-      };
-
-      if (isNaN(dataToSend.finca_id)) {
-        throw new Error("La finca seleccionada no es válida.");
+      });
+  
+      if (roleResponse.status !== 200 && roleResponse.status !== 201) {
+        throw new Error("Error al asignar el rol al usuario.");
       }
-
-      const response = await axiosInstance.post("/user-farm", dataToSend);
-
-      if (response.status === 200 || response.status === 201) {
-        setShowSuccessModal(true);
-      } else {
-        throw new Error("Error al establecer la relación usuario-finca-rol.");
+  
+      // Si se selecciona una finca, establecer la relación usuario-finca-rol
+      if (formData.finca_id) {
+        const dataToSend = {
+          usuario_id: parseInt(userId, 10),
+          rol_id: parseInt(formData.rol_id, 10),
+          finca_id: parseInt(formData.finca_id, 10),
+        };
+  
+        if (isNaN(dataToSend.finca_id)) {
+          throw new Error("La finca seleccionada no es válida.");
+        }
+  
+        const farmResponse = await axiosInstance.post("/user-farm", dataToSend);
+  
+        if (farmResponse.status !== 200 && farmResponse.status !== 201) {
+          throw new Error("Error al establecer la relación usuario-finca-rol.");
+        }
       }
+  
+      // Mostrar el modal de éxito
+      setShowSuccessModal(true);
     } catch (error) {
       setErrorMessage(error.message || "Error creando el usuario.");
     }
   };
+  
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
@@ -280,7 +290,6 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
                     name="finca_id"
                     value={formData.finca_id}
                     onChange={handleChange}
-                    required
                   >
                     <option value="">Seleccione una finca</option>
                     {fincas.map((finca) => (
