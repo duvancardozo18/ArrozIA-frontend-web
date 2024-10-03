@@ -20,23 +20,30 @@ const AreaTable = ({ refresh }) => {
     try {
       const response = await axiosInstance.get('/users');
       const users = response.data;
-
+  
       const usersWithFarmAndRole = await Promise.all(
         users.map(async (user) => {
           try {
-            const farmAndRoleResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
+            // Obtiene la finca_id
+            const farmResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
+            
+            // Obtiene el rol con su id y nombre
+            const roleResponse = await axiosInstance.get(`/user-roles/user/${user.id}`);
+            console.log('nombre', roleResponse)
             return { 
               ...user, 
-              finca_id: farmAndRoleResponse.data.finca_id, 
-              rol_id: farmAndRoleResponse.data.rol_id 
+              finca_id: farmResponse.data.finca_id, 
+              rol_id: roleResponse.data.id,
+              role_name: roleResponse.data.nombre
+              // role_description: roleResponse.data.descripcion
             };
           } catch (error) {
             console.error(`Error fetching farm and role for user ${user.id}:`, error);
-            return { ...user, finca_id: null, rol_id: null };
+            return { ...user, finca_id: null, rol_id: null, role_name: "Sin Rol" };
           }
         })
       );
-
+  
       setTableData(usersWithFarmAndRole);
       setLoading(false);
     } catch (error) {
@@ -44,7 +51,7 @@ const AreaTable = ({ refresh }) => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchUsers();
   }, [refresh]);
@@ -70,7 +77,7 @@ const AreaTable = ({ refresh }) => {
                   <td>{dataItem.apellido}</td>
                   <td>{dataItem.email}</td>
                   <td>{dataItem.finca_id ? dataItem.finca_id : "Sin finca"}</td>
-                  <td>{dataItem.rol_id ? dataItem.rol_id : "Sin rol"}</td>
+                  <td>{dataItem.role_name ? dataItem.role_name : "Sin rol"}</td>
                   <td className="dt-cell-action">
                     <AreaTableAction user={dataItem} onSave={fetchUsers} />
                   </td>

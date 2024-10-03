@@ -92,9 +92,10 @@ export const AuthProvider = ({ children }) => {
   const fetchUserData = async (userId) => {
     try {
       const roleResponse = await axiosInstance.get(`/user-roles/user/${userId}`);
-      
+    
       if (roleResponse.status === 200) {
-        const { rol_id } = roleResponse.data;
+        const { id: rol_id } = roleResponse.data;
+        //const { rol_id } = roleResponse.data;
         //const { rol_id, finca_id } = roleResponse.data;
         //setFincaId(finca_id || null); 
 
