@@ -20,30 +20,29 @@ const AreaTable = ({ refresh }) => {
     try {
       const response = await axiosInstance.get('/users');
       const users = response.data;
-  
+
       const usersWithFarmAndRole = await Promise.all(
         users.map(async (user) => {
           try {
-            // Obtiene la finca_id
+            // Obtiene la finca con su nombre
             const farmResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
             
             // Obtiene el rol con su id y nombre
             const roleResponse = await axiosInstance.get(`/user-roles/user/${user.id}`);
-            console.log('nombre', roleResponse)
+            
             return { 
               ...user, 
-              finca_id: farmResponse.data.finca_id, 
+              farm_name: farmResponse.data.farm_name, // Ajuste para incluir el nombre de la finca
               rol_id: roleResponse.data.id,
               role_name: roleResponse.data.nombre
-              // role_description: roleResponse.data.descripcion
             };
           } catch (error) {
             console.error(`Error fetching farm and role for user ${user.id}:`, error);
-            return { ...user, finca_id: null, rol_id: null, role_name: "Sin Rol" };
+            return { ...user, farm_name: "Sin finca", rol_id: null, role_name: "Sin Rol" };
           }
         })
       );
-  
+
       setTableData(usersWithFarmAndRole);
       setLoading(false);
     } catch (error) {
@@ -76,7 +75,7 @@ const AreaTable = ({ refresh }) => {
                   <td>{dataItem.nombre}</td>
                   <td>{dataItem.apellido}</td>
                   <td>{dataItem.email}</td>
-                  <td>{dataItem.finca_id ? dataItem.finca_id : "Sin finca"}</td>
+                  <td>{dataItem.farm_name ? dataItem.farm_name : "Sin finca"}</td>
                   <td>{dataItem.role_name ? dataItem.role_name : "Sin rol"}</td>
                   <td className="dt-cell-action">
                     <AreaTableAction user={dataItem} onSave={fetchUsers} />
