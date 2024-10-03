@@ -1,9 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { AuthContext } from "../../../config/AuthProvider"; 
 
 const FarmCard = ({ farm, onDelete, onEdit, onNavigate, isSelected }) => {
+  // Verificar permisos
+  const { userId, permissions } = useContext(AuthContext); 
+  const hasPermission = (permission) => permissions.includes(permission);
+
   useEffect(() => {
     // console.log("Datos de la finca recibidos:", farm);
   }, [farm]);
@@ -39,6 +44,7 @@ const FarmCard = ({ farm, onDelete, onEdit, onNavigate, isSelected }) => {
         </div>
       </div>
       <div className="actions">
+      {hasPermission("actualizar_finca") && ( // Verificar permisos
         <EditIcon
           style={{ cursor: "pointer", color: "blue" }}
           onClick={(e) => {
@@ -48,6 +54,8 @@ const FarmCard = ({ farm, onDelete, onEdit, onNavigate, isSelected }) => {
           onMouseEnter={(e) => (e.target.style.color = "darkblue")}
           onMouseLeave={(e) => (e.target.style.color = "blue")}
         />
+      )}
+       {hasPermission("eliminar_finca") && ( // Verificar permisos
         <DeleteIcon
           style={{ cursor: "pointer", color: "red" }}
           onClick={(e) => {
@@ -57,6 +65,7 @@ const FarmCard = ({ farm, onDelete, onEdit, onNavigate, isSelected }) => {
           onMouseEnter={(e) => (e.target.style.color = "darkred")}
           onMouseLeave={(e) => (e.target.style.color = "red")}
         />
+      )}
       </div>
     </div>
   );

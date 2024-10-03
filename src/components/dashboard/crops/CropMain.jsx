@@ -6,6 +6,21 @@ import DeleteCropModal from '../../dashboard/modal/DeleteModal';
 import axiosInstance from '../../../config/AxiosInstance';
 import { useLocation } from 'react-router-dom';
 
+const buttonCreate = {
+  padding: '10px 20px',
+  backgroundColor: '#28a745',
+  color: 'white',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  fontSize: '16px',
+  marginBottom: '20px', 
+  marginTop:'20px',
+  marginLeft: 'auto',
+  marginRight: '30px',
+  display: 'block',
+};
+
 const CropMain = () => {
   const location = useLocation();
   const { crops: initialCrops, landId, allotment: initialAllotment } = location.state || {};
@@ -86,7 +101,7 @@ const CropMain = () => {
     <div className="box-crop">
       {selectedAllotment ? (
         <>
-          <h2>Gestionando Cultivos del lote: {selectedAllotment.nombre}</h2>
+          <h2>{selectedAllotment.nombre}</h2>
           
           {crops.length > 0 ? (
             <CropTable
@@ -98,7 +113,9 @@ const CropMain = () => {
           ) : (
             <div>
               <p>No hay cultivos asignados a este lote.</p>
-              <button onClick={handleAddCrop}>Crear Nuevo Cultivo</button>
+              <button  style={buttonCreate} onClick={handleAddCrop} className="add-lote-btn">
+                  Crear Cultivo
+            </button>
             </div>
           )}
 

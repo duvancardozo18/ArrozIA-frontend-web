@@ -22,7 +22,7 @@ const ModalContent = styled.div`
   padding: 30px;
   border-radius: 20px;
   width: 450px;
-  max-width: 100%;
+  max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
@@ -120,7 +120,7 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const varietiesResponse = await axiosInstance.get('/list-varieties'); // Endpoint para obtener las variedades de arroz
+        const varietiesResponse = await axiosInstance.get('/variedades'); // Endpoint para obtener las variedades de arroz
         setVarieties(varietiesResponse.data);
       } catch (error) {
         console.error('Error al obtener variedades:', error);
@@ -161,9 +161,19 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Nuevo Cultivo</h2>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Cultivo</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
+          <InputGroup>
+              <label>Lote Asignado</label>
+              <input
+                type="text"
+                name="plotId"
+                value={selectedAllotment ? selectedAllotment.nombre : ''} // Mostrar el nombre del lote
+                disabled // Deshabilitar el campo para que no sea editable
+              />
+            </InputGroup>
+
             <InputGroup>
               <label>Nombre del Cultivo</label>
               <input
@@ -194,16 +204,6 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
             </InputGroup>
 
             <InputGroup>
-              <label>Lote Asignado</label>
-              <input
-                type="text"
-                name="plotId"
-                value={selectedAllotment ? selectedAllotment.nombre : ''} // Mostrar el nombre del lote
-                disabled // Deshabilitar el campo para que no sea editable
-              />
-            </InputGroup>
-
-            <InputGroup>
               <label>Fecha de Siembra</label>
               <input
                 type="date"
@@ -225,7 +225,7 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
               />
             </InputGroup>
 
-            <SubmitButton type="submit">Crear Cultivo</SubmitButton>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>

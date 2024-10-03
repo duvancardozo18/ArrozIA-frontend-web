@@ -10,7 +10,7 @@ import { PageNotFound, Users, Login, Roles, Farms, ResetPassword } from "./scree
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
-import CropMain from "./components/dashboard/crops/CropMain";
+import Crops from "./screens/dashboard/Crops";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 
@@ -63,7 +63,7 @@ function App() {
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
-            <Route path="/crop" element={<PrivateRoute element={<CropMain />} />} />
+            <Route path="/crop" element={<PrivateRoute element={<Crops />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/profile" element={<Profile />} />
           </Route>

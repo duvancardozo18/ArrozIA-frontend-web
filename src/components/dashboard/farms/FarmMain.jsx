@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import FarmCard from "./FarmCard";
 import AddIcon from "@mui/icons-material/Add";
 import axiosInstance from "../../../config/AxiosInstance";
 import NewFarm from "../../../components/dashboard/farms/CreateFarmModal";
 import EditFarmModal from "../../../components/dashboard/farms/EditFarmModal";
 import DeleteFarmModal from "../../dashboard/modal/DeleteModal";
+import { AuthContext } from "../../../config/AuthProvider"; 
+
 
 const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
   const [farms, setFarms] = useState([]);
@@ -13,6 +15,10 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingFarm, setEditingFarm] = useState(null);
   const [deletingFarm, setDeletingFarm] = useState(null);
+
+   // Verificar permisos
+   const { userId, permissions } = useContext(AuthContext); 
+   const hasPermission = (permission) => permissions.includes(permission);
 
   const fetchFarms = async () => {
     try {
@@ -80,12 +86,14 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
           <h2>Fincas</h2>
         </div>
 
-        <div className="add-farm" onClick={handleAddFarm}>
-          <div>
-            <AddIcon />
-            <h3>Agregar Finca</h3>
+        {hasPermission("crear_finca") && ( // Verificar permisos
+          <div className="add-farm" onClick={handleAddFarm}>
+            <div>
+              <AddIcon />
+              <h3>Agregar Finca</h3>
+            </div>
           </div>
-        </div>
+        )}
 
         {farms.map((farm, index) => (
           <FarmCard
