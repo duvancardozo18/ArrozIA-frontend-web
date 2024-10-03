@@ -5,7 +5,7 @@ import axiosInstance from '../../../config/AxiosInstance';
  
 
 const TABLE_HEADS = [
-  "#",
+ 
   "Nombre",
   "Acciones",
   ""  // Agregando el encabezado "Acciones"
@@ -49,7 +49,7 @@ const TableRole = ({ refresh }) => {
         {loading ? (
           <p>Cargando...</p>
         ) : (
-          <table>
+          <table style={{ minWidth: '10px' }}>
             <thead>
               <tr>
                 {TABLE_HEADS.map((th, index) => (
@@ -60,7 +60,7 @@ const TableRole = ({ refresh }) => {
             <tbody>
               {tableData.map((dataItem) => (
                 <tr key={dataItem.id}>
-                  <td>{dataItem.id}</td>
+                 
                   <td>{dataItem.nombre}</td>
                   {/* <td>{dataItem.descripcion}</td> */}
                   
