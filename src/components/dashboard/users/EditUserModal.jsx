@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../../config/AxiosInstance';
-import EditSuccessModal from '../modal/SuccessModal';  // Importa el modal de éxito
-
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../../config/AxiosInstance";
+import EditSuccessModal from "../modal/SuccessModal"; // Importa el modal de éxito
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -34,10 +33,10 @@ const ModalContent = styled.div`
 
 const ErrorMessage = styled.p`
   color: #ff6b6b;
-  font-size: 18px;  
+  font-size: 18px;
   margin-bottom: 20px;
   text-align: center;
-  font-weight: bold;  
+  font-weight: bold;
 `;
 
 const CloseButton = styled.button`
@@ -67,7 +66,8 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input, select {
+  input,
+  select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -102,7 +102,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -112,23 +112,22 @@ const SubmitButton = styled.button`
   }
 `;
 
-
 // Otros componentes estilizados omitidos para brevedad...
 
 const EditModal = ({ show, closeModal, user, onSave }) => {
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    email: '',
-    password: '',  // Contraseña opcional
-    rol_id: '',
-    finca_id: '',
+    nombre: "",
+    apellido: "",
+    email: "",
+    password: "", // Contraseña opcional
+    rol_id: "",
+    finca_id: "",
   });
 
   const [roles, setRoles] = useState([]);
   const [fincas, setFincas] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -140,16 +139,15 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
         finca_id: user.finca_id,
       });
     }
-
     const fetchRolesAndFincas = async () => {
       try {
-        const rolesResponse = await axiosInstance.get('/roles');
+        const rolesResponse = await axiosInstance.get("/roles");
         setRoles(rolesResponse.data.roles || []);
 
-        const fincasResponse = await axiosInstance.get('/farms');
+        const fincasResponse = await axiosInstance.get("/farms");
         setFincas(fincasResponse.data || []);
       } catch (error) {
-        setErrorMessage('Error al cargar roles y fincas. Intente nuevamente.');
+        setErrorMessage("Error al cargar roles y fincas. Intente nuevamente.");
       }
     };
 
@@ -160,36 +158,61 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      setErrorMessage('');
+    setErrorMessage("");
 
-      // Solo enviar el campo de contraseña si se ha modificado
-      const updatedFormData = { ...formData };
-      if (!updatedFormData.password) {
-        delete updatedFormData.password;
+    try {
+      // Separar la lógica según los campos que hayan cambiado
+      const updatedFields = {};
+
+      // Si el nombre, apellido o email cambian, actualiza esos campos
+      if (
+        formData.nombre !== user.nombre ||
+        formData.apellido !== user.apellido ||
+        formData.email !== user.email
+      ) {
+        updatedFields.nombre = formData.nombre;
+        updatedFields.apellido = formData.apellido;
+        updatedFields.email = formData.email;
+
+        await axiosInstance.put(`/users/update/${user.id}`, updatedFields);
+        setShowSuccessModal(true);
       }
 
-      // Actualizar datos personales (nombre, apellido, email, contraseña)
-      await axiosInstance.put(`/users/update/${user.id}`, updatedFormData);
+      // Si solo cambia la contraseña
+      if (formData.password) {
+        await axiosInstance.put(`/users/update-password/${user.id}`, {
+          password: formData.password,
+        });
+        setShowSuccessModal(true);
+      }
 
-      console.log(formData.finca_id);
-      console.log("finca_id:", formData.finca_id);
-      // Actualizar finca y rol
-      await axiosInstance.put(`/user-farm-rol/update/${user.id}`, {
-        rol_id: parseInt(formData.rol_id),
-        finca_id: parseInt(formData.finca_id)
-      });
-      
+      // Si solo cambia la finca
+      if (formData.finca_id !== user.finca_id) {
+        await axiosInstance.put(`/user-farm/update/${user.id}`, {
+          finca_id: parseInt(formData.finca_id, 10),
+        });
+        setShowSuccessModal(true);
+      }
 
+      // Si solo cambia el rol
+      if (formData.rol_id !== user.rol_id) {
+        const updatedRoleData = {
+          usuario_id: parseInt(user.id, 10),
+          rol_id: parseInt(formData.rol_id, 10),
+        };
+        // console.log('Datos enviados:', updatedRoleData);
+        await axiosInstance.put(`/user-roles/update/${user.id}`, updatedRoleData);
+        setShowSuccessModal(true);
+      }
+
+      // Cerrar el modal y llamar a la función onSave para actualizar la información
       closeModal();
-      setShowSuccessModal(true);  // Mostrar el modal de éxito
-      onSave();  // Actualiza la información del usuario si es necesario
+      onSave();
     } catch (error) {
-      setErrorMessage('Error actualizando el usuario.');
+      setErrorMessage("Error actualizando el usuario.");
     }
   };
 
@@ -205,7 +228,9 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
         <ModalOverlay>
           <ModalContent>
             <CloseButton onClick={closeModal}>×</CloseButton>
-            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar usuario</h2>
+            <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+              Editar usuario
+            </h2>
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <form onSubmit={handleSubmit}>
               <FormGrid>
@@ -245,7 +270,7 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
 
                 {/* Segunda columna: Finca y Rol */}
                 <Column>
-                <InputGroup>
+                  <InputGroup>
                     <label>Contraseña (opcional)</label>
                     <input
                       type="password"
@@ -260,14 +285,14 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
                       name="finca_id"
                       value={formData.finca_id}
                       onChange={handleChange}
-                      required
                     >
-                      <option value="">Seleccione una fincas</option>
+                      <option value="">Seleccione una finca</option>
                       {fincas.map((finca) => (
-                        <option key={finca.id} value={finca.id}>{finca.nombre}</option>
+                        <option key={finca.id} value={finca.id}>
+                          {finca.nombre}
+                        </option>
                       ))}
                     </select>
-
                   </InputGroup>
                   <InputGroup>
                     <label>Rol</label>
@@ -279,7 +304,9 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
                     >
                       <option value="">Seleccione un rol</option>
                       {roles.map((rol) => (
-                        <option key={rol.id} value={rol.id}>{rol.nombre}</option>
+                        <option key={rol.id} value={rol.id}>
+                          {rol.nombre}
+                        </option>
                       ))}
                     </select>
                   </InputGroup>
@@ -291,9 +318,9 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
         </ModalOverlay>
       )}
       {showSuccessModal && (
-        <EditSuccessModal 
-          show={showSuccessModal} 
-          onClose={handleCloseSuccessModal} 
+        <EditSuccessModal
+          show={showSuccessModal}
+          onClose={handleCloseSuccessModal}
           message="¡Información Actualizada!"
         />
       )}

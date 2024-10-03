@@ -23,6 +23,7 @@ const AreaTable = ({ refresh }) => {
 
       const usersWithFarmAndRole = await Promise.all(
         users.map(async (user) => {
+          let farmId = null;
           let farmName = "Sin finca"; // Valor por defecto para finca
           let roleName = "Sin rol";   // Valor por defecto para rol
           let roleId = null;
@@ -30,6 +31,7 @@ const AreaTable = ({ refresh }) => {
           try {
             // Intenta obtener la finca con su nombre
             const farmResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
+            farmId = farmResponse.data?.finca_id || null;
             farmName = farmResponse.data?.farm_name || "Sin finca";
           } catch (error) {
             // Solo muestra errores que no sean 404
@@ -52,6 +54,7 @@ const AreaTable = ({ refresh }) => {
 
           return { 
             ...user, 
+            finca_id: farmId,
             farm_name: farmName,
             rol_id: roleId,
             role_name: roleName
