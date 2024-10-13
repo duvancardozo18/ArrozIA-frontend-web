@@ -12,12 +12,16 @@ function LocationMarker({ position, setPosition }) {
   return <Marker position={position}></Marker>;
 }
 
-// Custom hook para centrar el mapa
+// Componente para centrar el mapa cada vez que la posición cambie
 function CenterMap({ position }) {
   const map = useMap();
+  
   useEffect(() => {
     if (position) {
-      map.setView(position, map.getZoom()); // Centra el mapa en la nueva posición
+      map.flyTo(position, map.getZoom(), {
+        animate: true,
+        duration: 1, // Agregamos animación para mejorar el efecto de cambio
+      });
     }
   }, [position, map]);
 
@@ -25,20 +29,19 @@ function CenterMap({ position }) {
 }
 
 export default function MapsLeaflet({ formData, setFormData }) {
-  // Inicializa con una posición predeterminada
   const defaultPosition = [2.941695288131047, -75.30014365074527];
-  
+
   // Si hay latitud y longitud en formData, se usa como posición inicial
   const initialPosition = formData.latitud && formData.longitud
     ? [parseFloat(formData.latitud), parseFloat(formData.longitud)]
     : defaultPosition;
-  
+
   const [position, setPosition] = useState(initialPosition);
 
   useEffect(() => {
-    // Actualiza la posición si formData tiene valores de latitud y longitud
     if (formData.latitud && formData.longitud) {
-      setPosition([parseFloat(formData.latitud), parseFloat(formData.longitud)]);
+      const newPosition = [parseFloat(formData.latitud), parseFloat(formData.longitud)];
+      setPosition(newPosition);
     }
   }, [formData.latitud, formData.longitud]);
 
@@ -52,13 +55,13 @@ export default function MapsLeaflet({ formData, setFormData }) {
   };
 
   return (
-    <MapContainer center={position} zoom={8} style={{ height: '160px', width: '100%', marginBottom: '20px' }}>
+    <MapContainer center={position} zoom={13} style={{ height: '160px', width: '100%', marginBottom: '20px' }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
       />
       <LocationMarker position={position} setPosition={handlePositionChange} />
-      <CenterMap position={position} /> {/* Centra el mapa en la posición actual */}
+      <CenterMap position={position} />
     </MapContainer>
   );
 }
