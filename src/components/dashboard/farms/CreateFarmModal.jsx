@@ -3,7 +3,6 @@ import styled from "styled-components";
 import axiosInstance from "../../../config/AxiosInstance";
 import SuccessModal from "../modal/SuccessModal";
 import MapsLeaflet from "./MapsLeaflet";
-import { API_URL } from '../../../config/apiConfig'; // Asegúrate de que este sea correcto
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -84,25 +83,6 @@ const InputGroup = styled.div`
   }
 `;
 
-const SuggestionBox = styled.ul`
-  list-style: none;
-  background: white;
-  border: 1px solid #ddd;
-  max-height: 150px;
-  overflow-y: auto;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-`;
-
-const SuggestionItem = styled.li`
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
-
 const SubmitButton = styled.button`
   width: 100%;
   padding: 12px;
@@ -132,59 +112,11 @@ const NewFarm = ({ closeModal, addFarm }) => {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [suggestions, setSuggestions] = useState([]); // Para manejar las sugerencias de municipios
 
-  const handleChange = async (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  
-    if (name === 'ubicacion' && value.length > 2) {
-      // Hacer la llamada a la API solo si el usuario ha ingresado al menos 3 caracteres
-      await fetchCities(value);
-    }
   };
-
-  // Función para buscar municipios en la API
-  const fetchCities = async (value) => {
-    try {
-      const response = await axiosInstance.get(`${API_URL}/City/search/${value}`);
-      setSuggestions(response.data);
-    } catch (error) {
-      console.error("Error fetching cities:", error);
-      setSuggestions([]); // Asegurar que no hay sugerencias si ocurre un error
-    }
-  };
-
-  // Función para manejar la selección de un municipio de las sugerencias
-// Función para manejar la selección de un municipio de las sugerencias
-const handleSelectCity = async (city) => {
-  try {
-    const cityName = city.name;
-    
-    // Realiza una solicitud a la API de Nominatim para obtener las coordenadas basadas en el nombre de la ciudad
-    const response = await axiosInstance.get(`https://nominatim.openstreetmap.org/search?q=${cityName}, Colombia&format=json`);
-    
-    const locationData = response.data[0]; // Toma el primer resultado de la búsqueda
-
-    if (locationData) {
-      // Actualiza los datos del formulario con la latitud y longitud obtenida
-      setFormData({
-        ...formData,
-        ubicacion: cityName, // Nombre del municipio
-        latitud: locationData.lat, // Latitud obtenida
-        longitud: locationData.lon, // Longitud obtenida
-      });
-    } else {
-      console.error("No se encontraron coordenadas para la ciudad:", cityName);
-    }
-  } catch (error) {
-    console.error("Error al obtener coordenadas por nombre de ciudad:", error);
-  }
-
-  setSuggestions([]); // Limpiar sugerencias después de seleccionar
-};
-
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -192,6 +124,7 @@ const handleSelectCity = async (city) => {
       setErrorMessage("");
       const response = await axiosInstance.post("/register-farm", formData);
       setShowSuccessModal(true);
+      // addFarm(response.data); // Refresh farm list after creating
     } catch (error) {
       if (error.response && error.response.status === 400) {
         setErrorMessage("Error al crear la finca.");
@@ -203,8 +136,8 @@ const handleSelectCity = async (city) => {
 
   const handleCloseSuccessModal = async () => {
     setShowSuccessModal(false);
-    await addFarm();
-    closeModal();
+    await addFarm(); 
+    closeModal(); 
   };
 
   return (
@@ -243,28 +176,17 @@ const handleSelectCity = async (city) => {
                 onChange={handleChange}
                 required
               />
-              {/* Mostrar sugerencias si las hay */}
-              {suggestions.length > 0 && (
-                <SuggestionBox>
-                  {suggestions.map((city) => (
-                    <SuggestionItem key={city.id} onClick={() => handleSelectCity(city)}>
-                      {city.name}
-                    </SuggestionItem>
-                  ))}
-                </SuggestionBox>
-              )}
             </InputGroup>
-            {/* Mapa actualizado con la latitud y longitud del municipio seleccionado */}
-            
+            <InputGroup>
+              <label>Ubicación</label>
+            </InputGroup>
             <MapsLeaflet formData={formData} setFormData={setFormData} />
             <SubmitButton type="submit">Crear</SubmitButton>
           </form>
-          
         </ModalContent>
       </ModalOverlay>
       {showSuccessModal && <SuccessModal message="¡Finca Creada!" onClose={handleCloseSuccessModal} />}
     </>
-    
   );
 };
 
