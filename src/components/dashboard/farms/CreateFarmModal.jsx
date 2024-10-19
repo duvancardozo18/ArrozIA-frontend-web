@@ -223,6 +223,7 @@ const handleSelectCity = async (city) => {
                 value={formData.nombre}
                 onChange={handleChange}
                 required
+                maxLength={50} //segun bd es el top
               />
             </InputGroup>
             <InputGroup>
@@ -232,6 +233,8 @@ const handleSelectCity = async (city) => {
                 name="area_total"
                 value={formData.area_total}
                 onChange={handleChange}
+                required // Campo obligatorio
+                min={0}  // Evita valores negativos
               />
             </InputGroup>
             <InputGroup>
@@ -242,6 +245,7 @@ const handleSelectCity = async (city) => {
                 value={formData.ubicacion}
                 onChange={handleChange}
                 required
+                maxLength={100} // Máximo de 100 caracteres
               />
               {/* Mostrar sugerencias si las hay */}
               {suggestions.length > 0 && (
