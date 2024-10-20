@@ -138,7 +138,7 @@ const NewFarm = ({ closeModal, addFarm }) => {
   useEffect(() => {
     const fetchInitialCities = async () => {
       try {
-        const defaultQuery = "an"; // Cambia "an" por cualquier par de caracteres relevantes
+        const defaultQuery = ""; // Cambia "an" por cualquier par de caracteres relevantes
         const response = await axiosInstance.get(`${API_URL}/City/search/${defaultQuery}`);
         const options = response.data.map((city) => ({
           value: city.id,
@@ -156,8 +156,22 @@ const NewFarm = ({ closeModal, addFarm }) => {
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  
+    if (name === "nombre") {
+      // Permitir solo letras y espacios, y limitar a 50 caracteres
+      if (/^[a-zA-Z\s]*$/.test(value) && value.length <= 50) {
+        setFormData({ ...formData, [name]: value });
+      }
+    } else if (name === "area_total") {
+      // Permitir solo números positivos
+      if (/^\d*$/.test(value)) {
+        setFormData({ ...formData, [name]: value });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
+  
 
 const fetchCities = async (inputValue) => {
   if (!inputValue || inputValue.length < 2) {
@@ -275,6 +289,7 @@ const fetchCities = async (inputValue) => {
                 isClearable
                 value={selectedCity}
                 menuPortalTarget={document.body} // Añade esta línea
+                required
                 styles={{
                   control: (provided) => ({
                     ...provided,

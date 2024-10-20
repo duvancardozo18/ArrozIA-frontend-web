@@ -199,7 +199,12 @@
   .info h3 {
     font-size: 1rem;
     font-weight: 500;
+    white-space: nowrap;        /* No permite que el texto salte a otra línea */
+    overflow: hidden;           /* Oculta cualquier contenido que se desborde */
+    text-overflow: ellipsis;    /* Muestra puntos suspensivos (...) si el texto es demasiado largo */
+    max-width: 150px;           /* Ajusta este valor según el diseño de tu tarjeta */
   }
+  
   
   .info small {
     font-size: 0.85rem;

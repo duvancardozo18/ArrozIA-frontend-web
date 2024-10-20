@@ -4,6 +4,8 @@ import axiosInstance from '../../../config/AxiosInstance';
 import SuccessModal from '../modal/SuccessModal';  
 import MapsLeaflet from "./MapsLeaflet";
 import { API_URL } from '../../../config/apiConfig';
+import AsyncSelect from 'react-select/async';
+
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -17,6 +19,7 @@ const ModalOverlay = styled.div`
   justify-content: center;
   z-index: 1000;
 `;
+
 
 const ModalContent = styled.div`
   background: white;
@@ -76,6 +79,11 @@ const InputGroup = styled.div`
     font-size: 16px;
     transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 
+    /* Ajustes para evitar el desbordamiento */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     &:focus {
       box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
       transform: translateY(-3px);
@@ -83,6 +91,7 @@ const InputGroup = styled.div`
     }
   }
 `;
+
 
 const SuggestionBox = styled.ul`
   list-style: none;
@@ -121,6 +130,8 @@ const SubmitButton = styled.button`
   }
 `;
 
+
+
 const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -133,6 +144,7 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [suggestions, setSuggestions] = useState([]); // Para manejar las sugerencias de municipios
+  const [selectedCity, setSelectedCity] = useState(null);
 
   useEffect(() => {
     if (farm) {
@@ -143,8 +155,14 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
         latitud: farm.latitud,
         longitud: farm.longitud,
       });
+  
+      setSelectedCity({
+        value: farm.ubicacion,
+        label: farm.ubicacion,
+      });
     }
   }, [farm]);
+  
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -156,55 +174,74 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
   };
 
   // Función para buscar municipios en la API
-  const fetchCities = async (value) => {
+  const fetchCities = async (inputValue) => {
+    if (!inputValue || inputValue.length < 2) {
+      return [];
+    }
     try {
-      const response = await axiosInstance.get(`${API_URL}/City/search/${value}`);
-      setSuggestions(response.data);
+      const response = await axiosInstance.get(`${API_URL}/City/search/${inputValue}`);
+      const options = response.data.map((city) => ({
+        value: city.id,
+        label: city.name,
+      }));
+      return options;
     } catch (error) {
       console.error("Error fetching cities:", error);
-      setSuggestions([]);
+      return [];
     }
   };
+  
 
   // Función para manejar la selección de un municipio y obtener las coordenadas
-  const handleSelectCity = async (city) => {
-    try {
-      const cityName = city.name;
-      
-      // Realiza una solicitud a la API de Nominatim para obtener las coordenadas basadas en el nombre de la ciudad
-      const response = await axiosInstance.get(`https://nominatim.openstreetmap.org/search?q=${cityName}, Colombia&format=json`);
-      
-      const locationData = response.data[0]; // Toma el primer resultado de la búsqueda
-
-      if (locationData) {
-        // Actualiza los datos del formulario con la latitud y longitud obtenida
-        setFormData({
-          ...formData,
-          ubicacion: cityName,
-          latitud: locationData.lat,
-          longitud: locationData.lon,
-        });
-      } else {
-        console.error("No se encontraron coordenadas para la ciudad:", cityName);
+  const handleSelectCity = async (selectedOption) => {
+    setSelectedCity(selectedOption);
+    if (selectedOption) {
+      const cityName = selectedOption.label;
+      try {
+        // Realiza una solicitud a Nominatim para obtener coordenadas
+        const response = await axiosInstance.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}, Colombia&format=json`);
+        const locationData = response.data[0]; // Toma el primer resultado
+  
+        if (locationData) {
+          // Actualiza los datos del formulario con la latitud y longitud obtenida
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            ubicacion: cityName,
+            latitud: locationData.lat,
+            longitud: locationData.lon,
+          }));
+        } else {
+          console.error("No se encontraron coordenadas para la ciudad:", cityName);
+        }
+      } catch (error) {
+        console.error("Error al obtener coordenadas por nombre de ciudad:", error);
       }
-    } catch (error) {
-      console.error("Error al obtener coordenadas por nombre de ciudad:", error);
+    } else {
+      // Si se elimina la selección
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        ubicacion: "",
+        latitud: null,
+        longitud: null,
+      }));
     }
-
-    setSuggestions([]); // Limpiar sugerencias después de seleccionar
   };
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       setErrorMessage('');
+      console.log('Datos enviados:', formData); // Verificar los datos antes de enviar
       const response = await axiosInstance.put(`/update/farm/${farm.id}`, formData);
       setShowSuccessModal(true);
       onSave(response.data);
     } catch (error) {
+      console.error("Error al actualizar la finca:", error);
       setErrorMessage('Error actualizando la finca.');
     }
   };
+  
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
@@ -230,6 +267,7 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
                   value={formData.nombre}
                   onChange={handleChange}
                   required
+                  maxLength={50} // según BD es el tope
                 />
               </InputGroup>
               <InputGroup>
@@ -239,28 +277,37 @@ const EditFarmModal = ({ show, closeModal, farm, onSave }) => {
                   name="area_total"
                   value={formData.area_total}
                   onChange={handleChange}
+                  required // Campo obligatorio
+                  min={0}  // Evita valores negativos
                 />
               </InputGroup>
               <InputGroup>
-                <label>Municipio / Vereda</label>
-                <input
-                  type="text"
-                  name="ubicacion"
-                  value={formData.ubicacion}
-                  onChange={handleChange}
-                  required
-                />
-                {/* Mostrar sugerencias si las hay */}
-                {suggestions.length > 0 && (
-                  <SuggestionBox>
-                    {suggestions.map((city) => (
-                      <SuggestionItem key={city.id} onClick={() => handleSelectCity(city)}>
-                        {city.name}
-                      </SuggestionItem>
-                    ))}
-                  </SuggestionBox>
-                )}
-              </InputGroup>
+                  <label>Municipio / Vereda</label>
+                  <AsyncSelect
+                    cacheOptions
+                    loadOptions={fetchCities}
+                    defaultOptions={true}
+                    onChange={handleSelectCity}
+                    placeholder="Selecciona Municipio / Vereda..."
+                    isClearable
+                    value={selectedCity}
+                    menuPortalTarget={document.body}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        borderRadius: '10px',
+                        padding: '2px',
+                        borderColor: '#ddd',
+                        boxShadow: 'none',
+                        '&:hover': {
+                          borderColor: '#aaa',
+                        },
+                      }),
+                      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    }}
+                  />
+                </InputGroup>
+
               {/* Mapa actualizado con la latitud y longitud del municipio seleccionado */}
               <MapsLeaflet formData={formData} setFormData={setFormData} />
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>

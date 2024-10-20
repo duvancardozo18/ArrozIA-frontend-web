@@ -7,26 +7,26 @@
     margin-bottom: 0.7rem;
     padding: 1.4rem;
     border-radius: var(--border-radius-2);
-    box-shadow: none; /* Sin sombra por defecto */
+    box-shadow: none;
     cursor: pointer;
     transition: all 0.3s ease;
     justify-content: space-between;
     position: relative;
 
     &:hover {
-      background-color: var(--color-light); /* Efecto hover */
-      transform: translateY(-5px); /* Efecto de elevación */
+      background-color: var(--color-light);
+      transform: translateY(-5px);
     }
 
     &.selected {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra solo para la finca seleccionada */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
   }
 
   .icon-container {
-    background-color: #14B814; /* Fondo verde para el ícono */
+    background-color: #14B814;
     padding: 0.8rem;
-    border-radius: 10px; /* Bordes redondeados */
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,11 +35,21 @@
   .content {
     display: flex;
     flex-direction: column;
+    flex: 1;  /* Para que el contenido ocupe el espacio disponible */
+    min-width: 0;  /* Esto es importante para permitir que el texto se trunque */
+  }
+
+  .info {
+    max-width: 150px; /* Ajusta esto según tu diseño */
+    overflow: hidden; /* Asegura que el contenido no se desborde */
   }
 
   .info h3 {
     font-size: 1rem;
     font-weight: 500;
+    white-space: nowrap;        /* No permite que el texto salte a una nueva línea */
+    overflow: hidden;           /* Oculta cualquier contenido que se salga del contenedor */
+    text-overflow: ellipsis;    /* Muestra "..." si el texto es demasiado largo */
   }
 
   .info small {
