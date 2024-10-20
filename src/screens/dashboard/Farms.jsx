@@ -5,7 +5,7 @@ import FarmMain from "../../components/dashboard/farms/FarmMain";
 import AllotmentMain from "./Lands";
 import "../../css/Farms.scss";
 import { Navigate } from "react-router-dom";
-import { Snackbar, Alert } from "@mui/material"; // Importamos Snackbar y Alert de Material UI
+import { Snackbar, Alert } from "@mui/material"; 
 
 const Farms = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -15,14 +15,20 @@ const Farms = () => {
   });
 
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showSnackbar, setShowSnackbar] = useState(false); // Estado para controlar el Snackbar
+  const [showSnackbar, setShowSnackbar] = useState(false); 
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+    const welcomeShown = localStorage.getItem("welcomeShown");
 
-    // Mostrar el snackbar cuando el componente se monte
-    if (token) {
+    // Verificar valores en consola
+    console.log("Token:", token);
+    console.log("Bienvenida mostrada antes:", welcomeShown);
+
+    if (token && !welcomeShown) {
       setShowSnackbar(true);
+      localStorage.setItem("welcomeShown", "true");
+      console.log("Bienvenida mostrada ahora:", localStorage.getItem("welcomeShown"));
     }
   }, []);
 
@@ -33,7 +39,6 @@ const Farms = () => {
     }
   }, [selectedFarm]);
 
-  // Cerrar el Snackbar después de que se muestre por un tiempo determinado
   const handleCloseSnackbar = () => {
     setShowSnackbar(false);
   };
@@ -59,7 +64,7 @@ const Farms = () => {
         open={showSnackbar}
         autoHideDuration={3000} // Mostrar por 3 segundos
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // Centrar el Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} 
       >
         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
           ¡Iniciaste sesión con éxito, bienvenido!
