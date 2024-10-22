@@ -25,16 +25,10 @@ const InsumosTable = ({ refresh }) => {
     }
   };
 
-  // Hook para obtener los insumos al cargar el componente
+  // Hook para obtener los insumos al cargar el componente y cuando cambie `refresh`
   useEffect(() => {
     fetchInsumos();
-  }, [refresh]);
-
-  const handleSave = () => {
-    // Lógica para refrescar la tabla si es necesario
-    console.log("Table refreshed");
-    fetchInsumos(); // Refresca los insumos después de guardar algún cambio
-  };
+  }, [refresh]); // Volver a obtener los insumos cuando cambie el valor de `refresh`
 
   if (loading) {
     return <div>Cargando insumos...</div>;
@@ -58,12 +52,12 @@ const InsumosTable = ({ refresh }) => {
         <tbody>
           {insumos.map((insumo) => (
             <tr key={insumo.id}> {/* Usa el id del insumo */}
-              <td>{insumo.nombre}</td> {/* Ajusta el campo según los datos */}
-              <td>{insumo.unidad_id}</td> {/* Ajusta este campo si es necesario */}
-              <td>{insumo.costo_unitario}</td> {/* Ajusta este campo si es necesario */}
+              <td>{insumo.nombre}</td> {/* Muestra el nombre del insumo */}
+              <td>{insumo.unidad?.nombre || 'N/A'}</td> {/* Muestra el nombre de la unidad si está disponible */}
+              <td>{insumo.costo_unitario}</td> {/* Muestra el costo unitario */}
               <td>
                 {/* Usar el componente TablaInsumosAction para las acciones */}
-                <TablaInsumosAction insumo={insumo} onSave={handleSave} />
+                <TablaInsumosAction insumo={insumo} onSave={fetchInsumos} />
               </td>
             </tr>
           ))}

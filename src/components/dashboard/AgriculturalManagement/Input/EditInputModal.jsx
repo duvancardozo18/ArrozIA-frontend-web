@@ -59,6 +59,7 @@ const InputGroup = styled.div`
   }
 
   input,
+  select,
   textarea {
     width: 100%;
     padding: 10px;
@@ -104,25 +105,58 @@ const Title = styled.h2`
   margin-bottom: 30px;
 `;
 
+const ErrorMessage = styled.p`
+  color: #ff6b6b;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+`;
+
 const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
   const [formData, setFormData] = useState({
-    nombre: insumo.nombre || "",
-    unidad_id: insumo.unidad_id || "",
-    costo_unitario: insumo.costo_unitario || "",
-    descripcion: insumo.descripcion || "",
+    nombre: insumo?.nombre || "",
+    unidad_id: insumo?.unidad_id || "",
+    costo_unitario: insumo?.costo_unitario || "",
+    descripcion: insumo?.descripcion || "",
   });
 
+  const [unidades, setUnidades] = useState([]);  // Estado para guardar las unidades de medida
   const [showSuccessModal, setShowSuccessModal] = useState(false);  // Estado para mostrar el modal de éxito
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
+    const fetchInsumo = async () => {
+      try {
+        const response = await axiosInstance.get(`/input/${insumo.id}`);  // Solicitud GET a /input/{input_id}
+        const fetchedInsumo = response.data;
+
+        // Asignamos los datos obtenidos al estado
+        setFormData({
+          nombre: fetchedInsumo.nombre,
+          unidad_id: fetchedInsumo.unidad.id,  // Usamos fetchedInsumo.unidad.id para establecer el ID de la unidad
+          costo_unitario: fetchedInsumo.costo_unitario,
+          descripcion: fetchedInsumo.descripcion,
+        });
+      } catch (error) {
+        console.error("Error al obtener el insumo:", error);
+        setErrorMessage("Error al cargar los datos del insumo.");
+      }
+    };
+
+    const fetchUnidades = async () => {
+      try {
+        const response = await axiosInstance.get("/input_units");  // Ajustar la ruta según el backend
+        setUnidades(response.data);  // Asignar los datos obtenidos al estado de unidades
+      } catch (error) {
+        console.error("Error al obtener las unidades de medida:", error);
+        setErrorMessage("Error al cargar las unidades de medida.");
+      }
+    };
+
     if (insumo) {
-      setFormData({
-        nombre: insumo.nombre,
-        unidad_id: insumo.unidad_id,
-        costo_unitario: insumo.costo_unitario,
-        descripcion: insumo.descripcion,
-      });
+      fetchInsumo();  // Llamamos a la función para obtener los datos del insumo
+      fetchUnidades();  // Cargamos las unidades desde el backend
     }
   }, [insumo]);
 
@@ -130,11 +164,25 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    // Validación para el campo 'nombre' con límite de 100 caracteres
+    if (name === "nombre" && value.length > 100) {
+      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setErrorMessage("");  // Limpiar el mensaje de error cuando es válido
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Validar antes de enviar
+    if (formData.nombre.length > 100) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
+      return;
+    }
+
     try {
       setErrorMessage("");
       // Realiza una solicitud PUT para actualizar el insumo
@@ -151,7 +199,7 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal(); // Cierra el modal de edición
-    window.location.reload(); // Refresca la página después de cerrar el modal
+    onSave(); // Actualiza la tabla de insumos sin cambiar de sección
   };
 
   return (
@@ -161,7 +209,7 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
           <ModalContent>
             <CloseButton onClick={closeModal}>×</CloseButton>
             <Title>Editar Insumo</Title>
-            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <form onSubmit={handleSubmit}>
               <InputGroup>
                 <label>Nombre</label>
@@ -173,16 +221,24 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
                   required
                 />
               </InputGroup>
+
               <InputGroup>
                 <label>Unidad de Medida</label>
-                <input
-                  type="number"
+                <select
                   name="unidad_id"
-                  value={formData.unidad_id}
+                  value={formData.unidad_id}  // El valor será preseleccionado basado en el estado
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Seleccionar Unidad</option>
+                  {unidades.map((unidad) => (
+                    <option key={unidad.id} value={unidad.id}>
+                      {unidad.nombre}
+                    </option>
+                  ))}
+                </select>
               </InputGroup>
+
               <InputGroup>
                 <label>Costo Unitario</label>
                 <input
@@ -194,6 +250,7 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
                   required
                 />
               </InputGroup>
+
               <InputGroup>
                 <label>Descripción</label>
                 <textarea
@@ -203,6 +260,7 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
                   rows={3}
                 />
               </InputGroup>
+
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>
             </form>
           </ModalContent>

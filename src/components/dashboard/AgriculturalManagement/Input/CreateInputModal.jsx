@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../../dashboard/modal/SuccessModal";
@@ -67,6 +67,7 @@ const InputGroup = styled.div`
   }
 
   input,
+  select,
   textarea {
     width: 100%;
     padding: 10px;
@@ -108,46 +109,88 @@ const SubmitButton = styled.button`
 
 const CreateInsumoModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
-    nombre: "",        // Cambiado de "name" a "nombre"
-    unidad_id: "",     // Cambiado de "unit" a "unidad_id"
-    costo_unitario: "", // Cambiado de "unitCost" a "costo_unitario"
-    descripcion: "",   // Descripción permanece igual
+    nombre: "",
+    unidad_id: "",
+    costo_unitario: "",
+    descripcion: "",
   });
 
+  const [unidades, setUnidades] = useState([]); // Estado para las unidades de medida
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Obtener todas las unidades de medida desde el backend al cargar el componente
+  useEffect(() => {
+    const fetchUnidades = async () => {
+      try {
+        const response = await axiosInstance.get("/input_units"); // Ruta ajustada
+        setUnidades(response.data); // Asumiendo que la respuesta es una lista de unidades de medida
+      } catch (error) {
+        console.error("Error al obtener las unidades de medida:", error);
+        setErrorMessage("Error al cargar las unidades de medida.");
+      }
+    };
+
+    fetchUnidades();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    // Validar longitud de nombre (máximo 100 caracteres)
+    if (name === "nombre" && value.length > 100) {
+      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setErrorMessage(""); // Limpiar mensaje de error cuando es válido
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      setErrorMessage("");
+      // Validación antes de enviar
+      if (formData.nombre.length > 100) {
+        setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
+        return;
+      }
 
       // Asegurarse de que los datos sean correctos
       const dataToSend = {
         ...formData,
         unidad_id: parseInt(formData.unidad_id, 10),
-        costo_unitario: parseFloat(formData.costo_unitario)
+        costo_unitario: parseFloat(formData.costo_unitario),
       };
 
+      console.log("Enviando insumo al backend: ", dataToSend);  // Log de depuración
+
       // Conexión con el backend para registrar insumo
-      await axiosInstance.post("/register-input", dataToSend);
-      setShowSuccessModal(true);
+      const response = await axiosInstance.post("/register-input", dataToSend);
+      console.log("Respuesta del backend:", response);  // Log de la respuesta
+
+      if (response.status === 200) {
+        setShowSuccessModal(true);  // Mostrar modal de éxito si el insumo se crea correctamente
+      } else {
+        throw new Error("Error en la respuesta del servidor");
+      }
     } catch (error) {
       console.error("Error al crear el insumo:", error.response?.data);
       setErrorMessage("Error inesperado al crear el insumo.");
     }
   };
 
+  // Esta función se encarga de manejar el cierre del modal de éxito
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    closeModal();
-    onSave();
+
+    // Envía los datos del nuevo insumo para que se agregue directamente a la tabla
+    const newInsumo = {
+      id: Date.now(), // Solo para simular un ID único, debes reemplazar con el ID real si el backend lo devuelve
+      ...formData,
+    };
+    onSave(newInsumo); // Pasa el nuevo insumo al padre para que lo agregue a la tabla
+    closeModal(); // Cierra el modal de creación
   };
 
   return (
@@ -160,7 +203,6 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
           </h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
-            {/* Nombre del insumo */}
             <InputGroup>
               <label>Nombre</label>
               <input
@@ -172,19 +214,23 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
               />
             </InputGroup>
 
-            {/* Unidad de medida */}
             <InputGroup>
-              <label>Unidad ID</label>
-              <input
-                type="number"
+              <label>Unidad de Medida</label>
+              <select
                 name="unidad_id"
                 value={formData.unidad_id}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">Seleccionar Unidad</option>
+                {unidades.map((unidad) => (
+                  <option key={unidad.id} value={unidad.id}>
+                    {unidad.nombre}
+                  </option>
+                ))}
+              </select>
             </InputGroup>
 
-            {/* Costo Unitario */}
             <InputGroup>
               <label>Costo Unitario</label>
               <input
@@ -197,7 +243,6 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
               />
             </InputGroup>
 
-            {/* Descripción (Opcional) */}
             <InputGroup>
               <label>Descripción (Opcional)</label>
               <textarea
@@ -208,12 +253,13 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
               />
             </InputGroup>
 
-            <SubmitButton type="submit">Crear</SubmitButton>
+            <SubmitButton type="submit">Crear Insumo</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
       {showSuccessModal && (
         <SuccessModal
+          show={showSuccessModal}
           onClose={handleCloseSuccessModal}
           message="¡Insumo Creado!"
         />

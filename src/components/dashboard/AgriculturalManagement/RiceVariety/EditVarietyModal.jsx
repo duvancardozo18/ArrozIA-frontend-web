@@ -20,7 +20,7 @@ const ModalContent = styled.div`
   background: white;
   padding: 30px;
   border-radius: 20px;
-  width: 600px;
+  width: 450px;
   max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
@@ -82,6 +82,10 @@ const InputGroup = styled.div`
       outline: none;
     }
   }
+
+  textarea {
+    resize: vertical;
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -99,6 +103,12 @@ const SubmitButton = styled.button`
     background-color: #218838;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   }
+`;
+
+const Title = styled.h2`
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 30px;
 `;
 
 const EditVarietyModal = ({ show, closeModal, variety }) => {
@@ -123,7 +133,14 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    // Validar longitud de los campos
+    if ((name === "nombre" || name === "numero_registro_productor_ica") && value.length > 50) {
+      setErrorMessage(`Límite de 50 caracteres alcanzado para Registro ICA`);
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setErrorMessage(""); // Limpiar mensaje de error cuando la longitud es válida
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -131,6 +148,11 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
     setErrorMessage("");
 
     try {
+      if (formData.nombre.length > 50 || formData.numero_registro_productor_ica.length > 50) {
+        setErrorMessage("No se puede enviar porque se superaron los límites de caracteres.");
+        return;
+      }
+
       await axiosInstance.put(`/update-variety/${variety.id}`, formData);
       setShowSuccessModal(true);
     } catch (error) {
@@ -150,11 +172,11 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
         <ModalOverlay>
           <ModalContent>
             <CloseButton onClick={closeModal}>×</CloseButton>
-            <h2>Editar Variedad de Arroz</h2>
+            <Title>Editar Variedad de Arroz</Title>
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <form onSubmit={handleSubmit}>
               <InputGroup>
-                <label>Nombre</label>
+                <label>Nombre de la variedad</label>
                 <input
                   type="text"
                   name="nombre"
@@ -179,6 +201,7 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
                   name="caracteristicas_variedad"
                   value={formData.caracteristicas_variedad}
                   onChange={handleChange}
+                  rows={3}
                 />
               </InputGroup>
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>

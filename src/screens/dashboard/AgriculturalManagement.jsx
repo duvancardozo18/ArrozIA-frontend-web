@@ -2,8 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import Header from "../../components/dashboard/Header";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import RiceVarietiesTable from "../../components/dashboard/AgriculturalManagement/RiceVariety/RiceVarietiesTable";
-import InsumosTable from "../../components/dashboard/AgriculturalManagement/Input/InputTable";
-import CreateInsumoModal from "../../components/dashboard/AgriculturalManagement/Input/CreateInputModal";
+import InputTable from "../../components/dashboard/AgriculturalManagement/Input/InputTable";
+import CreateInputModal from "../../components/dashboard/AgriculturalManagement/Input/CreateInputModal";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
 import CreateRiceVarietyModal from "../../components/dashboard/AgriculturalManagement/RiceVariety/CreateRiceVarietyModal";
@@ -24,7 +24,7 @@ const GestionAgricola = () => {
   }
 
   const handleSave = () => {
-    setRefreshTable((prev) => !prev);
+    setRefreshTable((prev) => !prev); // Altera el estado para forzar la actualización de las tablas
   };
 
   return (
@@ -61,16 +61,16 @@ const GestionAgricola = () => {
       ) : (
         <ButtonCrear
           buttonText="Crear insumo"
-          ModalComponent={CreateInsumoModal}
+          ModalComponent={CreateInputModal}
           onSave={handleSave}
         />
       )}
 
       {/* Renderizado condicional de las tablas */}
       {activeTable === "variedades" ? (
-        <RiceVarietiesTable refresh={refreshTable} />
+        <RiceVarietiesTable refresh={refreshTable} /> 
       ) : (
-        <InsumosTable />
+        <InputTable refresh={refreshTable} /> 
       )}
     </div>
   );

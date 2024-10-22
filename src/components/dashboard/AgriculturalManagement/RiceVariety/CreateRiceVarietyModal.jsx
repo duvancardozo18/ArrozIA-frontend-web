@@ -108,9 +108,9 @@ const SubmitButton = styled.button`
 
 const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
-    nombre: "",  // Cambié 'name' por 'nombre'
-    numero_registro_productor_ica: "",  // Cambié 'registrationICA' por 'numero_registro_productor_ica'
-    caracteristicas_variedad: "",  // Cambié 'characteristics' por 'caracteristicas_variedad'
+    nombre: "",  
+    numero_registro_productor_ica: "",  
+    caracteristicas_variedad: "",  
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -118,15 +118,27 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    // Validación manual de los campos que tienen un límite de 50 caracteres
+    if ((name === "nombre" || name === "numero_registro_productor_ica") && value.length > 50) {
+      setErrorMessage("Límites de caracteres alcanzados."); // Mostrar error si excede los 50 caracteres
+    } else {
+      setErrorMessage(""); // Limpiar el error si los caracteres están dentro del límite
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Verificar si hay errores antes de enviar el formulario
+    if (errorMessage) {
+      return; // No permitir el envío si hay un error
+    }
+
     try {
       setErrorMessage("");
-      await axiosInstance.post("/register-variety", formData);  // Ahora envía los campos correctos
+      await axiosInstance.post("/register-variety", formData);  
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al crear la variedad de arroz:", error);
@@ -155,10 +167,9 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
               <label>Nombre de la variedad</label>
               <input
                 type="text"
-                name="nombre"  // Cambié 'name' por 'nombre'
+                name="nombre"  
                 value={formData.nombre}
                 onChange={handleChange}
-                maxLength={50}
                 required
               />
             </InputGroup>
@@ -168,7 +179,7 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
               <label>Registro ICA</label>
               <input
                 type="text"
-                name="numero_registro_productor_ica"  // Cambié 'registrationICA' por 'numero_registro_productor_ica'
+                name="numero_registro_productor_ica"  
                 value={formData.numero_registro_productor_ica}
                 onChange={handleChange}
                 required
@@ -179,7 +190,7 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
             <InputGroup>
               <label>Características (Opcional)</label>
               <textarea
-                name="caracteristicas_variedad"  // Cambié 'characteristics' por 'caracteristicas_variedad'
+                name="caracteristicas_variedad"  
                 value={formData.caracteristicas_variedad}
                 onChange={handleChange}
                 rows={3}

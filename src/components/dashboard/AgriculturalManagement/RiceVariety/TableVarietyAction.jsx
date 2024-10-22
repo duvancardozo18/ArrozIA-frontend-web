@@ -53,7 +53,10 @@ const TablaVarietyAction = ({ variety, onSave }) => {
   const closeViewModal = () => setShowViewModal(false);
 
   const openEditModal = () => setShowEditModal(true);
-  const closeEditModal = () => setShowEditModal(false);
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    onSave(); // Refresca la tabla después de cerrar el modal de edición
+  };
 
   const openDeleteModal = () => setShowDeleteModal(true);
   const closeDeleteModal = () => setShowDeleteModal(false);
@@ -70,7 +73,7 @@ const TablaVarietyAction = ({ variety, onSave }) => {
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    window.location.reload(); // Refresca la página al cerrar el modal de éxito
+    onSave(); // Refresca la tabla después de cerrar el modal de éxito tras eliminar
   };
 
   return (
