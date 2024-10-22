@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [permissions, setPermissions] = useState([]);
   const [role, setRole] = useState(null); 
   const [loading, setLoading] = useState(true);
-
+  
   // Función para decodificar el JWT
   const parseJwt = (token) => {
     try {
@@ -156,7 +156,8 @@ export const AuthProvider = ({ children }) => {
       role, 
       loading, 
       login,
-      logout
+      logout,
+      
     }}>
       {children}
     </AuthContext.Provider>

@@ -169,6 +169,7 @@ const NewRol = ({ show, closeModal, onSave }) => {
                 value={formData.nombre}
                 onChange={handleChange}
                 required
+                maxLength={50}
               />
             </InputGroup>
             {/* <InputGroup>

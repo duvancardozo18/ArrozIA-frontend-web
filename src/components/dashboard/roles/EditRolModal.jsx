@@ -233,6 +233,7 @@ const EditRoleModal = ({ show, closeModal, role, onSave }) => {
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               required
+              maxLength={50}
             />
           </InputGroup>
           <CheckboxGroup>

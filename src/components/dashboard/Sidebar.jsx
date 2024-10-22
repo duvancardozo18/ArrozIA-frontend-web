@@ -106,6 +106,9 @@ const Sidebar = () => {
             {hasPermission("crear_rol") && ( // Verificar permisos
               <MenuItem to="/roles" icon={<FaUserCog size={35}/>} text="Roles" />
             )}
+            {/* Menú de Gestión Agrícola con el icono actualizado */}
+            <MenuItem to="/mechanization" icon={<MdOutlineBarChart size={35} />} text="Mecanizacion" />
+
           </ul>
         </div>
 

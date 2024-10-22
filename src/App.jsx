@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { PageNotFound, Users, Login, Roles, Farms, ResetPassword } from "./screens";
+import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, Mechanization } from "./screens";
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
@@ -16,6 +16,7 @@ import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst';
 
 
 import { Profile} from "./screens";
+
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -63,9 +64,12 @@ function App() {
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
+            <Route path="/mechanization" element={<PrivateRoute element={<Mechanization />} />} />
             <Route path="/crop" element={<PrivateRoute element={<Crops />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/profile" element={<Profile />} />
+
+
           </Route>
 
           <Route path="*" element={<PageNotFound />} />
