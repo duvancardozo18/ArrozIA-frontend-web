@@ -1,0 +1,28 @@
+.button-group {
+    display: flex;
+    gap: 10px; // Espacio entre los botones
+    margin-bottom: 20px; // Espacio debajo del grupo de botones
+  }
+  
+  .toggle-button {
+    padding: 10px 20px;
+    border: 1px solid #28a745; // Cambiado a verde
+    background-color: white;
+    color: #28a745; // Cambiado a verde
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  
+  .toggle-button:hover {
+    background-color: #28a745; // Cambiado a verde
+    color: white;
+  }
+  
+  .toggle-button.active {
+    background-color: #28a745; // Cambiado a verde
+    color: white;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5); // Cambiado a verde
+  }
+  
