@@ -50,11 +50,14 @@ const AllotmentMain = ({ selectedFarm }) => {
     }
   };
 
-  // Guardar el lote seleccionado
   const handleSelectAllotment = (lote) => {
-    setSelectedAllotment(lote); // Guarda el lote seleccionado
-    // console.log("Lote seleccionado:", lote);
+    if (lote && lote.id) {
+      setSelectedAllotment(lote); // Guarda el lote seleccionado
+    } else {
+      console.error("No se ha seleccionado un lote válido.");
+    }
   };
+  
 
 
   const handleDelete = async (land_id) => {
@@ -77,18 +80,16 @@ const AllotmentMain = ({ selectedFarm }) => {
   // console.log(id);
 
   // Redirigir a "CropsMain"
-  const handleViewCrops = async () => {
-    if (selectedAllotment && selectedAllotment.id) {
+  const handleViewCrops = async (lote) => {
+    if (lote && lote.id) {
       try {
-        // Obtener los cultivos del lote seleccionado
-        const response = await axiosInstance.get(
-          `/crops?land_id=${selectedAllotment.id}`
-        );
+        const response = await axiosInstance.get(`/crops?land_id=${lote.id}`);
+        console.log("Cultivos obtenidos:", response.data);
         navigate("/crop", {
           state: {
             crops: response.data,
-            landId: selectedAllotment.id,
-            allotment: selectedAllotment,
+            landId: lote.id,
+            allotment: lote,  // Pasa el lote seleccionado
           },
         });
       } catch (error) {
@@ -98,6 +99,7 @@ const AllotmentMain = ({ selectedFarm }) => {
       console.error("No hay lote seleccionado para ver cultivos");
     }
   };
+  
 
   return (
     <>

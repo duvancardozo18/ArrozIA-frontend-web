@@ -217,7 +217,17 @@ const fetchCities = async (inputValue) => {
     event.preventDefault();
     try {
       setErrorMessage("");
-      await axiosInstance.post("/register-farm", formData);
+
+
+       // Convertir valores numéricos a números (area_total, latitud, longitud)
+    const farmData = {
+      ...formData,
+      area_total: formData.area_total ? parseFloat(formData.area_total) : null,
+      latitud: formData.latitud ? parseFloat(formData.latitud) : null,
+      longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+    }
+
+      const response = await axiosInstance.post("/register-farm", formData);
       setShowSuccessModal(true);
     } catch (error) {
       if (error.response && error.response.status === 400) {

@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import '../../../css/Farms.scss';
+import NewCrop from '../crops/CreateCropModal';  // Asegúrate que el path sea correcto
 
 const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrops, onSelectAllotment, selectedAllotment }) => {
+  // Estado para controlar la apertura del modal de crear cultivo
+  const [isCreateCropModalOpen, setIsCreateCropModalOpen] = useState(false);
+  const [selectedLote, setSelectedLote] = useState(null); // Guardar el lote seleccionado
+
+  // Función para manejar la apertura del modal de crear cultivo
+  const onCreateCrop = (lote) => {
+    setSelectedLote(lote);  // Asigna el lote seleccionado
+    setIsCreateCropModalOpen(true);  // Abre el modal
+  };
 
   // Estilos en línea para el botón
   const buttonStyle = {
@@ -18,7 +28,6 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
     transition: '0.3s',
   };
 
-  
   const buttonHoverStyle = {
     backgroundColor: '#14B814',
     boxShadow: '0 0 0 5px rgba(20, 184, 20, 0.4)',  // Un verde más claro y con transparencia
@@ -39,9 +48,7 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
     marginRight: '30px',
     display: 'block',
   };
-  
 
-  
   return (
     <div className="lote-table-container">
       <div className="header">
@@ -80,7 +87,10 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
                 </td>
                 <td>
                   <button
-                    onClick={onViewCrops}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewCrops(lote);  // Pasa el lote seleccionado a onViewCrops
+                    }}
                     style={buttonStyle}
                     onMouseEnter={(e) => {
                       Object.assign(e.target.style, buttonHoverStyle);
@@ -92,6 +102,26 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
                     Gestionar Cultivo
                   </button>
                 </td>
+                <td>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();  // Evita que se seleccione la fila al hacer clic
+                      onCreateCrop(lote);  // Abre el modal de crear cultivo
+                    }}
+                    style={{
+                      ...buttonStyle,
+                      backgroundColor: '#f0f8ff',  // Color diferente para "Crear Cultivo"
+                    }}
+                    onMouseEnter={(e) => {
+                      Object.assign(e.target.style, { ...buttonHoverStyle, backgroundColor: '#218838' });
+                    }}
+                    onMouseLeave={(e) => {
+                      Object.assign(e.target.style, { ...buttonStyle, backgroundColor: '#f0f8ff' });
+                    }}
+                  >
+                    Crear Cultivo
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
@@ -101,6 +131,15 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onViewCrop
           )}
         </tbody>
       </table>
+
+      {/* Mostrar el modal de crear cultivo */}
+      {isCreateCropModalOpen && (
+        <NewCrop 
+          selectedAllotment={selectedLote}  // Pasa el lote seleccionado al modal
+          closeModal={() => setIsCreateCropModalOpen(false)}  // Cierra el modal
+        />
+      )}
+
     </div>
   );
 };

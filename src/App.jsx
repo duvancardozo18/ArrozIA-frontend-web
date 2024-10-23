@@ -13,6 +13,8 @@ import PrivateRoute from "./config/PrivateRoute";
 import Crops from "./screens/dashboard/Crops";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
+import CropView from './components/dashboard/crops/CropView';
+
 
 
 import { Profile} from "./screens";
@@ -67,7 +69,8 @@ function App() {
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/profile" element={<Profile />} />
-          </Route>
+            <Route path="/finca/:fincaSlug/lote/:loteSlug/cultivo/:cultivoSlug" element={<CropView />} />
+            </Route>
 
           <Route path="*" element={<PageNotFound />} />
         </Routes>
@@ -75,5 +78,8 @@ function App() {
     </AuthProvider>
   );
 }
+
+//<Route path="/:nombre_finca/:nombre_lote/:nombre_cultivo" element={<CropView />} />
+
 
 export default App;

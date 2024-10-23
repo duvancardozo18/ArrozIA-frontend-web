@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axiosInstance from '../../../config/AxiosInstance';
 import SuccessModal from '../../dashboard/modal/SuccessModal';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -101,11 +102,11 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NewCrop = ({ closeModal, selectedAllotment }) => {
+const NewCrop = ({ closeModal, selectedAllotment, selectedFarm }) => {
   const [formData, setFormData] = useState({
     cropName: '', 
     varietyId: '',
-    plotId: selectedAllotment ? selectedAllotment.id : '', // Asegurarte de asignar el ID del lote
+    plotId: selectedAllotment ? parseInt(selectedAllotment.id) : '', // Asegúrate de asignar el ID del lote
     plantingDate: '',
     estimatedHarvestDate: ''
   });
@@ -120,7 +121,7 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const varietiesResponse = await axiosInstance.get('/variedades'); // Endpoint para obtener las variedades de arroz
+        const varietiesResponse = await axiosInstance.get('/list-varieties'); // Endpoint para obtener las variedades de arroz
         setVarieties(varietiesResponse.data);
       } catch (error) {
         console.error('Error al obtener variedades:', error);
@@ -137,10 +138,19 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("Datos enviados:", formData);
     try {
       const response = await axiosInstance.post('/crops', formData);
       console.log('Cultivo creado:', response.data);
       setShowSuccessModal(true);  // Mostrar modal de éxito
+  
+      // Extraer los slugs desde la respuesta del backend
+      const { slug, plotSlug, fincaSlug } = response.data; // Recibe los slugs desde el backend
+      if (slug && plotSlug && fincaSlug) {
+        navigate(`/finca/${fincaSlug}/lote/${plotSlug}/cultivo/${slug}`);
+      } else {
+        console.error('Faltan slugs en la respuesta del backend');
+      }
     } catch (error) {
       console.error('Error al crear el cultivo:', error);
       if (error.response && error.response.status === 400) {
@@ -164,7 +174,7 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
           <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Crear Cultivo</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
-          <InputGroup>
+            <InputGroup>
               <label>Lote Asignado</label>
               <input
                 type="text"
@@ -234,5 +244,15 @@ const NewCrop = ({ closeModal, selectedAllotment }) => {
   );
 };
 
-export default NewCrop;
+NewCrop.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+  selectedAllotment: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Ahora acepta tanto string como number
+    nombre: PropTypes.string.isRequired,
+  }).isRequired,
+  selectedFarm: PropTypes.shape({
+    nombre: PropTypes.string.isRequired,
+  }), // Agregar selectedFarm como prop
+};
 
+export default NewCrop;
