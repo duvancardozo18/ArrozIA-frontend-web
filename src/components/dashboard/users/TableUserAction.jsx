@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import EditModal from "../../dashboard/users/EditUserModal";
 import DeleteModal from "../modal/DeleteModal";
 import SuccessModal from "../modal/SuccessModal"; 
+import LaborCulturalList from "../../dashboard/users/LaborCulturalList"; // Importa el modal de lista de labores culturales
 import axiosInstance from "../../../config/AxiosInstance";
-
 
 const ActionButton = styled.button`
   padding: 10px 15px;
@@ -38,12 +38,15 @@ const DeleteButton = styled(ActionButton)`
   background-color: #e74c3c;
 `;
 
-
+const LaborCulturalButton = styled(ActionButton)`
+  background-color: #28a745; /* Color verde */
+`;
 
 const AreaTableAction = ({ user, onSave }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false); 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showLaborListModal, setShowLaborListModal] = useState(false); // Estado para modal de lista de labores culturales
 
   const openEditModal = () => setShowEditModal(true);
   const closeEditModal = () => setShowEditModal(false);
@@ -51,12 +54,14 @@ const AreaTableAction = ({ user, onSave }) => {
   const openDeleteModal = () => setShowDeleteModal(true);
   const closeDeleteModal = () => setShowDeleteModal(false);
 
+  const openLaborListModal = () => setShowLaborListModal(true); // Abre el modal de lista de labores
+  const closeLaborListModal = () => setShowLaborListModal(false); // Cierra el modal de lista de labores culturales
+
   const handleDelete = async () => {
     try {
-      // Cierra el modal de eliminación primero antes de proceder
       closeDeleteModal();
       await axiosInstance.delete(`/users/delete/${user.id}`);
-      setShowSuccessModal(true); // Muestra el modal de éxito después de eliminar
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Error deleting user:", error);
     }
@@ -64,11 +69,9 @@ const AreaTableAction = ({ user, onSave }) => {
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave(); // Refresca la tabla de usuarios después de cerrar el modal de éxito
+    onSave();
   };
 
-
-  // Asegúrate de que el modal de éxito solo se muestra después de eliminar
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       <EditButton onClick={openEditModal}>
@@ -79,6 +82,9 @@ const AreaTableAction = ({ user, onSave }) => {
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
+      <LaborCulturalButton onClick={openLaborListModal}>
+        Labor Cultural
+      </LaborCulturalButton>
 
       {/* Modal de Edición */}
       <EditModal
@@ -98,6 +104,15 @@ const AreaTableAction = ({ user, onSave }) => {
         cancelText="No, cancelar"
         confirmText="Sí, eliminar"
       />
+
+      {/* Modal de Lista de Labores Culturales */}
+      {showLaborListModal && (
+        <LaborCulturalList
+          userId={user.id} // Pasa el ID del usuario
+          closeModal={closeLaborListModal}
+          onSave={onSave}
+        />
+      )}
 
       {/* Modal de Éxito */}
       {showSuccessModal && (
