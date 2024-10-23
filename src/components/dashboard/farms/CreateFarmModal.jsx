@@ -122,6 +122,15 @@ const NewFarm = ({ closeModal, addFarm }) => {
     event.preventDefault();
     try {
       setErrorMessage("");
+
+       // Convertir valores numéricos a números (area_total, latitud, longitud)
+    const farmData = {
+      ...formData,
+      area_total: formData.area_total ? parseFloat(formData.area_total) : null,
+      latitud: formData.latitud ? parseFloat(formData.latitud) : null,
+      longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+    }
+
       const response = await axiosInstance.post("/register-farm", formData);
       setShowSuccessModal(true);
       // addFarm(response.data); // Refresh farm list after creating

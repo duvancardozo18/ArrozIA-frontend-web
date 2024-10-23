@@ -1,0 +1,35 @@
+/* CropTasksView.css */
+.crop-tasks-view {
+    text-align: center;
+  }
+  
+  .calendar-container {
+    margin: 0 auto;
+    width: 300px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  ul li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .task-actions button {
+    margin: 10px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .task-actions button:hover {
+    background-color: #218838;
+  }
+  

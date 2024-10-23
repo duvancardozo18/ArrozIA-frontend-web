@@ -34,6 +34,9 @@ const CropMain = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("Datos iniciales de crops:", initialCrops);
+  console.log("ID del lote (landId):", landId);
+  console.log("Alotamiento seleccionado:", selectedAllotment);
     const fetchAllotmentAndCrops = async () => {
       if (landId) {
         try {
@@ -87,12 +90,16 @@ const CropMain = () => {
   const refreshCrops = async () => {
     try {
       const response = await axiosInstance.get(`/crops?land_id=${landId}`);
-      setCrops(response.data);
+      if (response.status === 200) {
+        setCrops(response.data);
+      } else {
+        console.error('Error al obtener los cultivos:', response);
+      }
     } catch (error) {
-      console.error('Error refreshing crops:', error);
+      console.error('Error al obtener los cultivos:', error);
     }
   };
-
+  
   if (loading) {
     return <div>Cargando información del lote y cultivos...</div>;
   }
