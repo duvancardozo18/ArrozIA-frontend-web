@@ -106,6 +106,7 @@ const Sidebar = () => {
             {hasPermission("crear_rol") && (
               <MenuItem to="/roles" icon={<FaUserCog size={35}/>} text="Roles" />
             )}
+              <MenuItem to="/mechanization" icon={<MdOutlineBarChart size={35} />} text="Mecanizacion" />
           </ul>
         </div>
 

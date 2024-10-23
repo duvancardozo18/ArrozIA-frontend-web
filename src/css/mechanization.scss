@@ -1,0 +1,197 @@
+.mechanization-container {
+  display: flex;
+  padding: center;
+}
+
+.layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;  // Ajusta el espacio entre la lista y los detalles
+  width: 100%;  // Asegura que el layout ocupe todo el ancho disponible
+}
+
+.operations-list {
+  flex: 1;  // Se adapta al tamaño de la lista de operaciones
+  max-width: 30%;  // Limita el ancho máximo de la lista
+}
+.operation-details {
+  flex: 3;  // Asegura que ocupe más espacio
+  background-color: var(--color-white);  // Fondo blanco para contrastar
+  padding: 2rem;  // Espaciado interno generoso
+  border-radius: var(--border-radius-2);  // Bordes redondeados suaves
+  box-shadow: var(--box-shadow);  // Sombra para darle relieve
+  display: flex;
+  flex-direction: column;
+  align-items: center;  // Centra horizontalmente
+  justify-content: center;  // Centra verticalmente
+  text-align: center;  // Centra el texto
+  gap: 1rem;  // Espacio entre los elementos
+}
+
+.operation-details h3 {
+  font-size: 1.8rem;  // Aumenta el tamaño de la fuente del título
+  font-weight: 600;  // Hace el título más grueso
+  color: var(--color-dark);  // Color principal para los encabezados
+  margin-bottom: 1.5rem;  // Separación del encabezado con el contenido
+}
+
+.operation-details p {
+  font-size: 1.2rem;  // Tamaño de fuente más grande para el cuerpo del texto
+  font-weight: 400;  // Peso estándar
+  margin-bottom: 0.8rem;  // Espaciado entre las líneas de texto
+  color: var(--color-info-dark);  // Color gris oscuro para legibilidad
+}
+
+.operation-details .actions {
+  margin-top: 2rem;  // Aumenta el margen superior entre los detalles y los botones
+  display: flex;
+  gap: 1rem;
+  justify-content: center;  // Centra los botones
+}
+
+
+
+
+
+.operation-details {
+  flex: 4;  // Asegura que los detalles ocupen más espacio
+  background-color: var(--color-white);
+  padding: 1.5rem;
+  border-radius: var(--border-radius-2);
+  box-shadow: var(--box-shadow);
+  width: 100%;  // Asegura que los detalles ocupen todo el espacio restante
+  max-width: 70%;  // Ajusta el tamaño de la columna de detalles
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+
+
+.actions button:hover {
+  background-color: var(--color-dark);
+}
+
+.operations-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.operations-header h2 {
+  font-size: 1.2rem;
+  color: var(--color-dark);
+}
+
+.operations-header button {
+  background-color: var(--color-success);
+  color: var(--color-white);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-1);
+  display: flex;
+  align-items: center;
+}
+
+.operations-header button:hover {
+  background-color: var(--color-dark);
+}
+
+.card-mecanizacion {
+  background-color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+  padding: 1.4rem;
+  border-radius: var(--border-radius-2);
+  box-shadow: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  justify-content: space-between;
+  position: relative;
+
+  &:hover {
+    background-color: var(--color-light);
+    transform: translateY(-5px);
+  }
+
+  &.selected {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .icon-container {
+    background-color: #14B814;
+    padding: 0.8rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+  }
+
+  .info small {
+    font-size: 0.85rem;
+    color: var(--color-info-dark);
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .actions svg {
+    font-size: 1.5rem;
+  }
+
+  .actions svg:hover {
+    transition: all 0.2s ease;
+
+    
+  }
+}
+
+.add-operation,
+.edit-operation,
+.delete-operation {
+  padding: 10px 20px;
+  background-color: rgb(40, 167, 69);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 20px 30px 20px auto;
+  display: block;
+  &:hover {
+    background-color: var(--color-dark); // Oscurece el color al hacer hover
+  }
+}
+
+// Estilos para el botón de eliminar con color rojo como en farm
+.delete-operation {
+  background-color: #ff0000;
+  &:hover {
+    background-color: rgba (255, 0,0, 1);  // Oscurece al hacer hover
+  }
+}
+
+// Estilo para el botón de editar en color azul
+
+
