@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { PageNotFound, Users, Login, Roles, Farms, ResetPassword } from "./screens";
+import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement } from "./screens";
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
@@ -66,6 +66,7 @@ function App() {
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
             <Route path="/crop" element={<PrivateRoute element={<Crops />} />} />
+            <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/finca/:fincaSlug/lote/:loteSlug/cultivo/:cultivoSlug" element={<CropView />} />

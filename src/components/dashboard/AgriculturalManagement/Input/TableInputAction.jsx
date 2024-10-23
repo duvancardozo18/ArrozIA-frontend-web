@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
-import EditModal from "../../dashboard/users/EditUserModal";
-import DeleteModal from "../modal/DeleteModal";
-import SuccessModal from "../modal/SuccessModal"; 
-import LaborCulturalList from "../../dashboard/users/LaborCulturalList"; // Importa el modal de lista de labores culturales
-import axiosInstance from "../../../config/AxiosInstance";
+import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from "react-icons/hi";
+import EditInsumoModal from "./EditInputModal"; // Importa el modal de edición de insumo
+import DeleteModal from "../../modal/DeleteModal";
+import SuccessModal from "../../modal/SuccessModal";
+import ViewInsumoModal from "./ViewInputModal"; // Importa el modal de visualización de insumo
+import axiosInstance from "../../../../config/AxiosInstance";
 
+// Estilos para los botones de acción
 const ActionButton = styled.button`
   padding: 10px 15px;
   margin: 0 5px;
@@ -30,6 +31,10 @@ const ActionButton = styled.button`
   }
 `;
 
+const ViewButton = styled(ActionButton)`
+  background-color: #2ecc71;
+`;
+
 const EditButton = styled(ActionButton)`
   background-color: #3498db;
 `;
@@ -38,15 +43,14 @@ const DeleteButton = styled(ActionButton)`
   background-color: #e74c3c;
 `;
 
-const LaborCulturalButton = styled(ActionButton)`
-  background-color: #28a745; /* Color verde */
-`;
-
-const AreaTableAction = ({ user, onSave }) => {
+const TablaInsumosAction = ({ insumo, onSave }) => {
+  const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showLaborListModal, setShowLaborListModal] = useState(false); // Estado para modal de lista de labores culturales
+
+  const openViewModal = () => setShowViewModal(true);
+  const closeViewModal = () => setShowViewModal(false);
 
   const openEditModal = () => setShowEditModal(true);
   const closeEditModal = () => setShowEditModal(false);
@@ -54,43 +58,64 @@ const AreaTableAction = ({ user, onSave }) => {
   const openDeleteModal = () => setShowDeleteModal(true);
   const closeDeleteModal = () => setShowDeleteModal(false);
 
-  const openLaborListModal = () => setShowLaborListModal(true); // Abre el modal de lista de labores
-  const closeLaborListModal = () => setShowLaborListModal(false); // Cierra el modal de lista de labores culturales
-
   const handleDelete = async () => {
+    console.log("Insumo a eliminar:", insumo); // Agregar para verificar el insumo
+
     try {
       closeDeleteModal();
-      await axiosInstance.delete(`/users/delete/${user.id}`);
-      setShowSuccessModal(true);
+      if (insumo && insumo.id) {
+        // Asegurarse de que el insumo y su id están definidos
+        const response = await axiosInstance.delete(`/delete/input/${insumo.id}`);
+        if (response.status === 200) {
+          setShowSuccessModal(true); // Mostrar modal de éxito si se elimina correctamente
+        } else {
+          console.error("No se pudo eliminar el insumo, error:", response);
+        }
+      } else {
+        console.error("El ID del insumo es undefined o no existe");
+      }
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error al eliminar el insumo:", error);
     }
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave();
+    onSave(); // Refresca la tabla después de eliminar
   };
 
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
+      {/* Botón de Ver */}
+      <ViewButton onClick={openViewModal}>
+        <HiOutlineEye size={18} />
+        Ver
+      </ViewButton>
+
+      {/* Botón de Edición */}
       <EditButton onClick={openEditModal}>
         <HiOutlinePencil size={18} />
         Editar
       </EditButton>
+
+      {/* Botón de Eliminación */}
       <DeleteButton onClick={openDeleteModal}>
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
-      <LaborCulturalButton onClick={openLaborListModal}>
-        Labor Cultural
-      </LaborCulturalButton>
+
+      {/* Modal de Visualización */}
+      <ViewInsumoModal
+        show={showViewModal}
+        closeModal={closeViewModal}
+        insumo={insumo}
+      />
 
       {/* Modal de Edición */}
-      <EditModal
+      <EditInsumoModal
         show={showEditModal}
         closeModal={closeEditModal}
-        user={user}
+        insumo={insumo}
         onSave={onSave}
       />
 
@@ -99,31 +124,22 @@ const AreaTableAction = ({ user, onSave }) => {
         show={showDeleteModal}
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
-        title="Eliminar Usuario"
-        message="¿Estás seguro que deseas eliminar el Usuario? Esta acción no se puede deshacer."
+        title="Eliminar Insumo"
+        message="¿Estás seguro que deseas eliminar este insumo? Esta acción no se puede deshacer."
         cancelText="No, cancelar"
         confirmText="Sí, eliminar"
       />
-
-      {/* Modal de Lista de Labores Culturales */}
-      {showLaborListModal && (
-        <LaborCulturalList
-          userId={user.id} // Pasa el ID del usuario
-          closeModal={closeLaborListModal}
-          onSave={onSave}
-        />
-      )}
 
       {/* Modal de Éxito */}
       {showSuccessModal && (
         <SuccessModal
           show={showSuccessModal}
           onClose={closeSuccessModal}
-          message="¡Usuario Eliminado!"
+          message="¡Insumo eliminado exitosamente!"
         />
       )}
     </div>
   );
 };
 
-export default AreaTableAction;
+export default TablaInsumosAction;

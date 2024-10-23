@@ -1,16 +1,15 @@
 import React, { useContext, useEffect, useRef } from "react";
-// import { ThemeContext } from "../../../context/ThemeContext";
 import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
 import { FaUserCog } from "react-icons/fa";
 import {
+  MdOutlineAgriculture,
   MdOutlineBarChart,
   MdOutlineClose,
   MdOutlineGridView,
   MdOutlineLogout,
-  MdOutlineSettings,
   MdOutlinePeople,
   MdOutlinePerson2,
 } from "react-icons/md";
@@ -59,19 +58,18 @@ const Sidebar = () => {
   };
 
   // Componente para un enlace del menú
-    const MenuItem = ({ to, icon, text }) => (
-      <li className="menu-item">
-        <Link
-          to={to}
-          className={`menu-link ${isActive(to) ? "active" : ""}`}
-          onClick={closeSidebar} // Cerrar el sidebar al hacer clic
-        >
-          <span className="menu-link-icon">{icon}</span>
-          <span className="menu-link-text">{text}</span>
-        </Link>
-      </li>
-    );
-
+  const MenuItem = ({ to, icon, text }) => (
+    <li className="menu-item">
+      <Link
+        to={to}
+        className={`menu-link ${isActive(to) ? "active" : ""}`}
+        onClick={closeSidebar} // Cerrar el sidebar al hacer clic
+      >
+        <span className="menu-link-icon">{icon}</span>
+        <span className="menu-link-text">{text}</span>
+      </Link>
+    </li>
+  );
 
   return (
     <nav
@@ -86,9 +84,7 @@ const Sidebar = () => {
             width="50"
             height="50"
           />
-        
-        <p style={{ fontSize: '20px', color: '#ABABB5', fontWeight: 'bold' }}>Arroz IA</p>
-
+          <p style={{ fontSize: '20px', color: '#ABABB5', fontWeight: 'bold' }}>Arroz IA</p>
         </div>
         <button className="sidebar-close-btn" onClick={closeSidebar}>
           <MdOutlineClose size={24} />
@@ -97,18 +93,23 @@ const Sidebar = () => {
       <div className="sidebar-body">
         <div className="sidebar-menu">
           <ul className="menu-list">
-            {/* <MenuItem to="/dashboard" icon={<MdOutlineGridView size={18} />} text="Inicio" /> */}
+            {/* Menú de Fincas */}
             <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
+            
+            {/* Menú de Gestión Agrícola con el icono actualizado */}
+            <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
 
-            {hasPermission("crear_usuario") && ( // Verificar permisos
+            {/* Menú de Usuarios y Roles con verificación de permisos */}
+            {hasPermission("crear_usuario") && (
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
             )}
-            {hasPermission("crear_rol") && ( // Verificar permisos
+            {hasPermission("crear_rol") && (
               <MenuItem to="/roles" icon={<FaUserCog size={35}/>} text="Roles" />
             )}
           </ul>
         </div>
 
+        {/* Menú de perfil y logout */}
         <div className="sidebar-menu sidebar-menu2">
           <ul className="menu-list">
             <MenuItem to="/profile" icon={<MdOutlinePerson2 size={35} />} text="Perfil" />
@@ -117,7 +118,7 @@ const Sidebar = () => {
                 <span className="menu-link-icon">
                   <MdOutlineLogout size={35} />
                 </span>
-                <span className="menu-link-text"  style={{ fontSize: '16px' }}>Cerrar sesión</span>
+                <span className="menu-link-text" style={{ fontSize: '16px' }}>Cerrar sesión</span>
               </button>
             </li>
           </ul>
