@@ -12,7 +12,7 @@ const CropView = () => {
     const fetchCropDetails = async () => {
       try {
         //const response = await axiosInstance.get(`/crops/${fincaSlug}/${loteSlug}/${cultivoSlug}`);
-        const response = await axiosInstance.get(`/land/26`);
+        const response = await axiosInstance.get(`land/${lote.id}`);
         setCropDetails(response.data);
       } catch (error) {
         console.error('Error fetching crop details:', error);
@@ -46,7 +46,7 @@ const CropView = () => {
   return (
     <div>
       <h1>{cropDetails.cropName}</h1>
-      <p>Variedad: {cropDetails.varietyName}</p>
+      <p>Variedad: {cropDetails.varietyId}</p>
       <p>Siembra: {new Date(cropDetails.plantingDate).toLocaleDateString()}</p>
       <p>Cosecha: {new Date(cropDetails.estimatedHarvestDate).toLocaleDateString()}</p>
 

@@ -83,15 +83,9 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAl
   return (
     <div className="lote-table-container">
       <div className="header">
-        {hasLotes ? (
-          <button style={agricultural} onClick={() => navigate('/gestionar-cultivos')}>
-            Gestionar Cultivos
-          </button>
-        ) : (
-          <button style={buttonCreate} onClick={onAddLote}>
+      <button style={buttonCreate} onClick={onAddLote}>
             Crear Lote
           </button>
-        )}
       </div>
       <hr className="separator" />
       <table className="lote-table">
@@ -123,31 +117,15 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAl
                   </button>
                 </td>
                 <td>
-                  {lote.hasCrops ? (
-                    <button
+                <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleViewCrops(lote);  // Redirigir a la ruta de gestionar cultivos
                       }}
                       style={agricultural}
                     >
-                      Gestionar Cultivo
+                      Gestionar Lote
                     </button>
-                  ) : (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onCreateCrop(lote);  // modal crear cultivos
-                      }}
-                      style={buttonCreate}
-                    >
-                      Crear Cultivo
-                    </button>
-                    
-
-                    
-                  )}
-                  {console.log('Has Lotes:', hasLotes)}  {/* Log the state of hasLotes */}
                 </td>
               </tr>
             ))
@@ -158,14 +136,6 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAl
           )}
         </tbody>
       </table>
-
-            {/* Mostrar el modal de crear cultivo */}
-            {isCreateCropModalOpen && (
-        <NewCrop 
-          selectedAllotment={selectedLote}  // Pasa el lote seleccionado al modal
-          closeModal={() => setIsCreateCropModalOpen(false)}  // Cierra el modal
-        />
-      )}
     </div>
   );
 };
