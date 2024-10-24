@@ -49,6 +49,22 @@ const GestionAgricola = () => {
         >
           Insumos Agrícolas
         </button>
+        <button
+          onClick={() => setActiveTable("insumos")}
+          className={`toggle-button ${
+            activeTable === "insumos" ? "active" : ""
+          }`}
+        >
+          Mecanizacion
+        </button>
+        <button
+          onClick={() => setActiveTable("insumos")}
+          className={`toggle-button ${
+            activeTable === "insumos" ? "active" : ""
+          }`}
+        >
+          Labor Cultural
+        </button>
       </div>
 
       {/* Botón para abrir el modal de crear variedad o insumo */}
