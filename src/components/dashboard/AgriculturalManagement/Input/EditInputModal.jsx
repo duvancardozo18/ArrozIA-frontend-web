@@ -144,19 +144,10 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
       }
     };
 
-    const fetchUnidades = async () => {
-      try {
-        const response = await axiosInstance.get("/input_units");  // Ajustar la ruta según el backend
-        setUnidades(response.data);  // Asignar los datos obtenidos al estado de unidades
-      } catch (error) {
-        console.error("Error al obtener las unidades de medida:", error);
-        setErrorMessage("Error al cargar las unidades de medida.");
-      }
-    };
+
 
     if (insumo) {
       fetchInsumo();  // Llamamos a la función para obtener los datos del insumo
-      fetchUnidades();  // Cargamos las unidades desde el backend
     }
   }, [insumo]);
 
@@ -226,16 +217,15 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
                 <label>Unidad de Medida</label>
                 <select
                   name="unidad_id"
-                  value={formData.unidad_id}  // El valor será preseleccionado basado en el estado
+                  value={formData.unidad}  // El valor será preseleccionado basado en el estado
                   onChange={handleChange}
                   required
                 >
                   <option value="">Seleccionar Unidad</option>
-                  {unidades.map((unidad) => (
-                    <option key={unidad.id} value={unidad.id}>
-                      {unidad.nombre}
-                    </option>
-                  ))}
+                  <option value="Kilogramo">Kilogramo</option>
+                  <option value="Litro">Litro</option>
+                  <option value="Gramo">Gramo</option>
+                  <option value="Tonelada">Tonelada</option>
                 </select>
               </InputGroup>
 

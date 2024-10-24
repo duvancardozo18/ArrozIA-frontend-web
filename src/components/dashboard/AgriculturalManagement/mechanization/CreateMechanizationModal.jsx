@@ -3,7 +3,7 @@ import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../../dashboard/modal/SuccessModal";
 
-// Estilos de modal y elementos
+// Styles for the modal and its elements
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -67,8 +67,8 @@ const InputGroup = styled.div`
   }
 
   input,
-  select,
-  textarea {
+  textarea,
+  select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -107,76 +107,71 @@ const SubmitButton = styled.button`
   }
 `;
 
-const CreateInsumoModal = ({ closeModal, onSave }) => {
+const CreateMechanizationModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
-    nombre: "",
-    unidad: "",
-    costo_unitario: "",
-    descripcion: "",
+    tarea_labor_id: "",
+    nombre_mecanizacion: "",
+    maquinaria_id: "",
+    horas_uso: "",
   });
 
-  const [unidades, setUnidades] = useState([]); // Estado para las unidades de medida
+  const [laborOptions, setLaborOptions] = useState([]);
+  const [maquinariaOptions, setMaquinariaOptions] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Fetch options for tarea_labor_id and maquinaria_id from the backend
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [laborsResponse, machineryResponse] = await Promise.all([
+          axiosInstance.get("/list-labors"),
+          axiosInstance.get("/list-machinery"),
+        ]);
 
+        setLaborOptions(laborsResponse.data);
+        setMaquinariaOptions(machineryResponse.data);
+      } catch (error) {
+        console.error("Error fetching options:", error);
+        setErrorMessage("Error al obtener las opciones.");
+      }
+    };
+
+    fetchOptions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validar longitud de nombre (máximo 100 caracteres)
-    if (name === "nombre" && value.length > 100) {
-      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    if (name === "nombre_mecanizacion" && value.length > 50) {
+      setErrorMessage("Límite de caracteres alcanzado.");
     } else {
+      setErrorMessage("");
       setFormData({ ...formData, [name]: value });
-      setErrorMessage(""); // Limpiar mensaje de error cuando es válido
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (errorMessage) {
+      return;
+    }
+
     try {
-      // Validación antes de enviar
-      if (formData.nombre.length > 100) {
-        setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
-        return;
-      }
-
-      // Asegurarse de que los datos sean correctos
-      const dataToSend = {
-        ...formData,
-        costo_unitario: parseFloat(formData.costo_unitario),
-      };
-
-      console.log("Enviando insumo al backend: ", dataToSend);  // Log de depuración
-
-      // Conexión con el backend para registrar insumo
-      const response = await axiosInstance.post("/register-input", dataToSend);
-      console.log("Respuesta del backend:", response);  // Log de la respuesta
-
-      if (response.status === 200) {
-        setShowSuccessModal(true);  // Mostrar modal de éxito si el insumo se crea correctamente
-      } else {
-        throw new Error("Error en la respuesta del servidor");
-      }
+      setErrorMessage("");
+      await axiosInstance.post("/operation-mechanization/", formData);
+      setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error al crear el insumo:", error.response?.data);
-      setErrorMessage("Error inesperado al crear el insumo.");
+      console.error("Error al crear la tarea de mecanización:", error);
+      setErrorMessage("Error inesperado al crear la tarea de mecanización.");
     }
   };
 
-  // Esta función se encarga de manejar el cierre del modal de éxito
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-
-    // Envía los datos del nuevo insumo para que se agregue directamente a la tabla
-    const newInsumo = {
-      id: Date.now(), // Solo para simular un ID único, debes reemplazar con el ID real si el backend lo devuelve
-      ...formData,
-    };
-    onSave(newInsumo); // Pasa el nuevo insumo al padre para que lo agregue a la tabla
-    closeModal(); // Cierra el modal de creación
+    closeModal();
+    onSave();
   };
 
   return (
@@ -185,73 +180,83 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
           <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-            Crear Insumo
+            Crear Operación de Mecanización
           </h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
+            {/* Tarea labor ID selection */}
             <InputGroup>
-              <label>Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-
-            <InputGroup>
-              <label>Unidad de Medida</label>
+              <label>Seleccionar Tarea Labor</label>
               <select
-                name="unidad"
-                value={formData.unidad}
+                name="tarea_labor_id"
+                value={formData.tarea_labor_id}
                 onChange={handleChange}
                 required
               >
-                <option value="">Seleccionar Unidad</option>
-                <option value="Kilogramo">Kilogramo</option>
-                <option value="Litro">Litro</option>
-                <option value="Gramo">Gramo</option>
-                <option value="Tonelada">Tonelada</option>
-
+                <option value="">Seleccione una tarea labor</option>
+                {laborOptions.map((labor) => (
+                  <option key={labor.id} value={labor.id}>
+                    {labor.nombre}
+                  </option>
+                ))}
               </select>
             </InputGroup>
 
+            {/* Nombre de mecanización */}
             <InputGroup>
-              <label>Costo Unitario</label>
+              <label>Nombre de Mecanización</label>
               <input
-                type="number"
-                step="0.01"
-                name="costo_unitario"
-                value={formData.costo_unitario}
+                type="text"
+                name="nombre_mecanizacion"
+                value={formData.nombre_mecanizacion}
                 onChange={handleChange}
                 required
               />
             </InputGroup>
 
+            {/* Maquinaria ID selection */}
             <InputGroup>
-              <label>Descripción (Opcional)</label>
-              <textarea
-                name="descripcion"
-                value={formData.descripcion}
+              <label>Seleccionar Maquinaria</label>
+              <select
+                name="maquinaria_id"
+                value={formData.maquinaria_id}
                 onChange={handleChange}
-                rows={3}
+                required
+              >
+                <option value="">Seleccione maquinaria</option>
+                {maquinariaOptions.map((maquinaria) => (
+                  <option key={maquinaria.id} value={maquinaria.id}>
+                    {maquinaria.nombre}
+                  </option>
+                ))}
+              </select>
+            </InputGroup>
+
+            {/* Horas de uso */}
+            <InputGroup>
+              <label>Horas de Uso</label>
+              <input
+                type="number"
+                step="0.01"
+                name="horas_uso"
+                value={formData.horas_uso}
+                onChange={handleChange}
+                required
               />
             </InputGroup>
 
-            <SubmitButton type="submit">Crear Insumo</SubmitButton>
+            <SubmitButton type="submit">Crear</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
       {showSuccessModal && (
         <SuccessModal
-          show={showSuccessModal}
           onClose={handleCloseSuccessModal}
-          message="¡Insumo Creado!"
+          message="¡Operación de mecanización creada exitosamente!"
         />
       )}
     </>
   );
 };
 
-export default CreateInsumoModal;
+export default CreateMechanizationModal;

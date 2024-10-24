@@ -15,7 +15,7 @@ const RiceVarietiesTable = ({ refresh }) => {
       setLoading(true);
       setError("");
       const response = await axiosInstance.get("/list-varieties"); // Asegúrate de que esta ruta coincide con tu backend
-      console.log("Datos recibidos del backend:", response.data); // Para depurar y verificar los datos
+      //console.log("Datos recibidos del backend:", response.data); // Para depurar y verificar los datos
       setVarieties(response.data); // Asigna los datos de las variedades a tu estado
       setLoading(false);
     } catch (error) {
@@ -51,11 +51,10 @@ const RiceVarietiesTable = ({ refresh }) => {
         <tbody>
           {varieties.length > 0 ? (
             varieties.map((variety) => (
-              <tr key={variety.id}> {/* Usa el id de la variedad */}
-                <td>{variety.nombre}</td> {/* Ajusta el campo según los datos */}
-                <td>{variety.numero_registro_productor_ica}</td> {/* Ajusta este campo si es necesario */}
+              <tr key={variety.id}>
+                <td>{variety.nombre}</td>
+                <td>{variety.numero_registro_productor_ica}</td>
                 <td>
-                  {/* Usar el componente TablaVarietyAction para las acciones */}
                   <TablaVarietyAction variety={variety} onSave={fetchVarieties} />
                 </td>
               </tr>

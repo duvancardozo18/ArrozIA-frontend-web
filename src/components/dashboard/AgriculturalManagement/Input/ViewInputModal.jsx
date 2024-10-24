@@ -6,7 +6,7 @@ const ViewInsumoModal = ({ show, closeModal, insumo }) => {
   if (!show || !insumo) return null;
 
   // Verifica que `insumo` esté definido y tiene los valores correctos
-  const { nombre, unidad_id, costo_unitario, descripcion } = insumo;
+  const { nombre, unidad, costo_unitario, descripcion } = insumo; // Cambia unidad_id a unidad
 
   // Utiliza ReactDOM.createPortal para renderizar el modal en el body
   return ReactDOM.createPortal(
@@ -16,7 +16,7 @@ const ViewInsumoModal = ({ show, closeModal, insumo }) => {
         <h2 className="title">Detalles del Insumo</h2>
         <div className="details">
           <p><strong>Nombre:</strong> {nombre}</p>
-          <p><strong>Unidad de Medida (ID):</strong> {unidad_id}</p>
+          <p><strong>Unidad de Medida:</strong> {unidad?.nombre || 'N/A'}</p> {/* Muestra el nombre de la unidad si está disponible */}
           <p><strong>Costo Unitario:</strong> {costo_unitario}</p>
           <p><strong>Descripción:</strong> {descripcion || "Sin descripción"}</p>
         </div>
