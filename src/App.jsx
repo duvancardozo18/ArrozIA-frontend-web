@@ -10,7 +10,9 @@ import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalMa
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
-import Lands from "./screens/dashboard/Crops";
+import Crops from "./screens/dashboard/Crops";
+import VegetativeCicle from "./screens/dashboard/vegetativeCycle";
+import LandsMain from "./components/dashboard/crops/CropsMain";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 import CropView from './components/dashboard/crops/CropView';
@@ -65,8 +67,10 @@ function App() {
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
-            <Route path="/land/:loteId" element={<PrivateRoute element={<Lands />} />} />
+            <Route path="/crops" element={<PrivateRoute element={<Crops />} />} />
+            <Route path="/land/:loteId" element={<PrivateRoute element={<LandsMain />} />} />
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
+            <Route path="/vegetative-cycle" element={<PrivateRoute element={<VegetativeCicle />} requiredPermission="crear_usuario" />} />
             <Route path="/mechanization" element={<PrivateRoute element={<Mechanization />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/profile" element={<Profile />} />

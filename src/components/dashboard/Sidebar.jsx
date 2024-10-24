@@ -95,9 +95,14 @@ const Sidebar = () => {
           <ul className="menu-list">
             {/* Menú de Fincas */}
             <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
+            <MenuItem to="/crops" icon={<MdOutlineBarChart size={35} />} text="Cultivos" />
             
             {/* Menú de Gestión Agrícola con el icono actualizado */}
             <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
+
+            {hasPermission("crear_usuario") && (
+              <MenuItem to="/vegetative-cycle" icon={<MdOutlineBarChart size={35} />} text="Ciclo Vegetativo" />
+            )}
 
             {/* Menú de Usuarios y Roles con verificación de permisos */}
             {hasPermission("crear_usuario") && (

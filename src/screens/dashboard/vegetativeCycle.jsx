@@ -15,7 +15,7 @@ const Crop = ({ selectedAllotment }) => {
 
   return (
     <div className="content-area">
-      <Header title="Cultivos" />
+      <Header title="Ciclo Vegetativo" />
       
     </div>
   );
