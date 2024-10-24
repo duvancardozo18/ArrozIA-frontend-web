@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { AuthContext } from "../../config/AuthProvider";
 import Header from '../../components/dashboard/Header';
-import CropMain from '../../components/dashboard/crops/CropMain'
+import CropView from '../../components/dashboard/crops/CropView'
 
 import '../../css/Crop.scss';
 import { Navigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ const Crop = ({ selectedAllotment }) => {
   return (
     <div className="content-area">
       <Header title="Cultivos" />
-      <CropMain />
+      <CropView />
     </div>
   );
 };

@@ -10,7 +10,7 @@ import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalMa
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
-import Crops from "./screens/dashboard/Crops";
+import Lands from "./screens/dashboard/Crops";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 import CropView from './components/dashboard/crops/CropView';
@@ -65,7 +65,7 @@ function App() {
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
-            <Route path="/crop" element={<PrivateRoute element={<Crops />} />} />
+            <Route path="/land/:id" element={<PrivateRoute element={<Lands />} />} />
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
             <Route path="/mechanization" element={<PrivateRoute element={<Mechanization />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />

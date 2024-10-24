@@ -11,7 +11,8 @@ const CropView = () => {
   useEffect(() => {
     const fetchCropDetails = async () => {
       try {
-        const response = await axiosInstance.get(`/crops/${fincaSlug}/${loteSlug}/${cultivoSlug}`);
+        //const response = await axiosInstance.get(`/crops/${fincaSlug}/${loteSlug}/${cultivoSlug}`);
+        const response = await axiosInstance.get(`/land/26`);
         setCropDetails(response.data);
       } catch (error) {
         console.error('Error fetching crop details:', error);
