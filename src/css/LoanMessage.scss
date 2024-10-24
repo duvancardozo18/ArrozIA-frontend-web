@@ -1,0 +1,30 @@
+.loan-container {
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    margin: 20px;
+    height: 50vh;
+  }
+  
+  .loan-icon {
+    font-size: 24px; /* Adjust size as needed */
+    color: gray; /* Adjust color as needed */
+    margin-right: 10px;
+    margin-top: 40px;
+    text-align: center;
+  }
+  
+  .loan-text p {
+    margin: 0;
+    font-size: 22px; /* Adjust size as needed */
+    text-align: center;
+  }
+
+  .fa {
+    font-size: 100px; /* Adjust size as needed */
+  }
+  
+  /* You might need to adjust this path based on your project structure */
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+  

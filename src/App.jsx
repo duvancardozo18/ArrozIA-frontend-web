@@ -65,7 +65,7 @@ function App() {
             <Route path="/users" element={<PrivateRoute element={<Users />} requiredPermission="crear_usuario" />} />
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
-            <Route path="/land/:id" element={<PrivateRoute element={<Lands />} />} />
+            <Route path="/land/:loteId" element={<PrivateRoute element={<Lands />} />} />
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
             <Route path="/mechanization" element={<PrivateRoute element={<Mechanization />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />

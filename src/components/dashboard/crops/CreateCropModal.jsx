@@ -133,7 +133,10 @@ const NewCrop = ({ closeModal, selectedAllotment, selectedFarm }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]: name === 'varietyId' || name === 'plotId' ? parseInt(value) : value
+    });
   };
 
   const handleSubmit = async (event) => {
@@ -144,13 +147,7 @@ const NewCrop = ({ closeModal, selectedAllotment, selectedFarm }) => {
       console.log('Cultivo creado:', response.data);
       setShowSuccessModal(true);  // Mostrar modal de éxito
   
-      // Extraer los slugs desde la respuesta del backend
-      const { slug, plotSlug, fincaSlug } = response.data; // Recibe los slugs desde el backend
-      if (slug && plotSlug && fincaSlug) {
-        navigate(`/finca/${fincaSlug}/lote/${plotSlug}/cultivo/${slug}`);
-      } else {
-        console.error('Faltan slugs en la respuesta del backend');
-      }
+
     } catch (error) {
       console.error('Error al crear el cultivo:', error);
       if (error.response && error.response.status === 400) {
@@ -164,6 +161,7 @@ const NewCrop = ({ closeModal, selectedAllotment, selectedFarm }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();  // Cierra el modal principal después del éxito
+    window.location.reload();
   };
 
   return (
@@ -175,9 +173,8 @@ const NewCrop = ({ closeModal, selectedAllotment, selectedFarm }) => {
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <InputGroup>
-              <label>Lote Asignado</label>
               <input
-                type="text"
+                type="hidden"
                 name="plotId"
                 value={selectedAllotment ? selectedAllotment.nombre : ''} // Mostrar el nombre del lote
                 disabled // Deshabilitar el campo para que no sea editable
@@ -239,7 +236,7 @@ const NewCrop = ({ closeModal, selectedAllotment, selectedFarm }) => {
           </form>
         </ModalContent>
       </ModalOverlay>
-      {showSuccessModal && <SuccessModal closeModal={handleCloseSuccessModal} />}
+      {showSuccessModal && <SuccessModal  message="¡Cultivo Creado!" onClose={handleCloseSuccessModal} />}
     </>
   );
 };
