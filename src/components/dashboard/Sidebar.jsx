@@ -95,7 +95,7 @@ const Sidebar = () => {
           <ul className="menu-list">
             {/* Menú de Fincas */}
             <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
-            <MenuItem to="/crops" icon={<MdOutlineBarChart size={35} />} text="Cultivos" />
+            {/* <MenuItem to="/crops" icon={<MdOutlineBarChart size={35} />} text="Cultivos" /> */}
             
             {/* Menú de Gestión Agrícola con el icono actualizado */}
             <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />

@@ -68,7 +68,7 @@ function App() {
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
             <Route path="/crops" element={<PrivateRoute element={<Crops />} />} />
-            <Route path="/land/:loteId" element={<PrivateRoute element={<LandsMain />} />} />
+            <Route path="/land/:loteId/crop" element={<PrivateRoute element={<LandsMain />} />} />
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
             <Route path="/vegetative-cycle" element={<PrivateRoute element={<VegetativeCicle />} requiredPermission="crear_usuario" />} />
             <Route path="/mechanization" element={<PrivateRoute element={<Mechanization />} />} />

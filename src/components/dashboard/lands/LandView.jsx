@@ -4,9 +4,12 @@ import { Card, CardContent, Typography, Grid } from '@mui/material';
 import axiosInstance from '../../../config/AxiosInstance';
 import NewCrop from '../crops/CreateCropModal';
 import LoanMessage from './LoanMessage';
+import Calendar from './Calendar';
+import EventCard from './EventCard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import SpaIcon from '@mui/icons-material/Spa';
+import TaskIcon from '@mui/icons-material/Task';
 
 const buttonCreate = {
   padding: '10px 20px',
@@ -24,9 +27,10 @@ const buttonCreate = {
 };
 
 const CropView = () => {
-  const { loteId } = useParams();  
+  const { loteId } = useParams();  // Puedes agregar otros parámetros si son necesarios
   const [landDetails, setLandDetails] = useState(null); // Datos del lote
   const [cropDetails, setCropDetails] = useState(null); // Datos de cultivos
+  const [taskEvents, setTaskEvents] = useState([]); // Datos de eventos obtenidos de /tasks
   const [isCreateCropModalOpen, setIsCreateCropModalOpen] = useState(false);
   const [selectedLote, setSelectedLote] = useState(null);
 
@@ -43,11 +47,16 @@ const CropView = () => {
         const landResponse = await axiosInstance.get(`/land/${loteId}`);
         setLandDetails(landResponse.data);
         
-        // 2. Con el loteId, obtener los cultivos asociados
+        // 2. Obtener los cultivos asociados con el loteId
         const cropResponse = await axiosInstance.get(`/crops/by_land/${loteId}`);
         setCropDetails(cropResponse.data);
+
+        // 3. Obtener eventos de tareas desde la ruta /tasks
+        const taskResponse = await axiosInstance.get(`/tasks`);
+        console.log(taskResponse.data);
+        setTaskEvents(taskResponse.data); // Asignar los eventos de la tarea
       } catch (error) {
-        console.error('Error fetching land or crop details:', error);
+        console.error('Error fetching land, crop, or task details:', error);
       }
     };
 
@@ -55,7 +64,7 @@ const CropView = () => {
   }, [loteId]);
 
   if (!landDetails || !cropDetails) {
-    return <div>Cargando información del lote y cultivos...</div>;
+    return <div>No se encontró información válida</div>;
   }
 
   return (
@@ -65,7 +74,7 @@ const CropView = () => {
       <p>Finca: {landDetails.finca_id}</p>
 
       {/* Mostrar botón y LoanMessage solo si no hay cultivos */}
-      {cropDetails.length === 0 ? (
+      {cropDetails?.length === 0 ? (
         <>
           <button style={buttonCreate} onClick={onAddLote}>
             Crear Cultivo
@@ -74,7 +83,7 @@ const CropView = () => {
         </>
       ) : (
         // Mostrar la tarjeta si hay cultivos
-        <Card  sx={{ mt: 4 }}>
+        <Card sx={{ mt: 4 }}>
           <CardContent>
             <Typography variant="h5" component="div" gutterBottom>
               {cropDetails[0].cropName}
@@ -112,6 +121,15 @@ const CropView = () => {
           closeModal={() => setIsCreateCropModalOpen(false)}
         />
       )}
+
+      {/* Mostrar calendario y tarjetas de eventos */}
+      {cropDetails.length > 0 && (
+        <>
+          <Calendar />
+          <EventCard events={taskEvents} />
+        </>
+      )}
+
     </div>
   );
 };

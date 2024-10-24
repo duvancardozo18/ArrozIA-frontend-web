@@ -48,7 +48,7 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAl
   
 
   const handleViewCrops = (lote) => {
-    navigate(`/land/${lote.id}`);  // Redirige a una ruta específica con el ID del lote
+    navigate(`/land/${lote.id}/crop`);  // Redirige a una ruta específica con el ID del lote
   };
 
 
@@ -124,7 +124,7 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAl
                       }}
                       style={agricultural}
                     >
-                      Gestionar Lote
+                      Gestionar Cultivo
                     </button>
                 </td>
               </tr>

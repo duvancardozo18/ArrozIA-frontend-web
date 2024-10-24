@@ -4,7 +4,6 @@ import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import EditModal from "../../dashboard/users/EditUserModal";
 import DeleteModal from "../modal/DeleteModal";
 import SuccessModal from "../modal/SuccessModal"; 
-import LaborCulturalList from "../../dashboard/users/LaborCulturalList"; // Importa el modal de lista de labores culturales
 import axiosInstance from "../../../config/AxiosInstance";
 
 const ActionButton = styled.button`
@@ -82,9 +81,7 @@ const AreaTableAction = ({ user, onSave }) => {
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
-      <LaborCulturalButton onClick={openLaborListModal}>
-        Labor Cultural
-      </LaborCulturalButton>
+
 
       {/* Modal de Edición */}
       <EditModal
