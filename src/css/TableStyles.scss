@@ -1,0 +1,68 @@
+.table-container {
+  padding: 20px;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.styled-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.styled-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.styled-table td:last-child {
+  display: flex;
+  gap: 10px;
+}
+
+.button-view,
+.button-edit,
+.button-delete {
+  display: inline-block;
+  padding: 8px 12px; // Aumentar el padding para hacerlos más grandes
+  border-radius: 4px;
+  font-weight: bold; // Hacer el texto más visible
+  cursor: pointer;
+  transition: background-color 0.3s ease; // Efecto de transición
+}
+
+.button-view {
+  background-color: #28a745; // Verde
+  color: #fff;
+}
+
+.button-view:hover {
+  background-color: #218838; // Un tono más oscuro al pasar el ratón
+}
+
+.button-edit {
+  background-color: #007bff; // Azul
+  color: #fff;
+}
+
+.button-edit:hover {
+  background-color: #0056b3; // Un tono más oscuro al pasar el ratón
+}
+
+.button-delete {
+  background-color: #dc3545; // Rojo
+  color: #fff;
+}
+
+.button-delete:hover {
+  background-color: #c82333; // Un tono más oscuro al pasar el ratón
+}

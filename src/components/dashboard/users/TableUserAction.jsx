@@ -82,9 +82,6 @@ const AreaTableAction = ({ user, onSave }) => {
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
-      <LaborCulturalButton onClick={openLaborListModal}>
-        Labor Cultural
-      </LaborCulturalButton>
 
       {/* Modal de Edición */}
       <EditModal
