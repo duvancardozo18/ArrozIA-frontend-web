@@ -1,13 +1,15 @@
+// src/components/dashboard/AgriculturalManagement/machinery/TableMachineryAction.jsx
+
 import React, { useState } from "react";
 import styled from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from "react-icons/hi";
-import EditMechanizationModal from "./EditMechanizationModal"; // Adjust import path as necessary
+import EditMachineryModal from "./EditMachineryModal"; // Importa el modal de edición de maquinaria
 import DeleteModal from "../../modal/DeleteModal";
 import SuccessModal from "../../modal/SuccessModal";
-import ViewMechanizationModal from "./ViewMechanizationModal"; // Import the view modal for mechanization operations
+import ViewMachineryModal from "./ViewMachineryModal"; // Importa el modal de visualización de maquinaria
 import axiosInstance from "../../../../config/AxiosInstance";
 
-// Styles for the action buttons
+// Estilos para los botones de acción
 const ActionButton = styled.button`
   padding: 10px 15px;
   margin: 0 5px;
@@ -43,7 +45,7 @@ const DeleteButton = styled(ActionButton)`
   background-color: #e74c3c;
 `;
 
-const TableMechanizationAction = ({ operation, onSave }) => {
+const TableMachineryAction = ({ machinery, onSave }) => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -53,85 +55,94 @@ const TableMechanizationAction = ({ operation, onSave }) => {
   const closeViewModal = () => setShowViewModal(false);
 
   const openEditModal = () => setShowEditModal(true);
-  const closeEditModal = () => {
-    setShowEditModal(false);
-    onSave(); // Refresh the table after closing the edit modal
-  };
+  const closeEditModal = () => setShowEditModal(false);
 
   const openDeleteModal = () => setShowDeleteModal(true);
   const closeDeleteModal = () => setShowDeleteModal(false);
 
   const handleDelete = async () => {
+    console.log("Maquinaria a eliminar:", machinery);
+  
     try {
       closeDeleteModal();
-      await axiosInstance.delete(`/operation-mechanization/{op_mech_id}`);
-      setShowSuccessModal(true);
+      if (machinery && machinery.id) {
+        // Asegurarse de que la maquinaria y su id están definidos
+        const response = await axiosInstance.delete(`/machinery/${machinery.id}`);
+        if (response.status === 200) {
+          setShowSuccessModal(true); // Mostrar modal de éxito si se elimina correctamente
+        } else {
+          console.error("No se pudo eliminar la maquinaria, error:", response);
+        }
+      } else {
+        console.error("El ID de la maquinaria es undefined o no existe");
+      }
     } catch (error) {
-      console.error("Error deleting mechanization operation:", error);
+      console.error("Error al eliminar la maquinaria:", error);
     }
   };
+  
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave(); // Refresh the table after successfully deleting
+    onSave(); // Refresca la tabla después de eliminar
   };
 
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
-      {/* View Button */}
+      {/* Botón de Ver */}
       <ViewButton onClick={openViewModal}>
         <HiOutlineEye size={18} />
         Ver
       </ViewButton>
 
-      {/* Edit Button */}
+      {/* Botón de Edición */}
       <EditButton onClick={openEditModal}>
         <HiOutlinePencil size={18} />
         Editar
       </EditButton>
 
-      {/* Delete Button */}
+      {/* Botón de Eliminación */}
       <DeleteButton onClick={openDeleteModal}>
         <HiOutlineTrash size={18} />
         Eliminar
       </DeleteButton>
 
-      {/* View Modal */}
-      <ViewMechanizationModal
+      {/* Modal de Visualización */}
+      <ViewMachineryModal
         show={showViewModal}
         closeModal={closeViewModal}
-        operation={operation}
+        machinery={machinery}
       />
 
-      {/* Edit Modal */}
-      <EditMechanizationModal
+      {/* Modal de Edición */}
+      <EditMachineryModal
         show={showEditModal}
         closeModal={closeEditModal}
-        operation={operation}
+        machinery={machinery}
         onSave={onSave}
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Modal de Confirmación de Eliminación */}
       <DeleteModal
         show={showDeleteModal}
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
-        title="Eliminar Operación de Mecanización"
-        message="¿Estás seguro que deseas eliminar esta operación de mecanización? Esta acción no se puede deshacer."
+        title="Eliminar Maquinaria"
+        message="¿Estás seguro que deseas eliminar esta maquinaria? Esta acción no se puede deshacer."
         cancelText="No, cancelar"
         confirmText="Sí, eliminar"
       />
 
-      {/* Success Modal */}
+      {/* Modal de Éxito */}
       {showSuccessModal && (
         <SuccessModal
           show={showSuccessModal}
           onClose={closeSuccessModal}
-          message="¡Operación de mecanización eliminada exitosamente!"
+          message="¡Maquinaria eliminada exitosamente!"
         />
       )}
     </div>
   );
 };
 
-export default TableMechanizationAction;
+export default TableMachineryAction;

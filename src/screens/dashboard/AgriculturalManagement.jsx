@@ -4,14 +4,15 @@ import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import RiceVarietiesTable from "../../components/dashboard/AgriculturalManagement/RiceVariety/RiceVarietiesTable";
 import CulturalWorkTable from "../../components/dashboard/AgriculturalManagement/cultural work/CulturalWorkTable";
 import CreateCulturalWorkModal from "../../components/dashboard/AgriculturalManagement/cultural work/CreateCulturalWorkModal";
-import MechanizationTable from "../../components/dashboard/AgriculturalManagement/mechanization/MechanizationTable";
 import InputTable from "../../components/dashboard/AgriculturalManagement/Input/InputTable";
 import CreateInputModal from "../../components/dashboard/AgriculturalManagement/Input/CreateInputModal";
+import MachineryTable from "../../components/dashboard/AgriculturalManagement/machinery/MachineryTable";
+import CreateMachineryModal from "../../components/dashboard/AgriculturalManagement/machinery/CreateMachineryModal";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
 import CreateRiceVarietyModal from "../../components/dashboard/AgriculturalManagement/RiceVariety/CreateRiceVarietyModal";
 import "../../css/AgriculturalManagement.scss"; // Import your styles
-import CreateMechanizationModla from "../../components/dashboard/AgriculturalManagement/mechanization/CreateMechanizationModal";
+
 
 const GestionAgricola = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -50,10 +51,10 @@ const GestionAgricola = () => {
           Insumos Agrícolas
         </button>
         <button
-          onClick={() => setActiveTable("mecanizacion")}
-          className={`toggle-button ${activeTable === "mecanizacion" ? "active" : ""}`}
+          onClick={() => setActiveTable("maquinaria")}
+          className={`toggle-button ${activeTable === "maquinaria" ? "active" : ""}`}
         >
-          Mecanización
+          Maquinaria
         </button>
         <button
           onClick={() => setActiveTable("labor-cultural")}
@@ -63,7 +64,7 @@ const GestionAgricola = () => {
         </button>
       </div>
 
-      {/* Button to open the modal for creating variety, input, or cultural work */}
+      {/* Button to open the modal for creating variety, input, cultural work, or machinery */}
       {activeTable === "variedades" && (
         <ButtonCrear
           buttonText="Crear variedad"
@@ -85,10 +86,10 @@ const GestionAgricola = () => {
           onSave={handleSave}
         />
       )}
-      {activeTable === "mecanizacion" && (
+      {activeTable === "maquinaria" && (
         <ButtonCrear
-          buttonText="Crear mecanización"
-          ModalComponent={CreateMechanizationModla}
+          buttonText="Crear maquinaria"
+          ModalComponent={CreateMachineryModal}
           onSave={handleSave}
         />
       )}
@@ -97,7 +98,7 @@ const GestionAgricola = () => {
       {activeTable === "variedades" && <RiceVarietiesTable refresh={refreshTable} />}
       {activeTable === "insumos" && <InputTable refresh={refreshTable} />}
       {activeTable === "labor-cultural" && <CulturalWorkTable refresh={refreshTable} />}
-      {activeTable === "mecanizacion" && <MechanizationTable refresh={refreshTable} />}
+      {activeTable === "maquinaria" && <MachineryTable refresh={refreshTable} />}
     </div>
   );
 };
