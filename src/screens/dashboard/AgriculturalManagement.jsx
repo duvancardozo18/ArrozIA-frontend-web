@@ -6,8 +6,8 @@ import CulturalWorkTable from "../../components/dashboard/AgriculturalManagement
 import CreateCulturalWorkModal from "../../components/dashboard/AgriculturalManagement/cultural work/CreateCulturalWorkModal";
 import InputTable from "../../components/dashboard/AgriculturalManagement/Input/InputTable";
 import CreateInputModal from "../../components/dashboard/AgriculturalManagement/Input/CreateInputModal";
-import MachineryTable from "../../components/dashboard/AgriculturalManagement/machinery/MachineryTable";
-import CreateMachineryModal from "../../components/dashboard/AgriculturalManagement/machinery/CreateMachineryModal";
+import MachineryTable from "../../components/dashboard/AgriculturalManagement/Machinery/MachineryTable";
+import CreateMachineryModal from "../../components/dashboard/AgriculturalManagement/Machinery/CreateMachineryModal";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
 import CreateRiceVarietyModal from "../../components/dashboard/AgriculturalManagement/RiceVariety/CreateRiceVarietyModal";
