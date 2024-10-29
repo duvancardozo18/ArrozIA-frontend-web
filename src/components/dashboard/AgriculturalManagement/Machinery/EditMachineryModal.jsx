@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import axiosInstance from '../../../config/AxiosInstance';  
-import SuccessModal from '../modal/SuccessModal';  
-import { API_URL } from '../../../config/apiConfig';
-import AsyncSelect from 'react-select/async';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import axiosInstance from "../../../../config/AxiosInstance";
+import SuccessModal from "../../modal/SuccessModal";
 
+// Estilos de modal y elementos (los mismos que proporcionaste)
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -33,14 +32,6 @@ const ModalContent = styled.div`
   }
 `;
 
-const ErrorMessage = styled.p`
-  color: #ff6b6b;
-  font-size: 18px;  
-  margin-bottom: 20px;
-  text-align: center;
-  font-weight: bold;  
-`;
-
 const CloseButton = styled.button`
   position: absolute;
   top: 15px;
@@ -67,7 +58,9 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input {
+  input,
+  select,
+  textarea {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -82,6 +75,10 @@ const InputGroup = styled.div`
       outline: none;
     }
   }
+
+  textarea {
+    resize: vertical;
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -92,7 +89,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -102,52 +99,88 @@ const SubmitButton = styled.button`
   }
 `;
 
-const EditMechanizationModal = ({ show, closeModal, operation, onSave }) => {
+const Title = styled.h2`
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 30px;
+`;
+
+const ErrorMessage = styled.p`
+  color: #ff6b6b;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+`;
+
+const EditMachineryModal = ({ show, closeModal, machinery, onSave }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    date: "",
-    area: "",
-    description: "",
+    name: machinery?.name || "",
+    description: machinery?.description || "",
+    costPerHour: machinery?.costPerHour || "",
+    hoursUsed: machinery?.hoursUsed || "",
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    if (operation) {
-      setFormData({
-        name: operation.name,
-        date: operation.date,
-        area: operation.area,
-        description: operation.description,
-      });
+    if (machinery) {
+      const fetchMachinery = async () => {
+        try {
+          const response = await axiosInstance.get(`/machinery/${machinery.id}`);
+          const fetchedMachinery = response.data;
+
+          setFormData({
+            name: fetchedMachinery.name,
+            description: fetchedMachinery.description,
+            costPerHour: fetchedMachinery.costPerHour,
+            hoursUsed: fetchedMachinery.hoursUsed,
+          });
+        } catch (error) {
+          console.error("Error al obtener la maquinaria:", error);
+          setErrorMessage("Error al cargar los datos de la maquinaria.");
+        }
+      };
+
+      fetchMachinery();
     }
-  }, [operation]);
+  }, [machinery]);
+
+  if (!show) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === "name" && value.length > 100) {
+      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setErrorMessage("");
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      setErrorMessage('');
-      const response = await axiosInstance.put(`/mechanization/${operation.id}`, formData);
+      setErrorMessage("");
+      // Realiza una solicitud PUT para actualizar la maquinaria
+      await axiosInstance.put(`/machinery/${machinery.id}`, formData);
+      console.log("Maquinaria actualizada correctamente");
+
       setShowSuccessModal(true);
-      onSave(response.data);
     } catch (error) {
-      console.error("Error al actualizar la operación:", error);
-      setErrorMessage('Error actualizando la operación de mecanización.');
+      console.error("Error al editar la maquinaria:", error);
+      setErrorMessage("Error inesperado al editar la maquinaria.");
     }
   };
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();
+    onSave(); // Refrescar la lista de maquinarias
   };
-
-  if (!show && !showSuccessModal) return null;
 
   return (
     <>
@@ -155,50 +188,40 @@ const EditMechanizationModal = ({ show, closeModal, operation, onSave }) => {
         <ModalOverlay>
           <ModalContent>
             <CloseButton onClick={closeModal}>×</CloseButton>
-            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Editar Operación de Mecanización</h2>
+            <Title>Editar Maquinaria</Title>
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <form onSubmit={handleSubmit}>
               <InputGroup>
-                <label>Nombre de la Operación</label>
+                <label>Nombre de la Maquinaria</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  maxLength={50}
                 />
               </InputGroup>
+
               <InputGroup>
-                <label>Fecha de la Operación</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  required
-                />
-              </InputGroup>
-              <InputGroup>
-                <label>Área de la Operación (hectáreas)</label>
-                <input
-                  type="number"
-                  name="area"
-                  value={formData.area}
-                  onChange={handleChange}
-                  required
-                  min={0}
-                />
-              </InputGroup>
-              <InputGroup>
-                <label>Descripción</label>
+                <label>Tipo de Maquinaria</label>
                 <input
                   type="text"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   required
-                  maxLength={255}
+                />
+              </InputGroup>
+
+              <InputGroup>
+                <label>Costo por Hora</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="costPerHour"
+                  value={formData.costPerHour}
+                  onChange={handleChange}
+                  required
                 />
               </InputGroup>
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>
@@ -206,9 +229,15 @@ const EditMechanizationModal = ({ show, closeModal, operation, onSave }) => {
           </ModalContent>
         </ModalOverlay>
       )}
-      {showSuccessModal && <SuccessModal message="¡Cambios Guardados!" onClose={handleCloseSuccessModal} />}
+      {showSuccessModal && (
+        <SuccessModal
+          show={showSuccessModal}
+          onClose={handleCloseSuccessModal}
+          message="¡Maquinaria editada exitosamente!"
+        />
+      )}
     </>
   );
 };
 
-export default EditMechanizationModal;
+export default EditMachineryModal;

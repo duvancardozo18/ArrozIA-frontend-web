@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axiosInstance from "../../../config/AxiosInstance";
-import SuccessModal from "../modal/SuccessModal";
+import axiosInstance from "../../../../config/AxiosInstance";
+import SuccessModal from "../../../dashboard/modal/SuccessModal";
 
+// Estilos de modal y elementos
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -65,7 +66,9 @@ const InputGroup = styled.div`
     margin-bottom: 5px;
   }
 
-  input {
+  input,
+  select,
+  textarea {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -80,6 +83,10 @@ const InputGroup = styled.div`
       outline: none;
     }
   }
+
+  textarea {
+    resize: vertical;
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -90,7 +97,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -100,12 +107,11 @@ const SubmitButton = styled.button`
   }
 `;
 
-const CreateMechanizationModal = ({ closeModal, addOperation }) => {
+const CreateMachineryModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
     name: "",
-    date: "",
-    area: "",
     description: "",
+    costPerHour: "",
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -113,29 +119,35 @@ const CreateMechanizationModal = ({ closeModal, addOperation }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData({ ...formData, [name]: value });
+    setErrorMessage(""); // Limpiar mensaje de error cuando es válido
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
       setErrorMessage("");
-      await axiosInstance.post("/mechanization", formData); // Cambiar la URL según la API
-      setShowSuccessModal(true);
-    } catch (error) {
-      console.error("Error al crear la operación:", error);
-      if (error.response && error.response.status === 400) {
-        setErrorMessage("Error al crear la operación de mecanización.");
+      // Conexión con el backend para registrar maquinaria
+      const response = await axiosInstance.post("/machinery/", formData);
+      console.log("Respuesta del backend:", response);
+
+      if (response.status === 201) {
+        setShowSuccessModal(true);
       } else {
-        setErrorMessage("Error inesperado al crear la operación.");
+        throw new Error("Error en la respuesta del servidor");
       }
+    } catch (error) {
+      console.error("Error al crear la maquinaria:", error.response?.data);
+      setErrorMessage("Error inesperado al crear la maquinaria.");
     }
   };
 
-  const handleCloseSuccessModal = async () => {
+  const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    await addOperation();
-    closeModal();
+    onSave(); // Refrescar la tabla de maquinaria
+    closeModal(); // Cerrar el modal de creación
   };
 
   return (
@@ -143,61 +155,56 @@ const CreateMechanizationModal = ({ closeModal, addOperation }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Crear Operación de Mecanización</h2>
+          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Crear Maquinaria</h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <InputGroup>
-              <label>Nombre</label>
+              <label>Nombre de la Maquinaria</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                maxLength={50} // Límite de caracteres según BD
+                maxLength={100}
               />
             </InputGroup>
+
             <InputGroup>
-              <label>Fecha</label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Área de la Operación (hectáreas)</label>
-              <input
-                type="number"
-                name="area"
-                value={formData.area}
-                onChange={handleChange}
-                required
-                min={0} // Evitar valores negativos
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Descripción</label>
+              <label>Tipo de Maquinaria</label>
               <input
                 type="text"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 required
-                maxLength={255}
               />
             </InputGroup>
-            <SubmitButton type="submit">Crear</SubmitButton>
+
+            <InputGroup>
+              <label>Costo por Hora</label>
+              <input
+                type="number"
+                step="0.01"
+                name="costPerHour"
+                value={formData.costPerHour}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+            <SubmitButton type="submit">Crear Maquinaria</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
       {showSuccessModal && (
-        <SuccessModal message="¡Operación de Mecanización Creada!" onClose={handleCloseSuccessModal} />
+        <SuccessModal
+          show={showSuccessModal}
+          onClose={handleCloseSuccessModal}
+          message="¡Maquinaria Creada!"
+        />
       )}
     </>
   );
 };
 
-export default CreateMechanizationModal;
+export default CreateMachineryModal;
