@@ -1,24 +1,21 @@
+// AgriculturalManagement.jsx
 import React, { useContext, useState, useEffect } from "react";
 import Header from "../../components/dashboard/Header";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import RiceVarietiesTable from "../../components/dashboard/AgriculturalManagement/RiceVariety/RiceVarietiesTable";
-import CulturalWorkTable from "../../components/dashboard/AgriculturalManagement/cultural work/CulturalWorkTable";
-import CreateCulturalWorkModal from "../../components/dashboard/AgriculturalManagement/cultural work/CreateCulturalWorkModal";
 import InputTable from "../../components/dashboard/AgriculturalManagement/Input/InputTable";
 import CreateInputModal from "../../components/dashboard/AgriculturalManagement/Input/CreateInputModal";
-import MachineryTable from "../../components/dashboard/AgriculturalManagement/Machinery/MachineryTable";
-import CreateMachineryModal from "../../components/dashboard/AgriculturalManagement/Machinery/CreateMachineryModal";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
 import CreateRiceVarietyModal from "../../components/dashboard/AgriculturalManagement/RiceVariety/CreateRiceVarietyModal";
-import "../../css/AgriculturalManagement.scss"; // Import your styles
-
+import LaborCulturalTable from "../../components/dashboard/AgriculturalManagement/LaborCultural/LaborCulturalTable";
+import CreateLaborModal from "../../components/dashboard/AgriculturalManagement/LaborCultural/CreateLaborModal";
+import "../../css/AgriculturalManagement.scss"; 
 
 const GestionAgricola = () => {
   const { isAuthenticated } = useContext(AuthContext);
   const [refreshTable, setRefreshTable] = useState(false);
   const [activeTable, setActiveTable] = useState("variedades");
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -28,15 +25,14 @@ const GestionAgricola = () => {
     return <Navigate to="/" replace />;
   }
 
+  // Actualiza la tabla cuando se crea, edita o elimina un dato
   const handleSave = () => {
-    setRefreshTable((prev) => !prev); // Toggle state to refresh the tables
+    setRefreshTable((prev) => !prev); 
   };
 
   return (
     <div className="content-area">
       <Header title="Gestión Agrícola" />
-
-      {/* Buttons to toggle between tables */}
       <div className="button-group">
         <button
           onClick={() => setActiveTable("variedades")}
@@ -51,54 +47,50 @@ const GestionAgricola = () => {
           Insumos Agrícolas
         </button>
         <button
-          onClick={() => setActiveTable("maquinaria")}
-          className={`toggle-button ${activeTable === "maquinaria" ? "active" : ""}`}
+          onClick={() => setActiveTable("mecanizacion")}
+          className={`toggle-button ${activeTable === "mecanizacion" ? "active" : ""}`}
         >
-          Maquinaria
+          Mecanización
         </button>
         <button
-          onClick={() => setActiveTable("labor-cultural")}
-          className={`toggle-button ${activeTable === "labor-cultural" ? "active" : ""}`}
+          onClick={() => setActiveTable("laborCultural")}
+          className={`toggle-button ${activeTable === "laborCultural" ? "active" : ""}`}
         >
           Labor Cultural
         </button>
       </div>
 
-      {/* Button to open the modal for creating variety, input, cultural work, or machinery */}
       {activeTable === "variedades" && (
         <ButtonCrear
-          buttonText="Crear variedad"
+          buttonText="Crear variedad del arroz"
           ModalComponent={CreateRiceVarietyModal}
           onSave={handleSave}
         />
       )}
       {activeTable === "insumos" && (
         <ButtonCrear
-          buttonText="Crear insumo"
+          buttonText="Crear insumos agrícolas"
           ModalComponent={CreateInputModal}
           onSave={handleSave}
         />
       )}
-      {activeTable === "labor-cultural" && (
+      {activeTable === "laborCultural" && (
         <ButtonCrear
-          buttonText="Crear labor cultural"
-          ModalComponent={CreateCulturalWorkModal}
-          onSave={handleSave}
-        />
-      )}
-      {activeTable === "maquinaria" && (
-        <ButtonCrear
-          buttonText="Crear maquinaria"
-          ModalComponent={CreateMachineryModal}
+          buttonText="Crear Labor Cultural"
+          ModalComponent={CreateLaborModal}
           onSave={handleSave}
         />
       )}
 
-      {/* Conditional rendering of the tables */}
-      {activeTable === "variedades" && <RiceVarietiesTable refresh={refreshTable} />}
-      {activeTable === "insumos" && <InputTable refresh={refreshTable} />}
-      {activeTable === "labor-cultural" && <CulturalWorkTable refresh={refreshTable} />}
-      {activeTable === "maquinaria" && <MachineryTable refresh={refreshTable} />}
+      {activeTable === "variedades" ? (
+        <RiceVarietiesTable refresh={refreshTable} />
+      ) : activeTable === "insumos" ? (
+        <InputTable refresh={refreshTable} />
+      ) : activeTable === "mecanizacion" ? (
+        <div>Tabla de Mecanización</div>
+      ) : (
+        <LaborCulturalTable refresh={refreshTable} />
+      )}
     </div>
   );
 };
