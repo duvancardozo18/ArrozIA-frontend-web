@@ -67,49 +67,13 @@ const InputGroup = styled.div`
   }
 
   input,
-  select,
-  textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-    font-size: 16px;
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
-
-    &:focus {
-      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
-      transform: translateY(-3px);
-      outline: none;
-    }
-  }
-
-  textarea {
-    resize: vertical;
-  }
-`;
-
-const FlexContainer = styled.div`
-  display: flex;
-  gap: 20px;
-`;
-
-const HalfInputGroup = styled.div`
-  flex: 1;
-
-  label {
-    font-size: 0.9em;
-    font-weight: bold;
-  }
-
-  input,
   select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
-    font-size: 16px;
     box-sizing: border-box;
+    font-size: 16px;
     transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 
     &:focus {
@@ -138,68 +102,60 @@ const SubmitButton = styled.button`
   }
 `;
 
-const CreateInsumoModal = ({ closeModal, onSave }) => {
+const CreatePhenologicalStageModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
-    nombre: "",
-    cantidad: "",
-    unidad_id: "",
-    costo_unitario: "",
-    descripcion: "",
+    variedad_arroz_id: "",
+    etapa_fenologica_id: "",
+    dias_duracion: "",
   });
-
+  const [varieties, setVarieties] = useState([]);
+  const [phenologicalStages, setPhenologicalStages] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [units, setUnits] = useState([]); // Estado para almacenar las unidades
 
-  // Efecto para obtener las unidades de medida
+  // Cargar variedades de arroz
   useEffect(() => {
-    const fetchUnits = async () => {
+    const fetchVarieties = async () => {
       try {
-        const response = await axiosInstance.get("/units"); // Ajusta la ruta según sea necesario
-        setUnits(response.data);
+        const response = await axiosInstance.get("/list-varieties");
+        setVarieties(response.data);
       } catch (error) {
-        setErrorMessage("Error al cargar las unidades de medida.");
+        setErrorMessage("Error al cargar las variedades de arroz.");
       }
     };
+    fetchVarieties();
+  }, []);
 
-    fetchUnits();
+  // Cargar etapas fenológicas
+  useEffect(() => {
+    const fetchPhenologicalStages = async () => {
+      try {
+        const response = await axiosInstance.get("/phenological-stages");
+        setPhenologicalStages(response.data);
+      } catch (error) {
+        setErrorMessage("Error al cargar las etapas fenológicas.");
+      }
+    };
+    fetchPhenologicalStages();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "nombre" && value.length > 100) {
-      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
-    } else {
-      setFormData({ ...formData, [name]: value });
-      setErrorMessage("");
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (formData.nombre.length > 100) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
-      return;
-    }
-
     try {
-      const dataToSend = {
-        ...formData,
-        unidad_id: parseInt(formData.unidad_id, 10),
-        costo_unitario: parseFloat(formData.costo_unitario),
-      };
-
-      const response = await axiosInstance.post("/register-input", dataToSend);
-
+      const response = await axiosInstance.post("/variety-rice-stages", formData);
       if (response.status === 200) {
         setShowSuccessModal(true);
       } else {
         throw new Error("Error en la respuesta del servidor");
       }
     } catch (error) {
-      setErrorMessage("Error inesperado al crear el insumo.");
+      setErrorMessage("Error inesperado al crear la etapa fenológica.");
     }
   };
 
@@ -215,74 +171,56 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
           <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-            Crear Insumo
+            Crear Etapa Fenológica
           </h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <InputGroup>
-              <label>Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
+              <label>Variedad de Arroz</label>
+              <select
+                name="variedad_arroz_id"
+                value={formData.variedad_arroz_id}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">Selecciona una variedad</option>
+                {varieties.map((variety) => (
+                  <option key={variety.id} value={variety.id}>
+                    {variety.nombre}
+                  </option>
+                ))}
+              </select>
             </InputGroup>
 
-            <FlexContainer>
-              <HalfInputGroup>
-                <label>Cantidad</label>
-                <input
-                  type="number"
-                  name="cantidad"
-                  value={formData.cantidad}
-                  onChange={handleChange}
-                  required
-                />
-              </HalfInputGroup>
-
-              <HalfInputGroup>
-                <label>Unidad de Medida</label>
-                <select
-                  name="unidad_id"
-                  value={formData.unidad_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Selecciona una unidad</option>
-                  {units.map(unit => (
-                    <option key={unit.id} value={unit.id}>
-                      {unit.nombre}
-                    </option>
-                  ))}
-                </select>
-              </HalfInputGroup>
-            </FlexContainer>
+            <InputGroup>
+              <label>Etapa Fenológica</label>
+              <select
+                name="etapa_fenologica_id"
+                value={formData.etapa_fenologica_id}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecciona una etapa</option>
+                {phenologicalStages.map((stage) => (
+                  <option key={stage.id} value={stage.id}>
+                    {stage.nombre}
+                  </option>
+                ))}
+              </select>
+            </InputGroup>
 
             <InputGroup>
-              <label>Costo Unitario</label>
+              <label>Días de Duración</label>
               <input
                 type="number"
-                step="0.01"
-                name="costo_unitario"
-                value={formData.costo_unitario}
+                name="dias_duracion"
+                value={formData.dias_duracion}
                 onChange={handleChange}
                 required
               />
             </InputGroup>
 
-            <InputGroup>
-              <label>Descripción (Opcional)</label>
-              <textarea
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-                rows={3}
-              />
-            </InputGroup>
-
-            <SubmitButton type="submit">Crear Insumo</SubmitButton>
+            <SubmitButton type="submit">Crear Etapa Fenológica</SubmitButton>
           </form>
         </ModalContent>
       </ModalOverlay>
@@ -290,11 +228,11 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
         <SuccessModal
           show={showSuccessModal}
           onClose={handleCloseSuccessModal}
-          message="¡Insumo Creado!"
+          message="¡Etapa Fenológica Creada!"
         />
       )}
     </>
   );
 };
 
-export default CreateInsumoModal;
+export default CreatePhenologicalStageModal;

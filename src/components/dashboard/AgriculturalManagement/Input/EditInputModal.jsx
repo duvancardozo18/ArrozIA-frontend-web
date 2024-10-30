@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
-import SuccessModal from "../../modal/SuccessModal";  // Importamos el modal de éxito
+import SuccessModal from "../../modal/SuccessModal"; // Importamos el modal de éxito
 
 // Estilos de modal y elementos
 const ModalOverlay = styled.div`
@@ -56,6 +56,7 @@ const InputGroup = styled.div`
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
+    font-size: 0.9em;
   }
 
   input,
@@ -78,6 +79,37 @@ const InputGroup = styled.div`
 
   textarea {
     resize: vertical;
+  }
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
+const HalfInputGroup = styled.div`
+  flex: 1;
+
+  label {
+    font-size: 0.9em;
+    font-weight: bold; /* Aplicar negrita */
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+
+    &:focus {
+      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
+      transform: translateY(-3px);
+      outline: none;
+    }
   }
 `;
 
@@ -116,38 +148,29 @@ const ErrorMessage = styled.p`
 const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: insumo?.nombre || "",
-    unidad_id: insumo?.unidad_id || "",
+    cantidad: insumo?.cantidad || "",
+    unidad_id: insumo?.unidad?.id || "",
     costo_unitario: insumo?.costo_unitario || "",
     descripcion: insumo?.descripcion || "",
   });
 
-  const [unidades, setUnidades] = useState([]);  // Estado para guardar las unidades de medida
-  const [showSuccessModal, setShowSuccessModal] = useState(false);  // Estado para mostrar el modal de éxito
+  const [unidades, setUnidades] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchInsumo = async () => {
+    const fetchUnidades = async () => {
       try {
-        const response = await axiosInstance.get(`/input/${insumo.id}`);  // Solicitud GET a /input/{input_id}
-        const fetchedInsumo = response.data;
-
-        // Asignamos los datos obtenidos al estado
-        setFormData({
-          nombre: fetchedInsumo.nombre,
-          unidad_id: fetchedInsumo.unidad.id,  // Usamos fetchedInsumo.unidad.id para establecer el ID de la unidad
-          costo_unitario: fetchedInsumo.costo_unitario,
-          descripcion: fetchedInsumo.descripcion,
-        });
+        const response = await axiosInstance.get("/units");
+        setUnidades(response.data);
       } catch (error) {
-        console.error("Error al obtener el insumo:", error);
-        setErrorMessage("Error al cargar los datos del insumo.");
+        console.error("Error al obtener las unidades de medida:", error);
+        setErrorMessage("Error al cargar las unidades de medida.");
       }
     };
 
-
-
     if (insumo) {
-      fetchInsumo();  // Llamamos a la función para obtener los datos del insumo
+      fetchUnidades();
     }
   }, [insumo]);
 
@@ -156,19 +179,17 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validación para el campo 'nombre' con límite de 100 caracteres
     if (name === "nombre" && value.length > 100) {
       setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
     } else {
       setFormData({ ...formData, [name]: value });
-      setErrorMessage("");  // Limpiar el mensaje de error cuando es válido
+      setErrorMessage("");
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validar antes de enviar
     if (formData.nombre.length > 100) {
       setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
       return;
@@ -176,11 +197,8 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
 
     try {
       setErrorMessage("");
-      // Realiza una solicitud PUT para actualizar el insumo
       await axiosInstance.put(`/update/input/${insumo.id}`, formData);
-      console.log("Insumo actualizado correctamente");
-
-      setShowSuccessModal(true);  // Mostrar el modal de éxito después de guardar
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al editar el insumo:", error);
       setErrorMessage("Error inesperado al editar el insumo.");
@@ -189,8 +207,8 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    closeModal(); // Cierra el modal de edición
-    onSave(); // Actualiza la tabla de insumos sin cambiar de sección
+    closeModal();
+    onSave();
   };
 
   return (
@@ -213,21 +231,35 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
                 />
               </InputGroup>
 
-              <InputGroup>
-                <label>Unidad de Medida</label>
-                <select
-                  name="unidad_id"
-                  value={formData.unidad}  // El valor será preseleccionado basado en el estado
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Seleccionar Unidad</option>
-                  <option value="Kilogramo">Kilogramo</option>
-                  <option value="Litro">Litro</option>
-                  <option value="Gramo">Gramo</option>
-                  <option value="Tonelada">Tonelada</option>
-                </select>
-              </InputGroup>
+              <FlexContainer>
+                <HalfInputGroup>
+                  <label>Cantidad</label>
+                  <input
+                    type="number"
+                    name="cantidad"
+                    value={formData.cantidad}
+                    onChange={handleChange}
+                    required
+                  />
+                </HalfInputGroup>
+
+                <HalfInputGroup>
+                  <label>Unidad de Medida</label>
+                  <select
+                    name="unidad_id"
+                    value={formData.unidad_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccionar Unidad</option>
+                    {unidades.map((unidad) => (
+                      <option key={unidad.id} value={unidad.id}>
+                        {unidad.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </HalfInputGroup>
+              </FlexContainer>
 
               <InputGroup>
                 <label>Costo Unitario</label>
@@ -242,7 +274,7 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
               </InputGroup>
 
               <InputGroup>
-                <label>Descripción</label>
+                <label>Descripción (Opcional)</label>
                 <textarea
                   name="descripcion"
                   value={formData.descripcion}
