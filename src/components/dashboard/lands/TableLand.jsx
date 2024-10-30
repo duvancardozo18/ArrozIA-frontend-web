@@ -101,7 +101,9 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAl
             lands.map((lote, index) => (
               <tr 
                 key={index} 
-                onClick={() => onSelectAllotment(lote)} // Seleccionar el lote cuando se hace clic en una fila
+                onClick={() => {     
+                  console.log("Lote seleccionado en TableLand:", lote);
+                  onSelectAllotment(lote)}} // Seleccionar el lote cuando se hace clic en una fila
                 style={{
                   backgroundColor: selectedAllotment && selectedAllotment.id === lote.id ? '#f0f8ff' : 'transparent', // Resaltar el lote seleccionado
                   cursor: 'pointer'
