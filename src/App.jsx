@@ -11,11 +11,15 @@ import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
 import Crops from "./screens/dashboard/Crops";
-import VegetativeCicle from "./screens/dashboard/vegetativeCycle";
+import VegetativeCycle from "./screens/dashboard/vegetativeCycle";
 import LandsMain from "./components/dashboard/crops/CropsMain";
 import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 import CropView from './components/dashboard/crops/CropView';
+import VegetativeCard from './components/dashboard/vegetativecycle/VegetativeCard';
+import Calendar from './components/dashboard/lands/Calendar';
+
+
 
 
 
@@ -70,11 +74,13 @@ function App() {
             <Route path="/crops" element={<PrivateRoute element={<Crops />} />} />
             <Route path="/land/:loteId/crop" element={<PrivateRoute element={<LandsMain />} />} />
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
-            <Route path="/vegetative-cycle" element={<PrivateRoute element={<VegetativeCicle />} requiredPermission="crear_usuario" />} />
+            <Route path="/vegetative-cycle" element={<PrivateRoute element={<VegetativeCycle />} requiredPermission="crear_usuario" />} />
             <Route path="/mechanization" element={<PrivateRoute element={<Mechanization />} />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/finca/:fincaSlug/lote/:loteSlug/cultivo/:cultivoSlug" element={<CropView />} />
+            <Route path="/" element={<Calendar />} />
+            <Route path="/ciclo-vegetativo" element={<VegetativeCard />} />   
             </Route>
 
           <Route path="*" element={<PageNotFound />} />

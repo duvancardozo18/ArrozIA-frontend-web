@@ -124,7 +124,7 @@ const EventCard = ({ cultivoId, descripcion, fechaEstimada, fechaRealizacion, es
 // Lista de eventos con valor por defecto para events
 // Componente de tarjeta de evento
 const EventList = ({ events = [] }) => {
-  console.log(events);
+  //console.log(events);
   return (
     <Container>
       <Title>Labores Pendientes</Title>
