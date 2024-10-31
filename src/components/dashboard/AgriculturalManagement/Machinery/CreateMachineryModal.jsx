@@ -3,7 +3,6 @@ import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../../dashboard/modal/SuccessModal";
 
-// Estilos de modal y elementos
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -171,7 +170,7 @@ const CreateMachineryModal = ({ closeModal, onSave }) => {
             </InputGroup>
 
             <InputGroup>
-              <label>Tipo de Maquinaria</label>
+              <label>Descripción</label>
               <input
                 type="text"
                 name="description"
