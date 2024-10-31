@@ -101,9 +101,7 @@ const Sidebar = () => {
             {/* Menú de Gestión Agrícola con el icono actualizado */}
             <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
 
-            {hasPermission("crear_usuario") && (
-              <MenuItem to="/vegetative-cycle" icon={<MdOutlineBarChart size={35} />} text="Ciclo Vegetativo" />
-            )}
+            
 
             {/* Nuevo menú de Tareas */}
             <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
