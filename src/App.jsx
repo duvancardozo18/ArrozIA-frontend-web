@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization  } from "./screens";
+import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization, Task  } from "./screens";
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider"; 
 import PrivateRoute from "./config/PrivateRoute"; 
@@ -18,6 +18,7 @@ import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst';
 import CropView from './components/dashboard/crops/CropView';
 import VegetativeCard from './components/dashboard/vegetativecycle/VegetativeCard';
 import Calendar from './components/dashboard/lands/MyCalendarPage';
+
 
 
 
@@ -81,6 +82,7 @@ function App() {
             <Route path="/finca/:fincaSlug/lote/:loteSlug/cultivo/:cultivoSlug" element={<CropView />} />
             <Route path="/" element={<Calendar />} />
             <Route path="/ciclo-vegetativo" element={<VegetativeCard />} />   
+            <Route path="/task" element={<PrivateRoute element={<Task />} />} />
             </Route>
 
           <Route path="*" element={<PageNotFound />} />
