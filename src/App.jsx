@@ -17,7 +17,7 @@ import ResetPasswordForm from './screens/password/ResetPasswordForm';
 import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
 import CropView from './components/dashboard/crops/CropView';
 import VegetativeCard from './components/dashboard/vegetativecycle/VegetativeCard';
-import Calendar from './components/dashboard/lands/Calendar';
+import Calendar from './components/dashboard/lands/MyCalendarPage';
 
 
 

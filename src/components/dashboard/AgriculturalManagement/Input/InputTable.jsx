@@ -39,24 +39,16 @@ const InsumosTable = ({ refresh }) => {
     <div className="table-container">
       <table className="table">
         <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Cantidad</th> {/* Nueva columna para Cantidad */}
-            <th>Unidad de Medida</th> {/* Mostrar nombre de unidad de medida */}
-            <th>Costo Unitario</th> {/* Mostrar costo unitario */}
-            <th>Acciones</th>
-          </tr>
+          <tr><th>Nombre</th><th>Cantidad</th><th>Unidad de Medida</th><th>Costo Unitario</th><th>Acciones</th></tr>
         </thead>
         <tbody>
           {insumos.map((insumo) => (
             <tr key={insumo.id}>
               <td>{insumo.nombre}</td>
-              <td>{insumo.cantidad || "N/A"}</td> {/* Mostrar cantidad */}
-              <td>{insumo.unidad ? insumo.unidad.nombre : "N/A"}</td> {/* Mostrar nombre de unidad de medida */}
-              <td>{insumo.costo_unitario}</td> {/* Mostrar costo unitario */}
-              <td>
-                <TablaInsumosAction insumo={insumo} onSave={fetchInsumos} />
-              </td>
+              <td>{insumo.cantidad || "N/A"}</td>
+              <td>{insumo.unidad ? insumo.unidad.nombre : "N/A"}</td>
+              <td>{insumo.costo_unitario}</td>
+              <td><TablaInsumosAction insumo={insumo} onSave={fetchInsumos} /></td>
             </tr>
           ))}
         </tbody>
@@ -65,4 +57,4 @@ const InsumosTable = ({ refresh }) => {
   );
 };
 
-export default InsumosTable;
+export default InsumosTable;
