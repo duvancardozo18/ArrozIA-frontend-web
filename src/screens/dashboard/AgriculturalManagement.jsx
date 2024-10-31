@@ -8,14 +8,20 @@ import CreateInputModal from "../../components/dashboard/AgriculturalManagement/
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
 import CreateRiceVarietyModal from "../../components/dashboard/AgriculturalManagement/RiceVariety/CreateRiceVarietyModal";
+import PhenologicalStageTable from "../../components/dashboard/AgriculturalManagement/PhenologicalStage/PhenologicalStageTable";
+import CreatePhenologicalStageModal from "../../components/dashboard/AgriculturalManagement/PhenologicalStage/CreatePhenologicalStageModal";
+import "../../css/AgriculturalManagement.scss";
+
 import LaborCulturalTable from "../../components/dashboard/AgriculturalManagement/LaborCultural/LaborCulturalTable";
 import CreateLaborModal from "../../components/dashboard/AgriculturalManagement/LaborCultural/CreateLaborModal";
-import "../../css/AgriculturalManagement.scss"; 
+
+
 
 const GestionAgricola = () => {
   const { isAuthenticated } = useContext(AuthContext);
   const [refreshTable, setRefreshTable] = useState(false);
-  const [activeTable, setActiveTable] = useState("variedades");
+  const [activeTable, setActiveTable] = useState("etapas-fenologicas"); // Cambiado a "etapas-fenologicas"
+
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -27,19 +33,13 @@ const GestionAgricola = () => {
 
   // Actualiza la tabla cuando se crea, edita o elimina un dato
   const handleSave = () => {
-    setRefreshTable((prev) => !prev); 
+    setRefreshTable((prev) => !prev);
   };
 
   return (
     <div className="content-area">
       <Header title="Gestión Agrícola" />
       <div className="button-group">
-        <button
-          onClick={() => setActiveTable("variedades")}
-          className={`toggle-button ${activeTable === "variedades" ? "active" : ""}`}
-        >
-          Variedades de Arroz
-        </button>
         <button
           onClick={() => setActiveTable("insumos")}
           className={`toggle-button ${activeTable === "insumos" ? "active" : ""}`}
@@ -58,39 +58,32 @@ const GestionAgricola = () => {
         >
           Labor Cultural
         </button>
+        <button
+          onClick={() => setActiveTable("etapas-fenologicas")}
+          className={`toggle-button ${activeTable === "etapas-fenologicas" ? "active" : ""}`}
+        >
+          Etapas Fenológicas
+        </button>
       </div>
-
-      {activeTable === "variedades" && (
-        <ButtonCrear
-          buttonText="Crear variedad del arroz"
-          ModalComponent={CreateRiceVarietyModal}
-          onSave={handleSave}
-        />
-      )}
       {activeTable === "insumos" && (
-        <ButtonCrear
-          buttonText="Crear insumos agrícolas"
-          ModalComponent={CreateInputModal}
-          onSave={handleSave}
-        />
+        <ButtonCrear buttonText="Crear insumo" ModalComponent={CreateInputModal} onSave={handleSave} />
       )}
-      {activeTable === "laborCultural" && (
-        <ButtonCrear
-          buttonText="Crear Labor Cultural"
-          ModalComponent={CreateLaborModal}
-          onSave={handleSave}
-        />
+      {activeTable === "labor-cultural" && (
+        <ButtonCrear buttonText="Crear labor cultural" ModalComponent={CreateCulturalWorkModal} onSave={handleSave} />
+      )}
+      {activeTable === "maquinaria" && (
+        <ButtonCrear buttonText="Crear maquinaria" ModalComponent={CreateMachineryModal} onSave={handleSave} />
+      )}
+      {activeTable === "etapas-fenologicas" && (
+        <ButtonCrear buttonText="Crear etapa fenológica" ModalComponent={CreatePhenologicalStageModal} onSave={handleSave} />
       )}
 
-      {activeTable === "variedades" ? (
-        <RiceVarietiesTable refresh={refreshTable} />
-      ) : activeTable === "insumos" ? (
-        <InputTable refresh={refreshTable} />
-      ) : activeTable === "mecanizacion" ? (
-        <div>Tabla de Mecanización</div>
-      ) : (
-        <LaborCulturalTable refresh={refreshTable} />
-      )}
+      {/* Tabla principal */}
+      {activeTable === "variedades" && <RiceVarietiesTable refresh={refreshTable} />}
+      {activeTable === "insumos" && <InputTable refresh={refreshTable} />}
+      {activeTable === "labor-cultural" && <CulturalWorkTable refresh={refreshTable} />}
+      {activeTable === "maquinaria" && <MachineryTable refresh={refreshTable} />}
+      {activeTable === "etapas-fenologicas" && <PhenologicalStageTable refresh={refreshTable} />}
     </div>
   );
 };
