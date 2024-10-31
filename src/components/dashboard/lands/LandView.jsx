@@ -1,40 +1,63 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, Typography, Grid } from '@mui/material';
+import { Card, CardContent, Typography, Grid, Button } from '@mui/material';
 import axiosInstance from '../../../config/AxiosInstance';
 import NewCrop from '../crops/CreateCropModal';
 import LoanMessage from './LoanMessage';
-import Calendar from './Calendar';
+import Calendar from './MyCalendarPage';
 import EventCard from './EventCard';
+import TaskDialog from './TaskDialog';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import SpaIcon from '@mui/icons-material/Spa';
+import styled from 'styled-components';
 
-const buttonCreate = {
-  padding: '10px 20px',
-  backgroundColor: '#28a745',
-  color: 'white',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-  fontSize: '16px',
-  marginBottom: '20px',
-  marginTop: '20px',
-  marginLeft: 'auto',
-  marginRight: '30px',
-  display: 'block',
-};
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+`;
 
-const CropView = ({ onSelectAllotment }) => {
+const StyledButton = styled(Button)`
+  && {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    color: white;
+    background-color: #007bff; /* Azul */
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+`;
+
+const GreenButton = styled(Button)`
+  && {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    color: white;
+    background-color: #28a745;
+    &:hover {
+      background-color: #218838;
+    }
+  }
+`;
+
+const ViewLand = ({ onSelectAllotment }) => {
   const { loteId } = useParams();
   const [landDetails, setLandDetails] = useState(null);
   const [cropDetails, setCropDetails] = useState(null);
   const [taskEvents, setTaskEvents] = useState([]);
   const [isCreateCropModalOpen, setIsCreateCropModalOpen] = useState(false);
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [showVegetativeCycle, setShowVegetativeCycle] = useState(false);
   const [selectedLote, setSelectedLote] = useState(null);
+  const [cultivoNombre, setCultivoNombre] = useState('');
+  const [cultivoId, setCultivoId] = useState(null);
 
   useEffect(() => {
-    // Obtener detalles del lote y cultivo, y eventos de tareas
     const fetchLandAndCropDetails = async () => {
       try {
         const landResponse = await axiosInstance.get(`/land/${loteId}`);
@@ -43,7 +66,12 @@ const CropView = ({ onSelectAllotment }) => {
         const cropResponse = await axiosInstance.get(`/crops/by_land/${loteId}`);
         setCropDetails(cropResponse.data);
 
-        const taskResponse = await axiosInstance.get(`/tasks`);
+        if (cropResponse.data.length > 0) {
+          setCultivoNombre(cropResponse.data[0].cropName);
+          setCultivoId(cropResponse.data[0].id);
+        }
+
+        const taskResponse = await axiosInstance.get(`/taskslist`);
         setTaskEvents(taskResponse.data);
       } catch (error) {
         console.error('Error fetching land, crop, or task details:', error);
@@ -53,28 +81,18 @@ const CropView = ({ onSelectAllotment }) => {
     fetchLandAndCropDetails();
   }, [loteId]);
 
-  // Llamar a `onSelectAllotment` cuando cropDetails esté disponible
-useEffect(() => {
-  if (cropDetails && cropDetails.length > 0 && landDetails) {
-    const selectedCrop = {
-      id: loteId,
-      nombre: landDetails.nombre,
-      sowingDate: cropDetails[0].plantingDate,
-    };
-
-    // Llama a `onSelectAllotment` solo si el nuevo valor es diferente
-    if (JSON.stringify(selectedCrop) !== JSON.stringify(selectedLote)) {
-      onSelectAllotment(selectedCrop);
-      setSelectedLote(selectedCrop); // Actualiza `selectedLote` para comparar en futuras ejecuciones
-    }
-  }
-}, [cropDetails, landDetails, loteId, onSelectAllotment, selectedLote]);
-
+  const handleOpenTaskDialog = () => {
+    setIsTaskDialogOpen(true);
+  };
 
   const onAddLote = () => {
     const lote = { id: loteId, nombre: `${loteId}` };
     setSelectedLote(lote);
     setIsCreateCropModalOpen(true);
+  };
+
+  const handleToggleVegetativeCycle = () => {
+    setShowVegetativeCycle((prev) => !prev);
   };
 
   if (!landDetails || !cropDetails) {
@@ -88,9 +106,9 @@ useEffect(() => {
 
       {cropDetails?.length === 0 ? (
         <>
-          <button style={buttonCreate} onClick={onAddLote}>
-            Crear Cultivo
-          </button>
+          <ButtonContainer>
+            <GreenButton onClick={onAddLote}>Crear Cultivo</GreenButton>
+          </ButtonContainer>
           <LoanMessage />
         </>
       ) : (
@@ -123,6 +141,21 @@ useEffect(() => {
         </Card>
       )}
 
+      <ButtonContainer>
+        <GreenButton onClick={handleOpenTaskDialog}>Asignar Labor</GreenButton>
+        
+      </ButtonContainer>
+
+      {isTaskDialogOpen && (
+        <TaskDialog
+          open={isTaskDialogOpen}
+          onClose={() => setIsTaskDialogOpen(false)}
+          onSave={(taskData) => console.log("Tarea guardada:", taskData)}
+          cultivoNombre={cultivoNombre}
+          cultivoId={cultivoId}
+        />
+      )}
+
       {isCreateCropModalOpen && selectedLote && (
         <NewCrop 
           selectedAllotment={selectedLote}
@@ -136,8 +169,10 @@ useEffect(() => {
           <EventCard events={taskEvents} />
         </>
       )}
+
+      
     </div>
   );
 };
 
-export default CropView;
+export default ViewLand;

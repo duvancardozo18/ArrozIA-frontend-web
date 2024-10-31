@@ -1,4 +1,3 @@
-// AgriculturalManagement.jsx
 import React, { useContext, useState, useEffect } from "react";
 import Header from "../../components/dashboard/Header";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
@@ -15,13 +14,14 @@ import "../../css/AgriculturalManagement.scss";
 import LaborCulturalTable from "../../components/dashboard/AgriculturalManagement/LaborCultural/LaborCulturalTable";
 import CreateLaborModal from "../../components/dashboard/AgriculturalManagement/LaborCultural/CreateLaborModal";
 
-
+// Importaciones para el submódulo de Maquinaria
+import MachineryTable from "../../components/dashboard/AgriculturalManagement/Machinery/MachineryTable";
+import CreateMachineryModal from "../../components/dashboard/AgriculturalManagement/Machinery/CreateMachineryModal";
 
 const GestionAgricola = () => {
   const { isAuthenticated } = useContext(AuthContext);
   const [refreshTable, setRefreshTable] = useState(false);
-  const [activeTable, setActiveTable] = useState("etapas-fenologicas"); // Cambiado a "etapas-fenologicas"
-
+  const [activeTable, setActiveTable] = useState("etapas-fenologicas");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -47,10 +47,10 @@ const GestionAgricola = () => {
           Insumos Agrícolas
         </button>
         <button
-          onClick={() => setActiveTable("mecanizacion")}
-          className={`toggle-button ${activeTable === "mecanizacion" ? "active" : ""}`}
+          onClick={() => setActiveTable("maquinaria")}
+          className={`toggle-button ${activeTable === "maquinaria" ? "active" : ""}`}
         >
-          Mecanización
+          Maquinaria
         </button>
         <button
           onClick={() => setActiveTable("laborCultural")}
@@ -65,11 +65,12 @@ const GestionAgricola = () => {
           Etapas Fenológicas
         </button>
       </div>
+
       {activeTable === "insumos" && (
         <ButtonCrear buttonText="Crear insumo" ModalComponent={CreateInputModal} onSave={handleSave} />
       )}
-      {activeTable === "labor-cultural" && (
-        <ButtonCrear buttonText="Crear labor cultural" ModalComponent={CreateCulturalWorkModal} onSave={handleSave} />
+      {activeTable === "laborCultural" && (
+        <ButtonCrear buttonText="Crear labor cultural" ModalComponent={CreateLaborModal} onSave={handleSave} />
       )}
       {activeTable === "maquinaria" && (
         <ButtonCrear buttonText="Crear maquinaria" ModalComponent={CreateMachineryModal} onSave={handleSave} />
@@ -81,7 +82,7 @@ const GestionAgricola = () => {
       {/* Tabla principal */}
       {activeTable === "variedades" && <RiceVarietiesTable refresh={refreshTable} />}
       {activeTable === "insumos" && <InputTable refresh={refreshTable} />}
-      {activeTable === "labor-cultural" && <CulturalWorkTable refresh={refreshTable} />}
+      {activeTable === "laborCultural" && <LaborCulturalTable refresh={refreshTable} />}
       {activeTable === "maquinaria" && <MachineryTable refresh={refreshTable} />}
       {activeTable === "etapas-fenologicas" && <PhenologicalStageTable refresh={refreshTable} />}
     </div>
