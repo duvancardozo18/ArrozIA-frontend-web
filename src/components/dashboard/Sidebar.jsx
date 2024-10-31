@@ -12,6 +12,7 @@ import {
   MdOutlineLogout,
   MdOutlinePeople,
   MdOutlinePerson2,
+  MdOutlineAssignment,
 } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../css/Sidebar.scss";
@@ -103,6 +104,9 @@ const Sidebar = () => {
             {hasPermission("crear_usuario") && (
               <MenuItem to="/vegetative-cycle" icon={<MdOutlineBarChart size={35} />} text="Ciclo Vegetativo" />
             )}
+
+            {/* Nuevo menú de Tareas */}
+            <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
 
             {/* Menú de Usuarios y Roles con verificación de permisos */}
             {hasPermission("crear_usuario") && (
