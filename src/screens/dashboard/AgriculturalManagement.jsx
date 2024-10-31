@@ -1,13 +1,10 @@
+// AgriculturalManagement.jsx
 import React, { useContext, useState, useEffect } from "react";
 import Header from "../../components/dashboard/Header";
 import ButtonCrear from "../../components/dashboard/ButtonCreate";
 import RiceVarietiesTable from "../../components/dashboard/AgriculturalManagement/RiceVariety/RiceVarietiesTable";
-import CulturalWorkTable from "../../components/dashboard/AgriculturalManagement/cultural work/CulturalWorkTable";
-import CreateCulturalWorkModal from "../../components/dashboard/AgriculturalManagement/cultural work/CreateCulturalWorkModal";
 import InputTable from "../../components/dashboard/AgriculturalManagement/Input/InputTable";
 import CreateInputModal from "../../components/dashboard/AgriculturalManagement/Input/CreateInputModal";
-import MachineryTable from "../../components/dashboard/AgriculturalManagement/Machinery/MachineryTable";
-import CreateMachineryModal from "../../components/dashboard/AgriculturalManagement/Machinery/CreateMachineryModal";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
 import CreateRiceVarietyModal from "../../components/dashboard/AgriculturalManagement/RiceVariety/CreateRiceVarietyModal";
@@ -15,10 +12,16 @@ import PhenologicalStageTable from "../../components/dashboard/AgriculturalManag
 import CreatePhenologicalStageModal from "../../components/dashboard/AgriculturalManagement/PhenologicalStage/CreatePhenologicalStageModal";
 import "../../css/AgriculturalManagement.scss";
 
+import LaborCulturalTable from "../../components/dashboard/AgriculturalManagement/LaborCultural/LaborCulturalTable";
+import CreateLaborModal from "../../components/dashboard/AgriculturalManagement/LaborCultural/CreateLaborModal";
+
+
+
 const GestionAgricola = () => {
   const { isAuthenticated } = useContext(AuthContext);
   const [refreshTable, setRefreshTable] = useState(false);
   const [activeTable, setActiveTable] = useState("etapas-fenologicas"); // Cambiado a "etapas-fenologicas"
+
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -28,6 +31,7 @@ const GestionAgricola = () => {
     return <Navigate to="/" replace />;
   }
 
+  // Actualiza la tabla cuando se crea, edita o elimina un dato
   const handleSave = () => {
     setRefreshTable((prev) => !prev);
   };
@@ -35,7 +39,6 @@ const GestionAgricola = () => {
   return (
     <div className="content-area">
       <Header title="Gestión Agrícola" />
-
       <div className="button-group">
         <button
           onClick={() => setActiveTable("insumos")}
@@ -44,14 +47,14 @@ const GestionAgricola = () => {
           Insumos Agrícolas
         </button>
         <button
-          onClick={() => setActiveTable("maquinaria")}
-          className={`toggle-button ${activeTable === "maquinaria" ? "active" : ""}`}
+          onClick={() => setActiveTable("mecanizacion")}
+          className={`toggle-button ${activeTable === "mecanizacion" ? "active" : ""}`}
         >
-          Maquinaria
+          Mecanización
         </button>
         <button
-          onClick={() => setActiveTable("labor-cultural")}
-          className={`toggle-button ${activeTable === "labor-cultural" ? "active" : ""}`}
+          onClick={() => setActiveTable("laborCultural")}
+          className={`toggle-button ${activeTable === "laborCultural" ? "active" : ""}`}
         >
           Labor Cultural
         </button>
@@ -62,7 +65,6 @@ const GestionAgricola = () => {
           Etapas Fenológicas
         </button>
       </div>
-
       {activeTable === "insumos" && (
         <ButtonCrear buttonText="Crear insumo" ModalComponent={CreateInputModal} onSave={handleSave} />
       )}
