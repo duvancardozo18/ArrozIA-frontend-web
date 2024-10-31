@@ -112,7 +112,7 @@ const EventCard = ({ cultivoId, descripcion, fechaEstimada, fechaRealizacion, es
         <EventDate>{`Realizada: ${fechaRealizacion}`}</EventDate>
       </LeftColumn>
       <RightColumn>
-        <EventTitle>{`Cultivo ID: ${cultivoId}`}</EventTitle>
+       {/*<EventTitle>{`Cultivo ID: ${cultivoId}`}</EventTitle>*/}
         <EventDescription>{descripcion}</EventDescription>
         <Responsible>{`Automáticamente Planeada: ${planeadaAutomaticamente ? 'Sí' : 'No'}`}</Responsible>
       </RightColumn>
