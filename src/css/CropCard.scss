@@ -1,0 +1,69 @@
+.crop-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f2f8e3; // Fondo pastel suave
+  border-radius: 12px;
+  margin: 0.5rem 0;
+  transition: box-shadow 0.3s ease, max-height 0.3s ease;
+  cursor: pointer;
+  max-height: 80px;
+  overflow: hidden;
+
+  &.expanded {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    max-height: 300px; // Ajuste para expandir el contenido
+  }
+
+  .icon-container {
+    background-color: #14B814; /* Verde pastel */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    padding: 0.5rem;
+    border-radius: 20%; // Contenedor circular para el icono
+    width: 50px;
+    height: 50px;
+  }
+
+  .crop-icon {
+    font-size: 1.8rem; // Tamaño ajustado para el ícono
+    color: white; /* Color del ícono en blanco */
+    
+  }
+
+  .content {
+    flex-grow: 1;
+    
+    .crop-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0;
+      color: #333;
+    }
+  }
+
+  .tasks-container {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #ddd;
+    background-color: #fff;
+    padding: 0.5rem;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      font-size: 0.9rem;
+      color: #555;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #eee;
+      }
+    }
+  }
+}
