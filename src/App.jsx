@@ -20,6 +20,7 @@ import CropView from './components/dashboard/crops/CropView';
 
 
 import { Profile} from "./screens";
+import Monitoring from "./screens/dashboard/Monitoring";
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -68,6 +69,7 @@ function App() {
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
             <Route path="/crops" element={<PrivateRoute element={<Crops />} />} />
+            <Route path="/monitoring" element={<PrivateRoute element={<Monitoring />} />} />
             <Route path="/land/:loteId/crop" element={<PrivateRoute element={<LandsMain />} />} />
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
             <Route path="/vegetative-cycle" element={<PrivateRoute element={<VegetativeCicle />} requiredPermission="crear_usuario" />} />

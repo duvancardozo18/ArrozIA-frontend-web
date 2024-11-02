@@ -104,6 +104,10 @@ const Sidebar = () => {
               <MenuItem to="/vegetative-cycle" icon={<MdOutlineBarChart size={35} />} text="Ciclo Vegetativo" />
             )}
 
+            {hasPermission("crear_usuario") && (
+              <MenuItem to="/monitoring" icon={<MdOutlineBarChart size={35} />} text="Monitoreo" />
+            )}
+
             {/* Menú de Usuarios y Roles con verificación de permisos */}
             {hasPermission("crear_usuario") && (
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
