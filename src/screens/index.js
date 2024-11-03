@@ -8,3 +8,5 @@ export { default as Profile } from "./dashboard/Profile";
 export { default as AgriculturalManagement } from "./dashboard/AgriculturalManagement";
 export { default as Mechanization } from "./dashboard/Mechanization";
 export { default as Task } from "./dashboard/Task";
+export { default as Monitoring } from "./dashboard/Monitoring";
+

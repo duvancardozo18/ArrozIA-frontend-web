@@ -1,0 +1,71 @@
+.monitoring-card {
+    border: 2px solid;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    background-color: #f2f2f2;
+    transition: box-shadow 0.3s;
+    position: relative;
+  
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  
+    .icon-container {
+      // margin-right: 15px;
+      // flex-shrink: 0;
+      margin-right: 15px;
+      flex-shrink: 0;
+      background-color: transparent; /* Fondo transparente para el icono */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+  
+    .monitoring-content {
+      flex-grow: 1;
+  
+      .monitoring-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 0 0 5px;
+      }
+  
+      .monitoring-recommendation,
+      .monitoring-stage {
+        font-size: 0.9em;
+        color: #555;
+        margin: 2px 0;
+      }
+    }
+  
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
+  
+    .edit-button,
+    .delete-button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2em;
+      padding: 5px;
+      transition: color 0.3s;
+    }
+  
+    .edit-button:hover {
+      color: #3498db; /* Color para el botón de edición */
+    }
+  
+    .delete-button:hover {
+      color: #e74c3c; /* Color para el botón de eliminación */
+    }
+  }
+  

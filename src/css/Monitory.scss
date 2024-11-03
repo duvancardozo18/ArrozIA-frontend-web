@@ -1,0 +1,131 @@
+.content-area {
+    padding: var(--padding-1);
+}
+  
+.layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.crops-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.crop-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.crop-card:hover {
+    background-color: #f1f1f1;
+}
+
+.tasks-container {
+    margin-top: 10px;
+    padding-left: 16px;
+    border-top: 1px solid #ddd;
+}
+
+.task-item {
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.monitoring-view-container {
+    display: flex;
+    gap: 20px;
+}
+
+.crops-column {
+    width: 40%;
+    padding: 10px;
+}
+
+.monitorings-column {
+    width: 60%;
+    padding: 10px;
+}
+
+/* Diseño responsivo para pantallas pequeñas */
+@media (max-width: 768px) {
+    .monitoring-view-container {
+        flex-direction: column;
+    }
+
+    .crops-column,
+    .monitorings-column {
+        width: 100%;
+    }
+}
+
+/* Diseño para el botón de agregar monitoreo */
+.button {
+    --main-focus: #2d8cf0;
+    --font-color: #323232;
+    --bg-color-sub: #dedede;
+    --bg-color: #eee;
+    --main-color: #323232;
+    position: relative;
+    width: 150px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 2px solid var(--main-color);
+    box-shadow: 4px 4px var(--main-color);
+    background-color: var(--bg-color);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.button,
+.button__icon,
+.button__text {
+    transition: all 0.3s;
+}
+
+.button .button__text {
+    transform: translateX(22px);
+    color: var(--font-color);
+    font-weight: 600;
+}
+
+.button .button__icon {
+    position: absolute;
+    transform: translateX(109px);
+    height: 100%;
+    width: 39px;
+    background-color: var(--bg-color-sub);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button .svg {
+    width: 20px;
+    fill: var(--main-color);
+}
+
+.button:hover {
+    background: var(--bg-color);
+}
+
+.button:hover .button__text {
+    color: transparent;
+}
+
+.button:hover .button__icon {
+    width: 148px;
+    transform: translateX(0);
+}
+
+.button:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px var(--main-color);
+}

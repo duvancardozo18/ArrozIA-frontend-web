@@ -106,6 +106,11 @@ const Sidebar = () => {
             {/* Nuevo menú de Tareas */}
             <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
 
+             {/* Nuevo menú de Tareas */}
+             <MenuItem to="/monitoring" icon={<MdOutlineAssignment size={35} />} text="Monitoreo" />
+
+            
+
             {/* Menú de Usuarios y Roles con verificación de permisos */}
             {hasPermission("crear_usuario") && (
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
