@@ -26,10 +26,6 @@ const ModalContent = styled.div`
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
   transition: transform 0.3s ease-in-out;
-
-  &:hover {
-    transform: translateY(-10px) scale(1.03) perspective(1000px);
-  }
 `;
 
 const ErrorMessage = styled.p`
@@ -38,6 +34,20 @@ const ErrorMessage = styled.p`
   margin-bottom: 20px;
   text-align: center;
   font-weight: bold;
+`;
+
+const PasswordRequirements = styled.div`
+  margin-top: 15px;
+  padding: 10px;
+  background: #f0f8ff;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #333;
+`;
+
+const RequirementItem = styled.p`
+  color: ${({ met }) => (met ? "#28a745" : "#4a90e2")}; /* Verde si se cumple, rojo si no */
+  font-weight: ${({ met }) => (met ? "bold" : "normal")};
 `;
 
 const CloseButton = styled.button`
@@ -120,30 +130,42 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
     email: "",
     password: "",
     rol_id: "",
-    finca_id: "",
   });
 
   const [roles, setRoles] = useState([]);
-  const [fincas, setFincas] = useState([]);
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    minLength: false,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchRolesAndFincas = async () => {
+    const fetchRoles = async () => {
       try {
         const rolesResponse = await axiosInstance.get("/roles");
         setRoles(rolesResponse.data.roles || []);
-
-        const fincasResponse = await axiosInstance.get("/farms");
-        setFincas(fincasResponse.data || []);
       } catch (error) {
-        console.error("Error fetching roles and fincas:", error);
-        setErrorMessage("Error al cargar roles y fincas. Intente nuevamente.");
+        console.error("Error fetching roles:", error);
+        setErrorMessage("Error al cargar roles. Intente nuevamente.");
       }
     };
 
-    fetchRolesAndFincas();
+    fetchRoles();
   }, []);
+
+  const checkPasswordRequirements = (password) => {
+    setPasswordRequirements({
+      minLength: password.length >= 8 && password.length <= 20,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecialChar: /[!@#$%^&*]/.test(password),
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -152,14 +174,17 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
       ...prevState,
       [name]: value,
     }));
+
+    if (name === "password") {
+      checkPasswordRequirements(value);
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       setErrorMessage("");
-  
-      // Validar que todos los campos obligatorios estén llenos
+
       if (
         !formData.nombre ||
         !formData.apellido ||
@@ -170,63 +195,38 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
         throw new Error("Todos los campos son obligatorios.");
       }
 
-      
-  
-      // Registrar el usuario
       const userResponse = await axiosInstance.post("/users/register", {
         nombre: formData.nombre,
         apellido: formData.apellido,
         email: formData.email,
         password: formData.password,
       });
-  
+
       const userId = userResponse.data.id;
-  
+
       if (!userId) {
         throw new Error("No se pudo obtener el ID del usuario.");
       }
-  
-      // Registrar el rol del usuario en /user-roles/register
+
       const roleResponse = await axiosInstance.post("/user-roles/register", {
         usuario_id: parseInt(userId, 10),
         rol_id: parseInt(formData.rol_id, 10),
       });
-  
+
       if (roleResponse.status !== 200 && roleResponse.status !== 201) {
         throw new Error("Error al asignar el rol al usuario.");
       }
-  
-      // Si se selecciona una finca, establecer la relación usuario-finca-rol
-      if (formData.finca_id) {
-        const dataToSend = {
-          usuario_id: parseInt(userId, 10),
-          rol_id: parseInt(formData.rol_id, 10),
-          finca_id: parseInt(formData.finca_id, 10),
-        };
-  
-        if (isNaN(dataToSend.finca_id)) {
-          throw new Error("La finca seleccionada no es válida.");
-        }
-  
-        const farmResponse = await axiosInstance.post("/user-farm", dataToSend);
-  
-        if (farmResponse.status !== 200 && farmResponse.status !== 201) {
-          throw new Error("Error al establecer la relación usuario-finca-rol.");
-        }
-      }
-  
-      // Mostrar el modal de éxito
+
       setShowSuccessModal(true);
     } catch (error) {
       setErrorMessage(error.message || "Error creando el usuario.");
     }
   };
-  
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     closeModal();
-    onSave(); // Safely call onSave
+    onSave();
   };
 
   return (
@@ -240,7 +240,6 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <FormGrid>
-              {/* First column: Nombre, Apellido, Email */}
               <Column>
                 <InputGroup>
                   <label>Nombre</label>
@@ -276,8 +275,6 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
                   />
                 </InputGroup>
               </Column>
-
-              {/* Second column: Contraseña, Finca, Rol */}
               <Column>
                 <InputGroup>
                   <label>Contraseña</label>
@@ -290,21 +287,23 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
                     required
                   />
                 </InputGroup>
-                <InputGroup>
-                  <label>Finca</label>
-                  <select
-                    name="finca_id"
-                    value={formData.finca_id}
-                    onChange={handleChange}
-                  >
-                    <option value="">Seleccione una finca</option>
-                    {fincas.map((finca) => (
-                      <option key={finca.id} value={finca.id}>
-                        {finca.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </InputGroup>
+                <PasswordRequirements>
+                  <RequirementItem met={passwordRequirements.minLength}>
+                    • Entre 8 y 20 caracteres
+                  </RequirementItem>
+                  <RequirementItem met={passwordRequirements.hasUpperCase}>
+                    • Al menos una letra mayúscula
+                  </RequirementItem>
+                  <RequirementItem met={passwordRequirements.hasLowerCase}>
+                    • Al menos una letra minúscula
+                  </RequirementItem>
+                  <RequirementItem met={passwordRequirements.hasNumber}>
+                    • Al menos un número
+                  </RequirementItem>
+                  <RequirementItem met={passwordRequirements.hasSpecialChar}>
+                    • Al menos un carácter especial (!@#$%^&*)
+                  </RequirementItem>
+                </PasswordRequirements>
                 <InputGroup>
                   <label>Rol</label>
                   <select
