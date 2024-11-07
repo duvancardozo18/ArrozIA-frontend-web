@@ -1,0 +1,251 @@
+/* Diagnosis.scss */
+
+/* Estilo general para la pantalla de diagnóstico */
+.content-area {
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* Header de la página */
+.header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Estilos para la selección de cultivo */
+.crop-selection {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.crop-selection h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #4CAF50;
+}
+
+.crop-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.crop-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background-color: #e8f5e9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.crop-card:hover {
+  background-color: #c8e6c9;
+  transform: translateY(-3px);
+}
+
+.crop-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.crop-card span {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Formulario de captura de imágenes */
+.image-capture-form {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.image-capture-form h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2196F3;
+}
+
+.image-capture-form input[type="file"] {
+  margin-bottom: 15px;
+}
+
+.image-preview {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.image-preview img {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+/* Manejo de subida de imágenes */
+.image-upload-handler {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.image-upload-handler h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2196F3;
+}
+
+.image-upload-handler button {
+  padding: 10px 15px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.image-upload-handler button:hover {
+  background-color: #1e88e5;
+}
+
+.image-upload-handler p {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #555;
+}
+
+/* Visualización de resultados del diagnóstico */
+.diagnosis-results-view {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.diagnosis-results-view h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #4CAF50;
+}
+
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.result-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 250px;
+  background-color: #fefefe;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-item img {
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+.result-details {
+  font-size: 14px;
+  color: #333;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.actions button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.actions button:hover {
+  background-color: #45a049;
+}
+
+/* Historial de diagnósticos */
+.diagnosis-history {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.diagnosis-history h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2196F3;
+}
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.history-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 200px;
+  background-color: #fefefe;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.history-item img {
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+.history-details {
+  font-size: 14px;
+  color: #333;
+}
+
+.history-details button {
+  padding: 5px 10px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.history-details button:hover {
+  background-color: #1e88e5;
+}

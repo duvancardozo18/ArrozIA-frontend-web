@@ -2,68 +2,148 @@
   display: flex;
   align-items: center;
   padding: 1rem;
-  background-color: #f2f8e3; // Fondo pastel suave
+  background-color: #f2f8e3; /* Fondo pastel suave */
   border-radius: 12px;
   margin: 0.5rem 0;
-  transition: box-shadow 0.3s ease, max-height 0.3s ease;
+  transition: box-shadow 0.3s ease, max-height 0.3s ease, transform 0.3s;
   cursor: pointer;
   max-height: 80px;
   overflow: hidden;
+}
 
-  &.expanded {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    max-height: 300px; // Ajuste para expandir el contenido
-  }
+.crop-card:hover {
+  background-color: #c8e6c9;
+  transform: translateY(-3px);
+}
 
-  .icon-container {
-    background-color: #14B814; /* Verde pastel */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    padding: 0.5rem;
-    border-radius: 20%; // Contenedor circular para el icono
-    width: 50px;
-    height: 50px;
-  }
+.crop-card.selected {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+  border: 2px solid #4CAF50;
+}
 
-  .crop-icon {
-    font-size: 1.8rem; // Tamaño ajustado para el ícono
-    color: white; /* Color del ícono en blanco */
-    
-  }
+.icon-container {
+  background-color: #14B814; /* Verde pastel */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  padding: 0.5rem;
+  border-radius: 20%; /* Contenedor circular para el icono */
+  width: 50px;
+  height: 50px;
+}
 
-  .content {
-    flex-grow: 1;
-    
-    .crop-name {
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin: 0;
-      color: #333;
-    }
-  }
+.crop-icon {
+  font-size: 1.8rem; /* Tamaño ajustado para el ícono */
+  color: white; /* Color del ícono en blanco */
+}
 
-  .tasks-container {
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid #ddd;
-    background-color: #fff;
-    padding: 0.5rem;
-    border-radius: 8px;
-    max-height: 200px;
-    overflow-y: auto;
+.content {
+  flex-grow: 1;
+}
 
-    .task-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.25rem 0;
-      font-size: 0.9rem;
-      color: #555;
+.crop-card span {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+}
 
-      &:not(:last-child) {
-        border-bottom: 1px solid #eee;
-      }
-    }
-  }
+.tasks-container {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+  padding: 0.5rem;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.task-item:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.diagnostico-container {
+  display: grid;
+  grid-template-columns: 300px 1fr; /* 300px para los lotes, el resto para el formulario */
+  gap: 20px;
+  padding: 20px;
+}
+
+.lotes-section {
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.image-capture-form {
+  margin: 0;
+  max-width: 100%; /* Para ocupar todo el espacio disponible */
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  text-align: center;
+}
+
+/* Otros estilos para el formulario */
+.image-capture-form h2 {
+  font-size: 28px;
+  margin-bottom: 25px;
+  color: #007BFF;
+  font-weight: 600;
+}
+
+.image-capture-form input[type="file"] {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.image-preview img {
+  border-radius: 10px;
+  border: 3px solid #007BFF;
+  width: 450px;
+  height: 450px;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.image-preview img:hover {
+  transform: scale(1.5);
+}
+
+.image-capture-form button {
+  padding: 40px 40px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 50px;
+  font-weight: 600;
+}
+
+.image-capture-form button:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
 }

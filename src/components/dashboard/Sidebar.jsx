@@ -3,7 +3,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
-import { FaUserCog } from "react-icons/fa";
+import { FaUserCog,FaDrupal } from "react-icons/fa";
 import {
   MdOutlineAgriculture,
   MdOutlineCloud,
@@ -90,13 +90,21 @@ const Sidebar = () => {
           <ul className="menu-list">
             <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
             <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
-            <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
-            <MenuItem to="/monitoring" icon={<MdOutlineAssignment size={35} />} text="Monitoreo" />
+            <MenuItem to="/diagnosis" icon={<FaDrupal   size={35}/>} text="Diagnosticos" />
+
+            {/* Nuevo menú de Tareas */}
+            <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
+
+             {/* Nuevo menú de Tareas */}
+             <MenuItem to="/monitoring" icon={<MdOutlineAssignment size={35} />} text="Monitoreo" />
+
+            {/* Menú de Usuarios y Roles con verificación de permisos */}
             <MenuItem
               to="/weather-monitoring"  // Ruta para el módulo meteorológico
               icon={<MdOutlineCloud size={35} />}
               text="Datos Meteorológicos"
             />
+
             {hasPermission("crear_usuario") && (
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
             )}
