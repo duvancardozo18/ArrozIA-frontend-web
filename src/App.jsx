@@ -18,7 +18,7 @@ import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst';
 import CropView from './components/dashboard/crops/CropView';
 import VegetativeCard from './components/dashboard/vegetativecycle/VegetativeCard';
 import Calendar from './components/dashboard/lands/MyCalendarPage';
-import Diagnosis from './components/dashboard/diagnosis/CropSelection';
+import Diagnosis from './components/dashboard/diagnosis2/CropSelection';
 import WeatherMonitoringView from './components/dashboard/datosMeteorologicos/WeatherMonitoringView';
 import { Profile } from "./screens";
 
