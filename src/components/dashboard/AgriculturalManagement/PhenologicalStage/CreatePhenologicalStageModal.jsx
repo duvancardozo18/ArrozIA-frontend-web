@@ -3,7 +3,6 @@ import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../../dashboard/modal/SuccessModal";
 
-// Estilos de modal y elementos
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -30,6 +29,12 @@ const ModalContent = styled.div`
   &:hover {
     transform: translateY(-10px) scale(1.03) perspective(1000px);
   }
+`;
+
+const Title = styled.h2`
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 30px;
 `;
 
 const ErrorMessage = styled.p`
@@ -113,7 +118,6 @@ const CreatePhenologicalStageModal = ({ closeModal, onSave }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Cargar variedades de arroz
   useEffect(() => {
     const fetchVarieties = async () => {
       try {
@@ -126,7 +130,6 @@ const CreatePhenologicalStageModal = ({ closeModal, onSave }) => {
     fetchVarieties();
   }, []);
 
-  // Cargar etapas fenológicas
   useEffect(() => {
     const fetchPhenologicalStages = async () => {
       try {
@@ -141,11 +144,29 @@ const CreatePhenologicalStageModal = ({ closeModal, onSave }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === "dias_duracion" && value.length > 10) {
+      setErrorMessage("El campo 'Días de Duración' no puede exceder los 10 caracteres.");
+    } else if (name === "dias_duracion" && value.length === 9) {
+      setErrorMessage("El campo 'Días de Duración' no puede exceder los 10 caracteres.");
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setErrorMessage(""); // Limpiar el mensaje de error cuando la longitud es válida
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!formData.variedad_arroz_id || !formData.etapa_fenologica_id || !formData.dias_duracion) {
+      setErrorMessage("Por favor, complete todos los campos obligatorios.");
+      return;
+    }
+
+    if (formData.dias_duracion.length > 10) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 10 caracteres en el campo 'Días de Duración'.");
+      return;
+    }
 
     try {
       const response = await axiosInstance.post("/variety-rice-stages", formData);
@@ -170,9 +191,7 @@ const CreatePhenologicalStageModal = ({ closeModal, onSave }) => {
       <ModalOverlay>
         <ModalContent>
           <CloseButton onClick={closeModal}>×</CloseButton>
-          <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-            Crear Etapa Fenológica
-          </h2>
+          <Title>Crear Etapa Fenológica</Title>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
             <InputGroup>

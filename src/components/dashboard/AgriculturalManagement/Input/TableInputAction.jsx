@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from "react-icons/hi";
-import EditInsumoModal from "./EditInputModal"; // Importa el modal de edición de insumo
+import EditInsumoModal from "./EditInputModal";
 import DeleteModal from "../../modal/DeleteModal";
 import SuccessModal from "../../modal/SuccessModal";
-import ViewInsumoModal from "./ViewInputModal"; // Importa el modal de visualización de insumo
+import ViewInsumoModal from "./ViewInputModal";
 import axiosInstance from "../../../../config/AxiosInstance";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Estilos para los botones de acción
 const ActionButton = styled.button`
@@ -59,12 +61,11 @@ const TablaInsumosAction = ({ insumo, onSave }) => {
   const closeDeleteModal = () => setShowDeleteModal(false);
 
   const handleDelete = async () => {
-    console.log("Insumo a eliminar:", insumo); // Agregar para verificar el insumo
+    console.log("Insumo a eliminar:", insumo);
 
     try {
       closeDeleteModal();
       if (insumo && insumo.id) {
-        // Asegurarse de que el insumo y su id están definidos
         const response = await axiosInstance.delete(`/delete/input/${insumo.id}`);
         if (response.status === 200) {
           setShowSuccessModal(true); // Mostrar modal de éxito si se elimina correctamente
@@ -75,6 +76,14 @@ const TablaInsumosAction = ({ insumo, onSave }) => {
         console.error("El ID del insumo es undefined o no existe");
       }
     } catch (error) {
+      // Configurar el mensaje de error basado en el tipo de error
+      if (error.response?.status === 409) {
+        toast.error("No se puede eliminar este insumo porque está relacionado con otras tablas.");
+      } else if (error.message === "Network Error") {
+        toast.error("No se puede elimar este insumo Agricola. Está relacionado a una tarea existente");
+      } else {
+        toast.error("Ocurrió un error al intentar eliminar el insumo.");
+      }
       console.error("Error al eliminar el insumo:", error);
     }
   };
@@ -85,24 +94,26 @@ const TablaInsumosAction = ({ insumo, onSave }) => {
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
-      {/* Botón de Ver */}
-      <ViewButton onClick={openViewModal}>
-        <HiOutlineEye size={18} />
-        Ver
-      </ViewButton>
+    <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        {/* Botón de Ver */}
+        <ViewButton onClick={openViewModal}>
+          <HiOutlineEye size={18} />
+          Ver
+        </ViewButton>
 
-      {/* Botón de Edición */}
-      <EditButton onClick={openEditModal}>
-        <HiOutlinePencil size={18} />
-        Editar
-      </EditButton>
+        {/* Botón de Edición */}
+        <EditButton onClick={openEditModal}>
+          <HiOutlinePencil size={18} />
+          Editar
+        </EditButton>
 
-      {/* Botón de Eliminación */}
-      <DeleteButton onClick={openDeleteModal}>
-        <HiOutlineTrash size={18} />
-        Eliminar
-      </DeleteButton>
+        {/* Botón de Eliminación */}
+        <DeleteButton onClick={openDeleteModal}>
+          <HiOutlineTrash size={18} />
+          Eliminar
+        </DeleteButton>
+      </div>
 
       {/* Modal de Visualización */}
       <ViewInsumoModal
@@ -138,6 +149,9 @@ const TablaInsumosAction = ({ insumo, onSave }) => {
           message="¡Insumo eliminado exitosamente!"
         />
       )}
+      
+      {/* Contenedor para mensajes de Toast */}
+      <ToastContainer />
     </div>
   );
 };

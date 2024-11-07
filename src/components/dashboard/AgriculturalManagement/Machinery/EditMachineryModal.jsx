@@ -3,7 +3,7 @@ import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../modal/SuccessModal";
 
-// Estilos de modal y elementos (los mismos que proporcionaste)
+// Estilos de modal y elementos
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -30,6 +30,20 @@ const ModalContent = styled.div`
   &:hover {
     transform: translateY(-10px) scale(1.03) perspective(1000px);
   }
+`;
+
+const Title = styled.h2`
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 30px;
+`;
+
+const ErrorMessage = styled.p`
+  color: #ff6b6b;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
 `;
 
 const CloseButton = styled.button`
@@ -99,20 +113,6 @@ const SubmitButton = styled.button`
   }
 `;
 
-const Title = styled.h2`
-  text-align: center;
-  font-size: 24px;
-  margin-bottom: 30px;
-`;
-
-const ErrorMessage = styled.p`
-  color: #ff6b6b;
-  font-size: 18px;
-  margin-bottom: 20px;
-  text-align: center;
-  font-weight: bold;
-`;
-
 const EditMachineryModal = ({ show, closeModal, machinery, onSave }) => {
   const [formData, setFormData] = useState({
     name: machinery?.name || "",
@@ -152,8 +152,12 @@ const EditMachineryModal = ({ show, closeModal, machinery, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "name" && value.length > 100) {
+    if (name === "name" && value.length >= 99) {
       setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    } else if (name === "description" && value.length >= 299) {
+      setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
+    } else if (name === "costPerHour" && value.length > 20) {
+      setErrorMessage("El campo 'Costo por Hora' no puede exceder los 20 dígitos.");
     } else {
       setFormData({ ...formData, [name]: value });
       setErrorMessage("");
@@ -163,12 +167,25 @@ const EditMachineryModal = ({ show, closeModal, machinery, onSave }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (formData.name.length > 100) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
+      return;
+    }
+
+    if (formData.description.length > 300) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
+      return;
+    }
+
+    if (formData.costPerHour.length > 20) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 20 dígitos en el campo 'Costo por Hora'.");
+      return;
+    }
+
     try {
       setErrorMessage("");
       // Realiza una solicitud PUT para actualizar la maquinaria
       await axiosInstance.put(`/machinery/${machinery.id}`, formData);
-      console.log("Maquinaria actualizada correctamente");
-
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al editar la maquinaria:", error);
@@ -199,17 +216,18 @@ const EditMachineryModal = ({ show, closeModal, machinery, onSave }) => {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  maxLength={100}
                 />
               </InputGroup>
 
               <InputGroup>
                 <label>Tipo de Maquinaria</label>
-                <input
-                  type="text"
+                <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  required
+                  rows={3}
+                  maxLength={300}
                 />
               </InputGroup>
 

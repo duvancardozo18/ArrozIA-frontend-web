@@ -29,7 +29,7 @@ const ModalContent = styled.div`
 
 const Title = styled.h2`
   text-align: center;
-  margin-bottom: 30px; /* Separación del título */
+  margin-bottom: 30px;
 `;
 
 const ErrorMessage = styled.p`
@@ -71,7 +71,7 @@ const InputGroup = styled.div`
     transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 
     &:focus {
-      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3); /* Efecto de iluminación */
+      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
       outline: none;
     }
   }
@@ -95,19 +95,41 @@ const SubmitButton = styled.button`
 const CreateLaborModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: "",
-    descripcion: ""
+    descripcion: "",
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setErrorMessage("");
+
+    if (name === "nombre" && value.length >= 99) {
+      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    } else if (name === "descripcion" && value.length >= 299) {
+      setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
+    } else {
+      setErrorMessage(""); // Limpiar mensaje de error si la entrada es válida
+    }
+
+    if (name === "nombre" && value.length <= 100) {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "descripcion" && value.length <= 300) {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (formData.nombre.length > 100) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
+      return;
+    }
+
+    if (formData.descripcion.length > 300) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
+      return;
+    }
 
     try {
       await axiosInstance.post("/labor-cultural/create", formData);
@@ -140,6 +162,7 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
                 value={formData.nombre}
                 onChange={handleChange}
                 required
+                maxLength={100}
               />
             </InputGroup>
             <InputGroup>
@@ -150,6 +173,7 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
                 onChange={handleChange}
                 required
                 rows={3}
+                maxLength={300}
               />
             </InputGroup>
             <SubmitButton type="submit">Crear</SubmitButton>

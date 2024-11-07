@@ -181,6 +181,8 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
 
     if (name === "nombre" && value.length > 100) {
       setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    } else if (name === "descripcion" && value.length > 300) {
+      setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
     } else {
       setFormData({ ...formData, [name]: value });
       setErrorMessage("");
@@ -192,6 +194,11 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
 
     if (formData.nombre.length > 100) {
       setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
+      return;
+    }
+
+    if (formData.descripcion.length > 300) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
       return;
     }
 

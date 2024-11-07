@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
-import SuccessModal from "../../modal/SuccessModal"; // Importa el modal de éxito
+import SuccessModal from "../../modal/SuccessModal";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -58,7 +58,6 @@ const CloseButton = styled.button`
 
 const InputGroup = styled.div`
   margin-bottom: 20px;
-  flex: 1;
 
   label {
     display: block;
@@ -97,11 +96,9 @@ const SubmitButton = styled.button`
   border-radius: 10px;
   font-size: 18px;
   cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
     background-color: #218838;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -134,9 +131,12 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validar longitud de los campos
     if ((name === "nombre" || name === "numero_registro_productor_ica") && value.length > 50) {
-      setErrorMessage(`Límite de 50 caracteres alcanzado para Registro ICA`);
+      setErrorMessage(`El campo no puede exceder los 50 caracteres.`);
+    } else if (name === "caracteristicas_variedad" && value.length > 300) {
+      setErrorMessage("El campo 'Características' no puede exceder los 300 caracteres.");
+    } else if ((name === "nombre" || name === "numero_registro_productor_ica") && value.length === 49) {
+      setErrorMessage(`Queda un solo carácter para el campo '${name === "nombre" ? "Nombre" : "Registro ICA"}'.`);
     } else {
       setFormData({ ...formData, [name]: value });
       setErrorMessage(""); // Limpiar mensaje de error cuando la longitud es válida
@@ -145,14 +145,24 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrorMessage("");
+
+    if (formData.nombre.length > 50) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 50 caracteres en el campo 'Nombre'.");
+      return;
+    }
+
+    if (formData.numero_registro_productor_ica.length > 50) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 50 caracteres en el campo 'Registro ICA'.");
+      return;
+    }
+
+    if (formData.caracteristicas_variedad.length > 300) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Características'.");
+      return;
+    }
 
     try {
-      if (formData.nombre.length > 50 || formData.numero_registro_productor_ica.length > 50) {
-        setErrorMessage("No se puede enviar porque se superaron los límites de caracteres.");
-        return;
-      }
-
+      setErrorMessage("");
       await axiosInstance.put(`/update-variety/${variety.id}`, formData);
       setShowSuccessModal(true);
     } catch (error) {
@@ -183,6 +193,7 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
                   value={formData.nombre}
                   onChange={handleChange}
                   required
+                  maxLength={50}
                 />
               </InputGroup>
               <InputGroup>
@@ -193,6 +204,7 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
                   value={formData.numero_registro_productor_ica}
                   onChange={handleChange}
                   required
+                  maxLength={50}
                 />
               </InputGroup>
               <InputGroup>
@@ -202,6 +214,7 @@ const EditVarietyModal = ({ show, closeModal, variety }) => {
                   value={formData.caracteristicas_variedad}
                   onChange={handleChange}
                   rows={3}
+                  maxLength={300}
                 />
               </InputGroup>
               <SubmitButton type="submit">Guardar Cambios</SubmitButton>

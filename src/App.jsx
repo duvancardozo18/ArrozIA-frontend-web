@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization, Task, Monitoring } from "./screens";
+import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization, Task, Monitoring, SoilAnalysis } from "./screens";
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider";
 import PrivateRoute from "./config/PrivateRoute";
@@ -82,6 +82,8 @@ function App() {
             <Route path="/task" element={<PrivateRoute element={<Task />} />} />
             <Route path="/monitoring" element={<PrivateRoute element={<Monitoring />} />} />
             <Route path="/weather-monitoring" element={<PrivateRoute element={<WeatherMonitoringView />} />} />
+            <Route path="/soil_analysis" element={<PrivateRoute element={<SoilAnalysis />} />} />
+            
           </Route>
 
           <Route path="*" element={<PageNotFound />} />

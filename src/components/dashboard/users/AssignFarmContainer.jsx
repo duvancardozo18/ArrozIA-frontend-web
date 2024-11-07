@@ -5,19 +5,19 @@ import 'react-toastify/dist/ReactToastify.css';
 import SuccessModal from '../modal/SuccessModal';
 import "../../../css/AssignFarmContainer.scss";
 
-const AssignFarmContainer = () => {
-  const [users, setUsers] = useState([]);
-  const [farms, setFarms] = useState([]);
-  const [refresh, setRefresh] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState("");
-  const [selectedFarm, setSelectedFarm] = useState("");
-  const [userSearch, setUserSearch] = useState("");
-  const [farmSearch, setFarmSearch] = useState("");
-  const [showUserOptions, setShowUserOptions] = useState(false);
-  const [showFarmOptions, setShowFarmOptions] = useState(false);
+const AssignFarmContainer = ({ onSave }) => {
+  const [users, setUsers] = useState([]); // Lista de usuarios
+  const [farms, setFarms] = useState([]); // Lista de fincas
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // Modal de éxito
+  const [selectedUser, setSelectedUser] = useState(""); // Usuario seleccionado
+  const [selectedFarm, setSelectedFarm] = useState(""); // Finca seleccionada
+  const [userSearch, setUserSearch] = useState(""); // Búsqueda de usuario
+  const [farmSearch, setFarmSearch] = useState(""); // Búsqueda de finca
+  const [showUserOptions, setShowUserOptions] = useState(false); // Opciones de usuarios
+  const [showFarmOptions, setShowFarmOptions] = useState(false); // Opciones de fincas
 
   useEffect(() => {
+    // Cargar usuarios y fincas
     axiosInstance.get("/users")
       .then((response) => setUsers(response.data))
       .catch((error) => console.error("Error fetching users:", error));
@@ -25,18 +25,18 @@ const AssignFarmContainer = () => {
     axiosInstance.get("/farms")
       .then((response) => setFarms(response.data))
       .catch((error) => console.error("Error fetching farms:", error));
-  }, [refresh]);
+  }, []);
 
   const handleAssignFarm = () => {
     if (selectedUser && selectedFarm) {
       axiosInstance.post(`/users/${selectedUser}/assign-farm`, { farm_id: selectedFarm })
         .then(() => {
-          setShowSuccessModal(true);
-          setRefresh((prev) => !prev);
-          setSelectedUser("");
-          setSelectedFarm("");
-          setUserSearch("");
-          setFarmSearch("");
+          setShowSuccessModal(true); // Mostrar modal de éxito
+          onSave(); // Llamar a onSave para refrescar la tabla de usuarios en el componente padre
+          setSelectedUser(""); // Limpiar selección de usuario
+          setSelectedFarm(""); // Limpiar selección de finca
+          setUserSearch(""); // Limpiar campo de búsqueda de usuario
+          setFarmSearch(""); // Limpiar campo de búsqueda de finca
         })
         .catch((error) => {
           console.error("Error assigning farm:", error);
