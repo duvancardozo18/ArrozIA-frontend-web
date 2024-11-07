@@ -7,7 +7,7 @@ const TABLE_HEADS = [
   "Nombre",
   "Apellido",
   "Correo electrónico",
-  "Finca",
+  "Fincas",
   "Rol",
   "Acciones",
 ];
@@ -23,30 +23,25 @@ const AreaTable = ({ refresh }) => {
 
       const usersWithFarmAndRole = await Promise.all(
         users.map(async (user) => {
-          let farmId = null;
-          let farmName = "Sin finca"; // Valor por defecto para finca
-          let roleName = "Sin rol";   // Valor por defecto para rol
-          let roleId = null;
+          let farmNames = "Sin finca"; // Valor por defecto para finca
+          let roleName = "Sin rol";    // Valor por defecto para rol
 
           try {
-            // Intenta obtener la finca con su nombre
-            const farmResponse = await axiosInstance.get(`/user-farm-rol/${user.id}`);
-            farmId = farmResponse.data?.finca_id || null;
-            farmName = farmResponse.data?.farm_name || "Sin finca";
+            // Obtener todas las fincas del usuario
+            const farmResponse = await axiosInstance.get(`/user-farms/${user.id}`);
+            const farms = farmResponse.data;
+            farmNames = farms.length > 0 ? farms.map(farm => farm.nombre).join(", ") : "Sin finca";
           } catch (error) {
-            // Solo muestra errores que no sean 404
             if (error.response?.status !== 404) {
-              console.error(`Error fetching farm for user ${user.id}:`, error);
+              console.error(`Error fetching farms for user ${user.id}:`, error);
             }
           }
 
           try {
-            // Intenta obtener el rol con su id y nombre
+            // Obtener el rol del usuario
             const roleResponse = await axiosInstance.get(`/user-roles/user/${user.id}`);
             roleName = roleResponse.data?.nombre || "Sin rol";
-            roleId = roleResponse.data?.id || null;
           } catch (error) {
-            // Solo muestra errores que no sean 404
             if (error.response?.status !== 404) {
               console.error(`Error fetching role for user ${user.id}:`, error);
             }
@@ -54,9 +49,7 @@ const AreaTable = ({ refresh }) => {
 
           return { 
             ...user, 
-            finca_id: farmId,
-            farm_name: farmName,
-            rol_id: roleId,
+            farm_names: farmNames,
             role_name: roleName
           };
         })
@@ -94,7 +87,7 @@ const AreaTable = ({ refresh }) => {
                   <td>{dataItem.nombre}</td>
                   <td>{dataItem.apellido}</td>
                   <td>{dataItem.email}</td>
-                  <td>{dataItem.farm_name}</td>
+                  <td>{dataItem.farm_names}</td>
                   <td>{dataItem.role_name}</td>
                   <td className="dt-cell-action">
                     <AreaTableAction user={dataItem} onSave={fetchUsers} />

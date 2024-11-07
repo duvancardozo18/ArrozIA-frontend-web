@@ -256,7 +256,12 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
                       required
                     />
                   </InputGroup>
-                  <InputGroup>
+                  
+                </Column>
+
+                {/* Segunda columna: Finca y Rol */}
+                <Column>
+                <InputGroup>
                     <label>Email</label>
                     <input
                       type="email"
@@ -266,34 +271,7 @@ const EditModal = ({ show, closeModal, user, onSave }) => {
                       required
                     />
                   </InputGroup>
-                </Column>
-
-                {/* Segunda columna: Finca y Rol */}
-                <Column>
-                  <InputGroup>
-                    <label>Contraseña (opcional)</label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                    />
-                  </InputGroup>
-                  <InputGroup>
-                    <label>Finca</label>
-                    <select
-                      name="finca_id"
-                      value={formData.finca_id}
-                      onChange={handleChange}
-                    >
-                      <option value="">Seleccione una finca</option>
-                      {fincas.map((finca) => (
-                        <option key={finca.id} value={finca.id}>
-                          {finca.nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </InputGroup>
+                 
                   <InputGroup>
                     <label>Rol</label>
                     <select

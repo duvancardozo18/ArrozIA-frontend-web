@@ -1,10 +1,68 @@
-// TableroKanban.jsx
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import TaskCard from './TaskCard';  // Importa el componente de tarjeta de tarea
+import TaskCard from './TaskCard';
 import axiosInstance from '../../../config/AxiosInstance';
+import styled from 'styled-components';
 
-const TableroKanban = ({ tasks, onTaskUpdate }) => {
+const BoardContainer = styled.div`
+  padding: 20px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+`;
+
+const Title = styled.h2`
+  font-size: 24px;
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+    text-align: center;
+  }
+`;
+
+const Columns = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+  }
+`;
+
+const Column = styled.div`
+  flex: 1;
+  padding: 15px;
+  border-radius: 8px;
+  min-height: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: ${({ statusId }) =>
+    statusId === '1' ? '#ffe6e6' : statusId === '2' ? '#fff4cc' : '#e6ffe6'};
+
+  h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+`;
+
+const NoTasksMessage = styled.div`
+  text-align: center;
+  font-size: 18px;
+  color: #555;
+  margin-top: 40px;
+`;
+
+const TableroKanban = ({ tasks, onTaskUpdate, selectedCropName }) => {
   // Clasificar tareas por estado
   const tasksByStatus = {
     1: tasks.filter(task => task.estado_id === 1), // Pendiente
@@ -39,73 +97,46 @@ const TableroKanban = ({ tasks, onTaskUpdate }) => {
   };
 
   return (
-    <div style={styles.boardContainer}>
-      <h2 style={styles.title}>Gestión de Tareas</h2>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div style={styles.columns}>
-          {Object.keys(tasksByStatus).map((statusId) => (
-            <Droppable key={statusId} droppableId={statusId}>
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  style={{
-                    ...styles.column,
-                    backgroundColor:
-                      statusId === '1'
-                        ? '#ffe6e6'
-                        : statusId === '2'
-                        ? '#fff4cc'
-                        : '#e6ffe6',
-                  }}
-                >
-                  <h3>{statusId === '1' ? 'Pendiente' : statusId === '2' ? 'En Progreso' : 'Completada'}</h3>
-                  {tasksByStatus[statusId].map((task, index) => (
-                    <Draggable key={task.id} draggableId={String(task.id)} index={index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <TaskCard task={task} />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ))}
-        </div>
-      </DragDropContext>
-    </div>
+    <BoardContainer>
+      <Title>Gestión de Tareas {selectedCropName && `- ${selectedCropName}`}</Title>
+      
+      {tasks.length === 0 ? (
+        <NoTasksMessage>Este cultivo no tiene tareas disponibles.</NoTasksMessage>
+      ) : (
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Columns>
+            {Object.keys(tasksByStatus).map((statusId) => (
+              <Droppable key={statusId} droppableId={statusId}>
+                {(provided) => (
+                  <Column
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    statusId={statusId}
+                  >
+                    <h3>{statusId === '1' ? 'Pendiente' : statusId === '2' ? 'En Progreso' : 'Completada'}</h3>
+                    {tasksByStatus[statusId].map((task, index) => (
+                      <Draggable key={task.id} draggableId={String(task.id)} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <TaskCard task={task} />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </Column>
+                )}
+              </Droppable>
+            ))}
+          </Columns>
+        </DragDropContext>
+      )}
+    </BoardContainer>
   );
-};
-
-const styles = {
-  boardContainer: {
-    padding: '20px',
-    backgroundColor: '#f0f2f5',
-    minHeight: '100vh',
-  },
-  title: {
-    fontSize: '24px',
-    marginBottom: '20px',
-  },
-  columns: {
-    display: 'flex',
-    gap: '20px',
-    marginTop: '20px',
-  },
-  column: {
-    flex: 1,
-    padding: '15px',
-    borderRadius: '8px',
-    minHeight: '400px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-  },
 };
 
 export default TableroKanban;

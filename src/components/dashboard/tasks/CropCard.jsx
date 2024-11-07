@@ -13,16 +13,31 @@ const StyledCard = styled(Card)`
   border-radius: 12px;
   background-color: #ffffff;
   transition: all 0.3s ease;
-
-  /* Aplica una sombra 3D envolvente si el card está seleccionado */
+  transform: ${({ isSelected }) => (isSelected ? 'translateZ(15px) scale(1.05)' : 'scale(1)')};
   box-shadow: ${({ isSelected }) =>
     isSelected
-      ? '0px 4px 8px rgba(0, 128, 0, 0.2), 0px 8px 16px rgba(0, 128, 0, 0.2), 0px 12px 24px rgba(0, 128, 0, 0.15)'
+      ? '0 8px 16px rgba(0, 128, 0, 0.5), 0 12px 24px rgba(0, 128, 0, 0.3)'
       : '0px 2px 10px rgba(0, 0, 0, 0.1)'};
-  transform: ${({ isSelected }) => (isSelected ? 'scale(1.05)' : 'scale(1)')};
 
   &:hover {
-    transform: ${({ isSelected }) => (isSelected ? 'scale(1.08)' : 'scale(1.03)')};
+    transform: ${({ isSelected }) => (isSelected ? 'translateZ(20px) scale(1.08)' : 'scale(1.03)')};
+    box-shadow: 0 8px 16px rgba(0, 128, 0, 0.4), 0 12px 24px rgba(0, 128, 0, 0.3);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 12px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transform: ${({ isSelected }) => (isSelected ? 'scale(1.02)' : 'scale(1)')};
   }
 `;
 
@@ -35,6 +50,19 @@ const IconContainer = styled.div`
   width: 40px;
   height: 40px;
   margin-right: 10px;
+
+  /* Adjust icon size on smaller screens */
+  @media (max-width: 768px) {
+    width: 35px;
+    height: 35px;
+    margin-right: 8px;
+  }
+
+  @media (max-width: 480px) {
+    width: 30px;
+    height: 30px;
+    margin: 0 auto 10px;
+  }
 `;
 
 const CropCard = ({ cropName, isSelected, onClick }) => {
