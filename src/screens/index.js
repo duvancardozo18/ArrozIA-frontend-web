@@ -9,4 +9,4 @@ export { default as AgriculturalManagement } from "./dashboard/AgriculturalManag
 export { default as Mechanization } from "./dashboard/Mechanization";
 export { default as Task } from "./dashboard/Task";
 export { default as Monitoring } from "./dashboard/Monitoring";
-
+export { default as Diagnosis } from "./dashboard/DiagnosisScreen";

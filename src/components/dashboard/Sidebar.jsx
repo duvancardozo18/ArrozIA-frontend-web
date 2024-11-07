@@ -3,7 +3,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
-import { FaUserCog } from "react-icons/fa";
+import { FaUserCog,FaDrupal } from "react-icons/fa";
 import {
   MdOutlineAgriculture,
   MdOutlineBarChart,
@@ -101,15 +101,13 @@ const Sidebar = () => {
             {/* Menú de Gestión Agrícola con el icono actualizado */}
             <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
 
-            
+            <MenuItem to="/diagnosis" icon={<FaDrupal   size={35}/>} text="Diagnosticos" />
 
             {/* Nuevo menú de Tareas */}
             <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
 
              {/* Nuevo menú de Tareas */}
              <MenuItem to="/monitoring" icon={<MdOutlineAssignment size={35} />} text="Monitoreo" />
-
-            
 
             {/* Menú de Usuarios y Roles con verificación de permisos */}
             {hasPermission("crear_usuario") && (

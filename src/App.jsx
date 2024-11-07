@@ -18,7 +18,7 @@ import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst';
 import CropView from './components/dashboard/crops/CropView';
 import VegetativeCard from './components/dashboard/vegetativecycle/VegetativeCard';
 import Calendar from './components/dashboard/lands/MyCalendarPage';
-
+import Diagnosis from './components/dashboard/diagnosis/CropSelection';
 
 
 
@@ -74,6 +74,7 @@ function App() {
             <Route path="/roles" element={<PrivateRoute element={<Roles />} requiredPermission="crear_rol" />} />
             <Route path="/farms" element={<PrivateRoute element={<Farms />} />} />
             <Route path="/crops" element={<PrivateRoute element={<Crops />} />} />
+            <Route path="/diagnosis" element={<PrivateRoute element={<Diagnosis />} />} />
             <Route path="/land/:loteId/crop" element={<PrivateRoute element={<LandsMain />} />} />
             <Route path="/agricultural_management" element={<PrivateRoute element={<AgriculturalManagement />} />} />
             <Route path="/vegetative-cycle" element={<PrivateRoute element={<VegetativeCycle />} requiredPermission="crear_usuario" />} />
