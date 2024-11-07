@@ -1,0 +1,70 @@
+.weather-card {
+    border: 1px solid #e0e0e0; /* Borde más sutil */
+    padding: 20px; /* Aumenta el padding para darle más espacio */
+    margin: 12px 0;
+    border-radius: 10px; /* Bordes más redondeados */
+    display: flex;
+    align-items: center;
+    background-color: #ffffff; /* Fondo blanco para consistencia */
+    transition: box-shadow 0.3s ease;
+    position: relative;
+
+    &:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra más suave */
+    }
+
+    .icon-container {
+        margin-right: 20px;
+        flex-shrink: 0;
+        background-color: #f0f4f7; /* Fondo ligeramente contrastante */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera para icono */
+    }
+
+    .weather-content {
+        flex-grow: 1;
+
+        .weather-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 0 0 8px;
+            color: #333; /* Texto oscuro para mejor contraste */
+        }
+
+        .weather-recommendation,
+        .weather-detail {
+            font-size: 0.95em;
+            color: #555; /* Texto gris oscuro para mejor legibilidad */
+            margin: 3px 0;
+        }
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-left: auto;
+    }
+
+    .edit-button,
+    .delete-button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2em;
+        padding: 5px;
+        transition: color 0.3s ease;
+    }
+
+    .edit-button:hover {
+        color: #3498db; /* Azul para editar */
+    }
+
+    .delete-button:hover {
+        color: #e74c3c; /* Rojo para eliminar */
+    }
+}
