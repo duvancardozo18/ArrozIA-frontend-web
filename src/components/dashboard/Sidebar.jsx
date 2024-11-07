@@ -6,9 +6,9 @@ import LogoWhite from "../../assets/images/logo.png";
 import { FaUserCog,FaDrupal } from "react-icons/fa";
 import {
   MdOutlineAgriculture,
-  MdOutlineBarChart,
+  MdOutlineCloud,
   MdOutlineClose,
-  MdOutlineGridView,
+  MdOutlineBarChart,
   MdOutlineLogout,
   MdOutlinePeople,
   MdOutlinePerson2,
@@ -17,23 +17,19 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../css/Sidebar.scss";
 import { SidebarContext } from "../../context/SidebarContext";
-import { AuthContext } from "../../config/AuthProvider"; // Importar el contexto de autenticación
+import { AuthContext } from "../../config/AuthProvider";
 
 const Sidebar = () => {
   const { theme } = useContext(ThemeContext);
   const { isSidebarOpen, closeSidebar } = useContext(SidebarContext);
-  const { userId, permissions } = useContext(AuthContext); // Obtener userId y permisos desde el contexto de autenticación
+  const { userId, permissions } = useContext(AuthContext);
   const navbarRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Función para determinar si el enlace está activo
   const isActive = (path) => location.pathname === path;
+  const hasPermission = (permission) => permissions.includes(permission);
 
-  // Verificar permisos desde el contexto
-  const hasPermission = (permission) => permissions.includes(permission); // Generalizar la verificación de permisos
-
-  // Función para cerrar la barra lateral al hacer clic fuera de ella
   const handleClickOutside = (event) => {
     if (
       navbarRef.current &&
@@ -51,20 +47,18 @@ const Sidebar = () => {
     };
   }, []);
 
-  // Función para manejar el logout
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_id");
     navigate("/");
   };
 
-  // Componente para un enlace del menú
-  const MenuItem = ({ to, icon, text }) => (
+  const MenuItem = ({ to, icon, text, onClick }) => (
     <li className="menu-item">
       <Link
-        to={to}
+        to={to || "#"}
         className={`menu-link ${isActive(to) ? "active" : ""}`}
-        onClick={closeSidebar} // Cerrar el sidebar al hacer clic
+        onClick={onClick || closeSidebar}
       >
         <span className="menu-link-icon">{icon}</span>
         <span className="menu-link-text">{text}</span>
@@ -94,13 +88,8 @@ const Sidebar = () => {
       <div className="sidebar-body">
         <div className="sidebar-menu">
           <ul className="menu-list">
-            {/* Menú de Fincas */}
             <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
-            {/* <MenuItem to="/crops" icon={<MdOutlineBarChart size={35} />} text="Cultivos" /> */}
-            
-            {/* Menú de Gestión Agrícola con el icono actualizado */}
             <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
-
             <MenuItem to="/diagnosis" icon={<FaDrupal   size={35}/>} text="Diagnosticos" />
 
             {/* Nuevo menú de Tareas */}
@@ -110,6 +99,12 @@ const Sidebar = () => {
              <MenuItem to="/monitoring" icon={<MdOutlineAssignment size={35} />} text="Monitoreo" />
 
             {/* Menú de Usuarios y Roles con verificación de permisos */}
+            <MenuItem
+              to="/weather-monitoring"  // Ruta para el módulo meteorológico
+              icon={<MdOutlineCloud size={35} />}
+              text="Datos Meteorológicos"
+            />
+
             {hasPermission("crear_usuario") && (
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
             )}
@@ -119,7 +114,6 @@ const Sidebar = () => {
           </ul>
         </div>
 
-        {/* Menú de perfil y logout */}
         <div className="sidebar-menu sidebar-menu2">
           <ul className="menu-list">
             <MenuItem to="/profile" icon={<MdOutlinePerson2 size={35} />} text="Perfil" />

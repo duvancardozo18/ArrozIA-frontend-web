@@ -1,15 +1,13 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../config/AxiosInstance'; 
-import { AuthContext } from '../../config/AuthProvider';
+import { AuthContext } from '../../config/AuthProvider'; 
 import logo from '../../assets/images/logo.png';
 import background from '../../assets/images/background.webp';
-import { IconButton, InputAdornment } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const LoginContainer = styled.div`
-  position: fixed;
+  position: fixed;  
   z-index: 101;
   display: flex;
   align-items: center;
@@ -19,6 +17,7 @@ const LoginContainer = styled.div`
   background-image: url(${background});
   background-size: cover;
   background-position: center;
+  
 `;
 
 const FormContainer = styled.div`
@@ -59,65 +58,60 @@ const Input = styled.input`
   }
 `;
 
-const PasswordInputContainer = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
 const Button = styled.button`
   width: 100%;
   padding: 12px;
-  background-color: ${({ disabled }) => (disabled ? '#ddd' : '#27ae60')};
+  background-color: #27ae60;
   color: white;
   border: none;
   border-radius: 10px;
   font-size: 18px;
   font-family: 'Roboto', sans-serif;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
-    background-color: ${({ disabled }) => (disabled ? '#ddd' : '#219150')};
-    box-shadow: ${({ disabled }) => (disabled ? 'none' : '0 8px 15px rgba(0, 0, 0, 0.1)')};
+    background-color: #219150;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 `;
 
+const LinkContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+`;
+
+const StyledLink = styled.span`
+  font-size: 14px;
+  color: #34495e;
+  font-family: 'Roboto', sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+
 const ErrorMessage = styled.p`
   color: red;
-  font-size: 14px;
-  margin-bottom: 5px;  /* Ajusta el margen */
-  margin-top: -5px;    /* Espacio más reducido arriba */
+  font-size: 18px; /* Aumenta el tamaño de la fuente según tus necesidades */
+  font-family: 'Roboto', sans-serif;
+  margin-bottom: 20px; /* Opcional: añade espacio debajo del mensaje */
 `;
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState(false); // Estado para el error del correo
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
-
-  // Validar el formato del correo
-  const validateEmail = (email) => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  };
-
-  // Manejar el cambio de email y la validación
-  const handleEmailChange = (e) => {
-    const emailValue = e.target.value;
-    setEmail(emailValue);
-    setEmailError(!validateEmail(emailValue)); // Verificar si es un correo válido
-  };
-
-  // Manejar el cambio en la visibilidad de la contraseña
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const { login } = useContext(AuthContext); // Usa la función de login del contexto
 
   const handleLogin = async () => {
     try {
+      // console.log('Iniciando sesión con:', email, password);
       const response = await axiosInstance.post('/login', {
         email: email.trim(),
         password: password.trim(),
@@ -126,16 +120,40 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
+      // console.log('Respuesta del servidor:', response.data);
       const { access_token, refresh_token, user_name } = response.data;
-      login(access_token);
+  
+      // Si no hay necesidad de cambiar la contraseña, continuar con el login normal
+      login(access_token); // Utiliza la función login del contexto para guardar el token
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('userName', user_name);
       navigate('/farms');
     } catch (error) {
-      setError('Correo o contraseña incorrectos');
+      if (error.response) {
+        // console.log('Error Status:', error.response.status);
+        // console.log('Error Data:', error.response.data);
+        // console.log('change_password_required:', error.response.data.change_password_required);
+      }
+    
+      if (
+        error.response &&
+        error.response.status === 403 &&
+        (error.response.data.change_password_required === true || error.response.data.change_password_required === 'true')
+      ) {
+        const { access_token, refresh_token } = error.response.data;
+        console.log('Redirigiendo a cambio de contraseña...');
+        navigate('/change-password-first', {
+          state: { accessToken: access_token, refreshToken: refresh_token }
+        });
+      } else {
+        console.error('Error en el inicio de sesión:', error.response ? error.response.data : error.message);
+        setError('Correo o contraseña incorrectos');
+      }
     }
+    
   };
+  
 
   return (
     <LoginContainer>
@@ -143,37 +161,22 @@ const Login = () => {
         <Logo src={logo} alt="App Logo" />
         <Title>Arroz IA</Title>
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        
-        {/* Mostrar el mensaje de error arriba del campo de correo */}
-        {emailError && <ErrorMessage>Ingrese un correo válido</ErrorMessage>}
-        
         <Input
           type="email"
           placeholder="Correo electrónico"
           value={email}
-          onChange={handleEmailChange}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        
-        <PasswordInputContainer>
-          <Input
-            type={showPassword ? 'text' : 'password'} // Cambiar entre 'text' y 'password'
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <InputAdornment position="end" style={{ position: 'absolute', right: '10px', top: '25%' }}>
-            <IconButton onClick={handleClickShowPassword} edge="end">
-              {showPassword ? <VisibilityOff /> : <Visibility />}
-            </IconButton>
-          </InputAdornment>
-        </PasswordInputContainer>
-
-        <Button
-          onClick={handleLogin}
-          disabled={emailError || email === ''} // Deshabilitar el botón si hay error o el campo está vacío
-        >
-          Iniciar Sesión
-        </Button>
+        <Input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button onClick={handleLogin}>Iniciar Sesión</Button>
+        <LinkContainer>
+          <StyledLink onClick={() => navigate('/reset-password')}>¿Olvidaste tu contraseña?</StyledLink>
+        </LinkContainer>
       </FormContainer>
     </LoginContainer>
   );

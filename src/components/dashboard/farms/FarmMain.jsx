@@ -7,22 +7,34 @@ import EditFarmModal from "../../../components/dashboard/farms/EditFarmModal";
 import DeleteFarmModal from "../../dashboard/modal/DeleteModal";
 import { AuthContext } from "../../../config/AuthProvider"; 
 
-
 const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
   const [farms, setFarms] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false); // Nuevo estado para saber si el usuario es administrador
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingFarm, setEditingFarm] = useState(null);
   const [deletingFarm, setDeletingFarm] = useState(null);
 
-   // Verificar permisos
-   const { userId, permissions } = useContext(AuthContext); 
-   const hasPermission = (permission) => permissions.includes(permission);
+  // Verificar permisos
+  const { userId, permissions } = useContext(AuthContext); 
+  const hasPermission = (permission) => permissions.includes(permission);
 
+  // Función para verificar si el usuario es administrador
+  const checkIfAdmin = async () => {
+    try {
+      const response = await axiosInstance.get(`/users/${userId}/is_admin`);
+      setIsAdmin(response.data.is_admin); // Establecer estado de administrador
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+    }
+  };
+
+  // Función para obtener las fincas según el rol del usuario
   const fetchFarms = async () => {
     try {
-      const response = await axiosInstance.get("/farms");
+      const url = isAdmin ? "/farms" : `/users/${userId}/farms`; // Elegir la ruta según si es administrador o no
+      const response = await axiosInstance.get(url);
       setFarms(response.data);
     } catch (error) {
       console.error("Error fetching farms:", error);
@@ -30,15 +42,21 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
   };
 
   useEffect(() => {
-    fetchFarms();
+    checkIfAdmin(); // Verificar si el usuario es administrador al cargar el componente
   }, []);
+
+  useEffect(() => {
+    if (isAdmin !== null) { // Esperar a que se determine el rol del usuario
+      fetchFarms();
+    }
+  }, [isAdmin]);
 
   const handleAddFarm = () => setIsAddModalOpen(true);
 
   const addFarm = async () => {
     try {
-      await fetchFarms(); // Refresh farm list from the server
-      setIsAddModalOpen(false); // Close modal after adding
+      await fetchFarms();
+      setIsAddModalOpen(false);
     } catch (error) {
       console.error("Error fetching farms after adding a new one:", error);
     }
@@ -49,16 +67,14 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
       setEditingFarm(farmToEdit);
       setIsEditModalOpen(true);
     } else {
-      console.error(
-        "Failed to set the farm for editing: Farm ID is undefined."
-      );
+      console.error("Failed to set the farm for editing: Farm ID is undefined.");
     }
   };
 
   const handleSaveFarm = async (updatedFarm) => {
     try {
-      await fetchFarms(); // Refresh farm list from the server
-      setIsEditModalOpen(false); // Close modal after saving
+      await fetchFarms();
+      setIsEditModalOpen(false);
     } catch (error) {
       console.error("Error fetching farms after updating:", error);
     }
@@ -67,8 +83,8 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
   const handleDelete = async (farm_id) => {
     try {
       await axiosInstance.delete(`/delete/farm/${farm_id}`);
-      await fetchFarms(); // Refresh farm list from the server
-      setIsDeleteModalOpen(false); // Close modal after deleting
+      await fetchFarms();
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error("Error deleting farm:", error);
     }
@@ -86,7 +102,7 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
           <h2>Fincas</h2>
         </div>
 
-        {hasPermission("crear_finca") && ( // Verificar permisos
+        {hasPermission("crear_finca") && (
           <div className="add-farm" onClick={handleAddFarm}>
             <div>
               <AddIcon />
@@ -111,7 +127,7 @@ const FarmMain = ({ selectedFarm, setSelectedFarm, isDarkMode }) => {
       {isAddModalOpen && (
         <NewFarm
           closeModal={() => setIsAddModalOpen(false)}
-          addFarm={addFarm} // Pass addFarm to refresh list after creating
+          addFarm={addFarm}
         />
       )}
 

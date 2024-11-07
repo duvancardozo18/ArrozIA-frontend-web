@@ -6,26 +6,21 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization, Task, Monitoring  } from "./screens";
+import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization, Task, Monitoring } from "./screens";
 import Unauthorized from "./config/Unauthorized";
-import { AuthProvider } from "./config/AuthProvider"; 
-import PrivateRoute from "./config/PrivateRoute"; 
+import { AuthProvider } from "./config/AuthProvider";
+import PrivateRoute from "./config/PrivateRoute";
 import Crops from "./screens/dashboard/Crops";
 import VegetativeCycle from "./screens/dashboard/vegetativeCycle";
 import LandsMain from "./components/dashboard/crops/CropsMain";
-import ResetPasswordForm from './screens/password/ResetPasswordForm'; 
-import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst'; 
+import ResetPasswordForm from './screens/password/ResetPasswordForm';
+import ResetPasswordFormFirst from './screens/password/ResetPasswordFormFirst';
 import CropView from './components/dashboard/crops/CropView';
 import VegetativeCard from './components/dashboard/vegetativecycle/VegetativeCard';
 import Calendar from './components/dashboard/lands/MyCalendarPage';
 import Diagnosis from './components/dashboard/diagnosis/CropSelection';
-
-
-
-
-
-
-import { Profile} from "./screens";
+import WeatherMonitoringView from './components/dashboard/datosMeteorologicos/WeatherMonitoringView';
+import { Profile } from "./screens";
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -86,7 +81,8 @@ function App() {
             <Route path="/ciclo-vegetativo" element={<VegetativeCard />} />   
             <Route path="/task" element={<PrivateRoute element={<Task />} />} />
             <Route path="/monitoring" element={<PrivateRoute element={<Monitoring />} />} />
-            </Route>
+            <Route path="/weather-monitoring" element={<PrivateRoute element={<WeatherMonitoringView />} />} />
+          </Route>
 
           <Route path="*" element={<PageNotFound />} />
         </Routes>
@@ -94,8 +90,5 @@ function App() {
     </AuthProvider>
   );
 }
-
-//<Route path="/:nombre_finca/:nombre_lote/:nombre_cultivo" element={<CropView />} />
-
 
 export default App;
