@@ -46,7 +46,7 @@ const PasswordRequirements = styled.div`
 `;
 
 const RequirementItem = styled.p`
-  color: ${({ met }) => (met ? "#28a745" : "#4a90e2")}; /* Verde si se cumple, rojo si no */
+  color: ${({ met }) => (met ? "#28a745" : "#4a90e2")};
   font-weight: ${({ met }) => (met ? "bold" : "normal")};
 `;
 
@@ -182,16 +182,35 @@ const NewUser = ({ closeModal, onSave = () => {} }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Check if all password requirements are met
+    const unmetRequirements = Object.entries(passwordRequirements)
+      .filter(([key, met]) => !met)
+      .map(([key]) => {
+        switch (key) {
+          case "minLength":
+            return "• Entre 8 y 20 caracteres";
+          case "hasUpperCase":
+            return "• Al menos una letra mayúscula";
+          case "hasLowerCase":
+            return "• Al menos una letra minúscula";
+          case "hasNumber":
+            return "• Al menos un número";
+          case "hasSpecialChar":
+            return "• Al menos un carácter especial (!@#$%^&*)";
+          default:
+            return "";
+        }
+      });
+
+    if (unmetRequirements.length > 0) {
+      setErrorMessage(`La contraseña no cumple con los requisitos:\n${unmetRequirements.join("\n")}`);
+      return;
+    }
+
     try {
       setErrorMessage("");
-
-      if (
-        !formData.nombre ||
-        !formData.apellido ||
-        !formData.email ||
-        !formData.password ||
-        !formData.rol_id
-      ) {
+      if (!formData.nombre || !formData.apellido || !formData.email || !formData.password || !formData.rol_id) {
         throw new Error("Todos los campos son obligatorios.");
       }
 

@@ -1,0 +1,77 @@
+/* Container for the whole content area */
+.content-area {
+    padding: var(--padding-1);
+}
+
+/* Main container for the columns */
+.soil-analysis-view-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Column for the lands list */
+.lands-column {
+    flex: 1; /* Allows this column to take up an equal portion of the available space */
+    padding: 10px;
+    background-color: #f9f9f9; /* Optional: to visually separate the columns */
+    box-sizing: border-box;
+}
+
+/* Column for the soil analysis */
+.soil-analysis-column {
+    flex: 2; /* Allows this column to take up twice the space as lands column */
+    padding: 10px;
+    background-color: #ffffff; /* Optional: to visually separate the columns */
+    box-sizing: border-box;
+}
+
+/* Soil analysis table container inside the soil-analysis-column */
+.soil-analysis-table-container {
+    width: 100%; /* Ensures full width of the container */
+    box-sizing: border-box;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .soil-analysis-view-container {
+        flex-direction: column; /* Stacks the columns vertically */
+    }
+
+    .lands-column,
+    .soil-analysis-column {
+        width: 100%; /* Each column takes full width when stacked */
+    }
+}
+
+
+.lands-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.land-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.land-card:hover {
+    background-color: #f1f1f1;
+}
+
+.tasks-container {
+    margin-top: 10px;
+    padding-left: 16px;
+    border-top: 1px solid #ddd;
+}
+
+.task-item {
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+}

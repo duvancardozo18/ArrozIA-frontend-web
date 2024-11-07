@@ -119,26 +119,41 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validación manual de los campos que tienen un límite de 50 caracteres
     if ((name === "nombre" || name === "numero_registro_productor_ica") && value.length > 50) {
-      setErrorMessage("Límites de caracteres alcanzados."); // Mostrar error si excede los 50 caracteres
+      setErrorMessage("El campo no puede exceder los 50 caracteres.");
+    } else if (name === "caracteristicas_variedad" && value.length > 300) {
+      setErrorMessage("El campo 'Características' no puede exceder los 300 caracteres.");
+    } else if (name === "nombre" && value.length === 49) {
+      setErrorMessage("Queda un solo carácter para el campo 'Nombre'.");
+    } else if (name === "numero_registro_productor_ica" && value.length === 49) {
+      setErrorMessage("Queda un solo carácter para el campo 'Registro ICA'.");
     } else {
-      setErrorMessage(""); // Limpiar el error si los caracteres están dentro del límite
       setFormData({ ...formData, [name]: value });
+      setErrorMessage("");
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Verificar si hay errores antes de enviar el formulario
-    if (errorMessage) {
-      return; // No permitir el envío si hay un error
+    if (formData.nombre.length > 50) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 50 caracteres en el campo 'Nombre'.");
+      return;
+    }
+
+    if (formData.numero_registro_productor_ica.length > 50) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 50 caracteres en el campo 'Registro ICA'.");
+      return;
+    }
+
+    if (formData.caracteristicas_variedad.length > 300) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Características'.");
+      return;
     }
 
     try {
       setErrorMessage("");
-      await axiosInstance.post("/register-variety", formData);  
+      await axiosInstance.post("/register-variety", formData);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al crear la variedad de arroz:", error);
@@ -162,7 +177,6 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
           </h2>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <form onSubmit={handleSubmit}>
-            {/* Nombre de la variedad */}
             <InputGroup>
               <label>Nombre de la variedad</label>
               <input
@@ -171,10 +185,10 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
                 value={formData.nombre}
                 onChange={handleChange}
                 required
+                maxLength={50}
               />
             </InputGroup>
 
-            {/* Registro ICA */}
             <InputGroup>
               <label>Registro ICA</label>
               <input
@@ -183,10 +197,10 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
                 value={formData.numero_registro_productor_ica}
                 onChange={handleChange}
                 required
+                maxLength={50}
               />
             </InputGroup>
 
-            {/* Características (Opcional) */}
             <InputGroup>
               <label>Características (Opcional)</label>
               <textarea
@@ -194,6 +208,7 @@ const CreateRiceVarietyModal = ({ closeModal, onSave }) => {
                 value={formData.caracteristicas_variedad}
                 onChange={handleChange}
                 rows={3}
+                maxLength={300}
               />
             </InputGroup>
 

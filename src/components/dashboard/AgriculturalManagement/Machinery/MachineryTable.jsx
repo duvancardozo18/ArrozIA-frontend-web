@@ -44,7 +44,7 @@ const MachineryTable = ({ refresh }) => {
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>Descripción</th>
+            <th></th>
             <th>Costo por Hora</th>
             <th>Acciones</th>
           </tr>
@@ -53,7 +53,7 @@ const MachineryTable = ({ refresh }) => {
           {machineries.map((machinery) => (
             <tr key={machinery.id}>
               <td>{machinery.name}</td>
-              <td>{machinery.description}</td>
+              <td></td>
               <td>{machinery.costPerHour}</td>
               <td>
                 {/* Usar el componente TableMachineryAction para las acciones */}

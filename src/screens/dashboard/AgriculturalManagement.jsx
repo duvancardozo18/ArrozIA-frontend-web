@@ -58,12 +58,7 @@ const GestionAgricola = () => {
         >
           Labor Cultural
         </button>
-        <button
-          onClick={() => setActiveTable("variedades")}
-          className={`toggle-button ${activeTable === "variedades" ? "active" : ""}`}
-        >
-          Variedades
-        </button>
+       
         <button
           onClick={() => setActiveTable("etapas-fenologicas")}
           className={`toggle-button ${activeTable === "etapas-fenologicas" ? "active" : ""}`}

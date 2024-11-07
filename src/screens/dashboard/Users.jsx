@@ -28,7 +28,8 @@ const Usars = () => {
         onSave={handleSave}
       />
       <AreaTable refresh={refreshTable} />
-      <AssignFarmContainer />
+      {/* Pasar handleSave como prop a AssignFarmContainer para refrescar la tabla */}
+      <AssignFarmContainer onSave={handleSave} />
     </div>
   );
 };

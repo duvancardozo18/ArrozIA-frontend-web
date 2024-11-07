@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../../dashboard/modal/SuccessModal";
 
+// Estilos de modal y elementos
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -119,18 +120,39 @@ const CreateMachineryModal = ({ closeModal, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData({ ...formData, [name]: value });
-    setErrorMessage(""); // Limpiar mensaje de error cuando es válido
+    if (name === "name" && value.length >= 99) {
+      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
+    } else if (name === "description" && value.length >= 299) {
+      setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
+    } else {
+      setErrorMessage("");
+    }
+
+    if (name === "name" && value.length <= 100) {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "description" && value.length <= 300) {
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "costPerHour") {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (formData.name.length > 100) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
+      return;
+    }
+
+    if (formData.description.length > 300) {
+      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
+      return;
+    }
+
     try {
       setErrorMessage("");
-      // Conexión con el backend para registrar maquinaria
       const response = await axiosInstance.post("/machinery/", formData);
-      console.log("Respuesta del backend:", response);
 
       if (response.status === 201) {
         setShowSuccessModal(true);
@@ -145,8 +167,8 @@ const CreateMachineryModal = ({ closeModal, onSave }) => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave(); // Refrescar la tabla de maquinaria
-    closeModal(); // Cerrar el modal de creación
+    onSave();
+    closeModal();
   };
 
   return (
@@ -171,12 +193,12 @@ const CreateMachineryModal = ({ closeModal, onSave }) => {
 
             <InputGroup>
               <label>Descripción</label>
-              <input
-                type="text"
+              <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                required
+                rows={3}
+                maxLength={300}
               />
             </InputGroup>
 

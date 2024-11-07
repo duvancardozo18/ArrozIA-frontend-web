@@ -105,6 +105,9 @@ const Sidebar = () => {
               text="Datos Meteorológicos"
             />
 
+            {/* Nuevo menú de análisis edafológico */}
+            <MenuItem to="/soil_analysis" icon={<MdOutlineAssignment size={35} />} text="Análisis edafológico" />
+
             {hasPermission("crear_usuario") && (
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
             )}
