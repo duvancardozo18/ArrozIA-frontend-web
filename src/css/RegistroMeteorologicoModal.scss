@@ -1,3 +1,4 @@
+/* Overlay del modal */
 .modal {
   position: fixed;
   top: 0;
@@ -11,6 +12,7 @@
   z-index: 1000;
 }
 
+/* Contenido del modal con scroll */
 .modal-content {
   background-color: #ffffff;
   padding: 30px;
@@ -19,6 +21,8 @@
   max-width: 90%;
   position: relative;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
+  max-height: 80vh; /* Limita la altura en pantallas pequeñas */
+  overflow-y: auto; /* Añade scroll vertical */
 }
 
 .close-btn {
@@ -104,4 +108,22 @@ h2 {
   text-align: center;
   font-weight: bold;
   margin-top: 10px;
+}
+
+/* Ajustes de responsividad para pantallas pequeñas */
+@media (max-width: 500px) {
+  .modal-content {
+    padding: 20px;
+    width: 90%;
+    max-height: 70vh; /* Ajusta el alto en pantallas muy pequeñas */
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .submit-btn {
+    font-size: 16px;
+    padding: 10px;
+  }
 }

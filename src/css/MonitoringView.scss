@@ -113,3 +113,30 @@
     background-color: #0069d9;
   }
 }
+
+/* Ajustes de responsividad para pantallas pequeñas */
+@media (max-width: 768px) {
+  .monitoring-view {
+    flex-direction: column;
+  }
+
+  .monitoring-sidebar {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .monitoring-content {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .register-weather-btn {
+    margin-top: 10px;
+    width: 100%;
+  }
+}
