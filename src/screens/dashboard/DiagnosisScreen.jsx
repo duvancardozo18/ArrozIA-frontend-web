@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from "../../config/AuthProvider";
 import Header from '../../components/dashboard/Header';
-import CropSelection from '../../components/dashboard/diagnosis/CropSelection';
-import ImageCaptureForm from '../../components/dashboard/diagnosis/ImageCaptureForm';
-import ImageUploadHandler from '../../components/dashboard/diagnosis/ImageUploadHandler';
-import DiagnosisResultsView from '../../components/dashboard/diagnosis/DiagnosisResultsView';
-import DiagnosisHistory from '../../components/dashboard/diagnosis/DiagnosisHistory';
+import CropSelection from '../../components/dashboard/diagnosis2/CropSelection';
+import ImageCaptureForm from '../../components/dashboard/diagnosis2/ImageCaptureForm';
+import ImageUploadHandler from '../../components/dashboard/diagnosis2/ImageUploadHandler';
+import DiagnosisResultsView from '../../components/dashboard/diagnosis2/DiagnosisResultsView';
+import DiagnosisHistory from '../../components/dashboard/diagnosis2/DiagnosisHistory';
 import { Navigate } from 'react-router-dom';
 import axiosInstance from "../../config/AxiosInstance";
 import '../../css/Diagnosis.scss';
