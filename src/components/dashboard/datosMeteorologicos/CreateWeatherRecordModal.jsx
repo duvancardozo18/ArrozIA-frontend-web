@@ -4,64 +4,6 @@ import axiosInstance from '../../../config/AxiosInstance';
 import SuccessModal from '../../dashboard/modal/SuccessModal';
 import '../../../css/RegistroMeteorologicoModal.scss';
 
-// Estilos del overlay y contenido del modal
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  width: 450px;
-  max-width: 90%;
-  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
-  position: relative;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-`;
-
-const Title = styled.h2`
-  text-align: center;
-  margin-bottom: 20px;
-`;
-
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 12px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 18px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 15px;
-
-  &:hover {
-    background-color: #218838;
-  }
-`;
-
 const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) => {
   const [formData, setFormData] = useState({
     fecha: '',
@@ -108,11 +50,11 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) 
 
   return (
     <>
-      <ModalOverlay>
-        <ModalContent>
-          <CloseButton onClick={onClose}>×</CloseButton>
-          <Title>Registrar Datos Meteorológicos</Title>
-          {errorMessage && <p style={{ color: '#ff6b6b', textAlign: 'center' }}>{errorMessage}</p>}
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <button className="close-button" onClick={onClose}>×</button>
+          <h2 className="modal-title">Registrar Datos Meteorológicos</h2>
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
           <form onSubmit={handleSubmit} className="modal-form">
             <div className="input-group">
               <label>Lote</label>
@@ -146,10 +88,10 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) 
               <label>Horas de Sol</label>
               <input type="number" name="horas_sol" value={formData.horas_sol} onChange={handleChange} required />
             </div>
-            <SubmitButton type="submit">Guardar</SubmitButton>
+            <button type="submit" className="submit-button">Guardar</button>
           </form>
-        </ModalContent>
-      </ModalOverlay>
+        </div>
+      </div>
 
       {showSuccessModal && (
         <SuccessModal
