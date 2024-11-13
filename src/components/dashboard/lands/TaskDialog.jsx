@@ -30,14 +30,30 @@ const ColumnContainer = styled.div`
   }
 `;
 
+// const StyledButton = styled(Button)`
+//   && {
+//     background-color: ${(props) => (props.cancel ? "#FF4D4F" : "#28a745")};
+//     color: white;
+//     &:hover {
+//       background-color: ${(props) => (props.cancel ? "#ff6666" : "#218838")};
+//     }
+//   }
+// `;
+
 const StyledButton = styled(Button)`
-  && {
-    background-color: ${(props) => (props.cancel ? "#FF4D4F" : "#28a745")};
-    color: white;
-    &:hover {
-      background-color: ${(props) => (props.cancel ? "#ff6666" : "#218838")};
-    }
+&& {
+  background-color: #28a745;
+  color: white;
+
+  &.cancel-button {
+    background-color: #FF4D4F;
   }
+
+  &:hover {
+    background-color: ${(props) =>
+      props.className === "cancel-button" ? "#ff6666" : "#218838"};
+  }
+}
 `;
 
 const StyledTextField = styled(TextField)`
@@ -305,9 +321,10 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
           </ColumnContainer>
         </DialogContent>
         <DialogActions>
-          <StyledButton onClick={onClose} cancel>
-            Cancelar
-          </StyledButton>
+        <StyledButton onClick={onClose} className="cancel-button">
+          Cancelar
+        </StyledButton>
+
           <StyledButton onClick={handleAddTask}>Crear</StyledButton>
         </DialogActions>
       </Dialog>
