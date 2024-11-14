@@ -1,12 +1,14 @@
-// MapsLeaflet.js
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 
-function LocationMarker({ position, setPosition }) {
+function LocationMarker({ position, setPosition, updateLocationData }) {
   useMapEvents({
     click(e) {
-      setPosition([e.latlng.lat, e.latlng.lng]);
+      const newPosition = [e.latlng.lat, e.latlng.lng];
+      setPosition(newPosition);
+      updateLocationData(newPosition); // Llamada para actualizar departamento y ciudad
     },
   });
 
@@ -43,13 +45,28 @@ export default function MapsLeaflet({ formData, setFormData }) {
     }
   }, [formData.latitud, formData.longitud]);
 
-  const handlePositionChange = (newPosition) => {
-    setPosition(newPosition);
-    setFormData({
-      ...formData,
-      latitud: newPosition[0].toString(),
-      longitud: newPosition[1].toString(),
-    });
+  // Función para realizar la geocodificación inversa y actualizar los campos de departamento y ciudad
+  const updateLocationData = async (newPosition) => {
+    try {
+      const [lat, lon] = newPosition;
+      console.log(`Fetching data for coordinates: Latitude ${lat}, Longitude ${lon}`);
+      const response = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+      const address = response.data.address;
+
+      console.log("Response from Nominatim:", response.data); // Verificar toda la respuesta
+      console.log("City:", address.city || address.town || address.village);
+      console.log("State:", address.state);
+
+      setFormData((prevData) => ({
+        ...prevData,
+        latitud: lat.toString(),
+        longitud: lon.toString(),
+        departamento: address.state || "",
+        ciudad: address.city || address.town || address.village || "",
+      }));
+    } catch (error) {
+      console.error("Error al obtener la ciudad y el departamento:", error);
+    }
   };
 
   return (
@@ -62,7 +79,11 @@ export default function MapsLeaflet({ formData, setFormData }) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
       />
-      <LocationMarker position={position} setPosition={handlePositionChange} />
+      <LocationMarker
+        position={position}
+        setPosition={setPosition}
+        updateLocationData={updateLocationData} // Pasa la función para actualizar ubicación
+      />
       <CenterMap position={position} /> {/* Centra el mapa en la posición actual */}
     </MapContainer>
   );
