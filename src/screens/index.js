@@ -11,3 +11,4 @@ export { default as Task } from "./dashboard/Task";
 export { default as Monitoring } from "./dashboard/Monitoring";
 export { default as Diagnosis } from "./dashboard/DiagnosisScreen";
 export { default as SoilAnalysis } from "./dashboard/SoilAnalysis";
+export { default as Reports } from "./dashboard/Reports";

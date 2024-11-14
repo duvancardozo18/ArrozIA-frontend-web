@@ -93,6 +93,9 @@ const Sidebar = () => {
             <MenuItem to="/diagnosis" icon={<FaDrupal   size={35}/>} text="Diagnosticos" />
 
             {/* Nuevo menú de Tareas */}
+            <MenuItem to="/reports" icon={<MdOutlineAssignment size={35} />} text="Reportes" />
+
+            {/* Nuevo menú de Tareas */}
             <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
 
              {/* Nuevo menú de Tareas */}

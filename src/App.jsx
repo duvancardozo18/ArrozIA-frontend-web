@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MoonIcon from "./assets/icons/moon.svg";
 import SunIcon from "./assets/icons/sun.svg";
 import BaseLayout from "./layout/BaseLayout";
-import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization, Task, Monitoring, SoilAnalysis } from "./screens";
+import { PageNotFound, Users, Login, Roles, Farms, ResetPassword, AgriculturalManagement, Mechanization, Task, Monitoring, SoilAnalysis, Reports } from "./screens";
 import Unauthorized from "./config/Unauthorized";
 import { AuthProvider } from "./config/AuthProvider";
 import PrivateRoute from "./config/PrivateRoute";
@@ -21,6 +21,7 @@ import Calendar from './components/dashboard/lands/MyCalendarPage';
 import Diagnosis from './components/dashboard/diagnosis2/CropSelection';
 import WeatherMonitoringView from './components/dashboard/datosMeteorologicos/WeatherMonitoringView';
 import { Profile } from "./screens";
+import ReportsView from "./components/dashboard/reports/ReportsView";
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -80,6 +81,7 @@ function App() {
             <Route path="/" element={<Calendar />} />
             <Route path="/ciclo-vegetativo" element={<VegetativeCard />} />   
             <Route path="/task" element={<PrivateRoute element={<Task />} />} />
+            <Route path="/reports" element={<PrivateRoute element={<ReportsView />} />} />
             <Route path="/monitoring" element={<PrivateRoute element={<Monitoring />} />} />
             <Route path="/weather-monitoring" element={<PrivateRoute element={<WeatherMonitoringView />} />} />
             <Route path="/soil_analysis" element={<PrivateRoute element={<SoilAnalysis />} />} />
