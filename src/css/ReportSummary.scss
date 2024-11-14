@@ -1,0 +1,70 @@
+.report-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .dates {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .date-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .date-item h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .date-item p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .production, .utility, .total-costs {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+  }
+  
+  .production h3, .utility h3, .total-costs h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .production p, .utility p {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  .total-costs table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .total-costs td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+  }
+  
+  .total-costs .total-row td {
+    font-weight: bold;
+    color: #333;
+  }
+  
+
+

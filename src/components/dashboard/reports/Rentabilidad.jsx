@@ -1,147 +1,86 @@
-import React, { useEffect, useState } from 'react';
-import axiosInstance from '../../../config/AxiosInstance';
-import '../../../css/Rentabilidad.scss';
+import React from 'react';
+import '../../../css/ReportSummary.scss';
+import CultivoInsumosTable from '../../dashboard/reports/CropInputsTable';
+import CulturalWorkTable from '../../dashboard/reports/CulturalWorkTable';
 
-const Rentabilidad = ({ selectedCropId, onExport }) => {
-  const [machineryCosts, setMachineryCosts] = useState([]);
-  const [laborCosts, setLaborCosts] = useState([]);
-  const [inputCosts, setInputCosts] = useState([]);
-  const [additionalCosts, setAdditionalCosts] = useState(0);
-  const [financialExpenses, setFinancialExpenses] = useState(0);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Obtener costos de maquinaria reales
-    const fetchMachineryCosts = async () => {
-      try {
-        const response = await axiosInstance.get(`/financial/machinery-costs`);
-        setMachineryCosts(response.data);
-      } catch (error) {
-        console.error('Error fetching machinery costs:', error);
-      }
-    };
-
-    // Obtener costos de labores culturales reales
-    const fetchLaborCosts = async () => {
-      try {
-        const response = await axiosInstance.get(`/financial/real-labor-costs`);
-        setLaborCosts(response.data);
-      } catch (error) {
-        console.error('Error fetching labor costs:', error);
-      }
-    };
-
-    // Obtener costos de insumos agrícolas reales
-    const fetchInputCosts = async () => {
-      try {
-        const response = await axiosInstance.get(`/financial/agricultural-input-costs`);
-        setInputCosts(response.data);
-      } catch (error) {
-        console.error('Error fetching input costs:', error);
-      }
-    };
-
-    // Obtener costos adicionales reales
-    const fetchAdditionalCosts = async () => {
-      try {
-        const response = await axiosInstance.get(`/financial/additional-costs`);
-        setAdditionalCosts(response.data.total_additional_costs || 0);
-      } catch (error) {
-        console.error('Error fetching additional costs:', error);
-      }
-    };
-
-    // Obtener gastos financieros reales
-    const fetchFinancialExpenses = async () => {
-      try {
-        const response = await axiosInstance.get(`/financial/financial-expenses`);
-        setFinancialExpenses(response.data.total_financial_expenses || 0);
-      } catch (error) {
-        console.error('Error fetching financial expenses:', error);
-      }
-    };
-
-    fetchMachineryCosts();
-    fetchLaborCosts();
-    fetchInputCosts();
-    fetchAdditionalCosts();
-    fetchFinancialExpenses();
-    setLoading(false);
-  }, [selectedCropId]);
-
-  // Calcular valores totales
-  const totalMachineryCosts = machineryCosts.reduce((sum, item) => sum + item.costo_total, 0);
-  const totalLaborCosts = laborCosts.reduce((sum, item) => sum + item.costo_total, 0);
-  const totalInputCosts = inputCosts.reduce((sum, item) => sum + item.costo_total, 0);
-  const totalExpenses = totalMachineryCosts + totalLaborCosts + totalInputCosts + additionalCosts + financialExpenses;
-  const totalIncome = 0; // Asigna un valor o agrega una lógica si tienes datos de ingresos
-  const utility = totalIncome - totalExpenses;
-
-  if (loading) return <p>Loading...</p>;
-
+const ReportSummary = () => {
   return (
-    <div className="rentabilidad-container">
-      <button onClick={onExport} className="export-button">Exportar</button>
-
-      <div className="general-info-card">
-        <h4>Información General</h4>
-
-        <div className="expenses-section">
-          <h5>Egresos</h5>
-          <table className="expense-table">
-            <thead>
-              <tr className="table-header">
-                <th>Descripción</th>
-                <th>Cantidad</th>
-                <th>Valor</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...inputCosts, ...machineryCosts, ...laborCosts].map((expense, index) => (
-                <tr key={index} className="table-row">
-                  <td>{expense.nombre}</td>
-                  <td>{expense.total_horas || expense.total_cantidad} {expense.unit}</td>
-                  <td>${expense.costo_total.toLocaleString()}</td>
-                  <td><button onClick={() => alert(`Detalles de ${expense.nombre}`)}>Ver</button></td>
-                </tr>
-              ))}
-              <tr className="table-row">
-                <td>Costos adicionales</td>
-                <td>-</td>
-                <td>${additionalCosts.toLocaleString()}</td>
-                <td>-</td>
-              </tr>
-              <tr className="table-row">
-                <td>Gastos financieros</td>
-                <td>-</td>
-                <td>${financialExpenses.toLocaleString()}</td>
-                <td>-</td>
-              </tr>
-            </tbody>
-          </table>
-          <p className="total-value">Valor total: ${totalExpenses.toLocaleString()}</p>
+    <div className=''>
+    <div className="report-summary">
+      <div className="dates">
+        <div className="date-item">
+          <span className="icon">🌱</span>
+          <div>
+            <h3>Fecha de siembra</h3>
+            <p>20 de febrero 2024</p>
+          </div>
         </div>
-
-        <div className="income-section">
-          <h5>Ingresos</h5>
-          <table className="income-table">
-            <thead>
-              <tr className="table-header">
-                <th>Descripción</th>
-                <th>Cantidad</th>
-                <th>Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Muestra los ingresos aquí si tienes datos */}
-            </tbody>
-          </table>
-          <p className="utility-value">Utilidad: ${utility.toLocaleString()}</p>
+        <div className="date-item">
+          <span className="icon">🌾</span>
+          <div>
+            <h3>Fecha de Cosecha</h3>
+            <p>19 de junio 2024</p>
+          </div>
         </div>
       </div>
+
+      <div className="production">
+        <h3>Producción</h3>
+        <p>75 toneladas</p>
+        <h3>Ingresos</h3>
+        <p>$124.200.000</p>
+      </div>
+
+      <div className="utility">
+        <h3>Utilidad</h3>
+        <p>$</p>
+      </div>
+
+      <div className="total-costs">
+        <h3>Costos totales</h3>
+        <table>
+          <tbody>
+            <tr>
+              <td>Arriendo</td>
+              <td>$14.000.000</td>
+            </tr>
+            <tr>
+              <td>Preparación del Terreno</td>
+              <td>$5.700.000</td>
+            </tr>
+            <tr>
+              <td>Instalación de Riego</td>
+              <td>$5.600.000</td>
+            </tr>
+            <tr>
+              <td>Servicio de agua</td>
+              <td>$9.000.000</td>
+            </tr>
+            <tr>
+              <td>Insumos</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>Labores Culturales</td>
+              <td>$17.775.000</td>
+            </tr>
+            <tr>
+              <td>Cuota de Fomento</td>
+              <td>$1.240.000</td>
+            </tr>
+            <tr className="total-row">
+              <td>VALOR TOTAL</td>
+              <td>$153.315.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <CultivoInsumosTable />
+     <CulturalWorkTable />
     </div>
   );
 };
 
-export default Rentabilidad;
+export default ReportSummary;
