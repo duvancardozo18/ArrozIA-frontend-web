@@ -78,7 +78,9 @@ const ViewLand = ({ onSelectAllotment }) => {
             start: new Date(task.fecha_estimada),
             end: new Date(task.fecha_estimada),
             id: task.id,
-            usuario_id: task.usuario_id // Añadir el usuario_id
+            usuario_id: task.usuario_id, // Añadir el usuario_id
+            labor_cultural_id: task.labor_cultural_id,
+            es_mecanizable: task.es_mecanizable, // Añadir es_mecanizable
           }));
           setTaskEvents(formattedTasks);
         }
