@@ -58,9 +58,7 @@ const CropDetails = ({ selectedCropId, onClose }) => {
       <p>Lote: {cropDetails.plotId || "No disponible"}</p>
       <p>Área cultivada: {cropDetails.cultivatedArea} {cropDetails.areaUnit}</p>
       <p>Fecha de siembra: {cropDetails.plantingDate}</p>
-      <p>Fecha estimada de cosecha: {cropDetails.estimatedHarvestDate}</p>
-      <p>Fecha de cosecha: {cropDetails.harvestDate ? cropDetails.harvestDate : "NO realizada"}</p>
-
+      
       <div className="tabs">
         <button onClick={() => setActiveTab('rendimiento')} className={activeTab === 'rendimiento' ? 'active' : ''}>
           Rendimiento

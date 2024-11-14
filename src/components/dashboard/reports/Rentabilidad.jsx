@@ -71,7 +71,7 @@ const ReportSummary = () => {
             </tr>
             <tr className="total-row">
               <td>VALOR TOTAL</td>
-              <td>$153.315.000</td>
+              <td>$</td>
             </tr>
           </tbody>
         </table>
