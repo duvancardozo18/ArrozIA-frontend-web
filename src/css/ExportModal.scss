@@ -1,0 +1,90 @@
+.export-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .export-modal-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    text-align: left;
+
+    h3 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    p {
+      margin-bottom: 15px;
+      color: #666;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .export-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+
+      label {
+        font-size: 1em;
+        color: #333;
+      }
+    }
+
+    .format-selection {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+
+      label {
+        font-size: 1em;
+        color: #333;
+      }
+
+      select {
+        padding: 5px;
+        font-size: 1em;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+    }
+
+    .generate-report-button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #45a049;
+      }
+    }
+  }
+}
