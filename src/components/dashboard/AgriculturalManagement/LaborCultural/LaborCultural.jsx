@@ -1,3 +1,4 @@
+// LaborCultural.js
 import React, { useState, useEffect } from 'react';
 import CreateLaborModal from './LaborCultural/CreateLaborModal';
 import LaborCulturalTable from './LaborCultural/LaborCulturalTable';
@@ -39,6 +40,7 @@ const LaborCultural = () => {
     );
   };
 
+  // Función para eliminar una labor de la lista
   const handleDeleteLabor = (id) => {
     setLabores((prevLabores) => prevLabores.filter((labor) => labor.id !== id));
   };
@@ -54,7 +56,6 @@ const LaborCultural = () => {
         <CreateLaborModal onClose={handleCloseModal} onSave={handleAddLabor} />
       )}
 
-      {/* Pasa handleEditLabor y handleDeleteLabor a LaborCulturalTable para que pueda actualizar el estado */}
       <LaborCulturalTable
         labores={labores}
         onEditLabor={handleEditLabor}

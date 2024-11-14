@@ -3,7 +3,6 @@ import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../../dashboard/modal/SuccessModal";
 
-// Estilos de modal y elementos
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -25,11 +24,6 @@ const ModalContent = styled.div`
   max-width: 90%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   transform: translateZ(0);
-  transition: transform 0.3s ease-in-out;
-
-  &:hover {
-    transform: translateY(-10px) scale(1.03) perspective(1000px);
-  }
 `;
 
 const Title = styled.h2`
@@ -55,11 +49,6 @@ const CloseButton = styled.button`
   font-weight: bold;
   color: #333;
   cursor: pointer;
-  transition: color 0.2s ease-in-out;
-
-  &:hover {
-    color: #ff6b6b;
-  }
 `;
 
 const InputGroup = styled.div`
@@ -72,24 +61,19 @@ const InputGroup = styled.div`
   }
 
   input,
-  textarea {
+  textarea,
+  select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
-    box-sizing: border-box;
     font-size: 16px;
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: box-shadow 0.3s ease-in-out;
 
     &:focus {
-      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3); 
-      transform: translateY(-3px);
+      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
       outline: none;
     }
-  }
-
-  textarea {
-    resize: vertical;
   }
 `;
 
@@ -101,13 +85,10 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-family: "Roboto", sans-serif;
   cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
     background-color: #218838;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -115,7 +96,10 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
+    precio_hora_real: "",  
+    etapa_fenologica_id: "",  
   });
+  const [phenologicalStages, setPhenologicalStages] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -124,14 +108,32 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
       setFormData({
         nombre: labor.nombre,
         descripcion: labor.descripcion,
+        precio_hora_real: labor.precio_hora_real || "",
+        etapa_fenologica_id: labor.etapa_fenologica_id || "",
       });
     }
   }, [labor]);
 
+  useEffect(() => {
+    const fetchPhenologicalStages = async () => {
+      try {
+        const response = await axiosInstance.get("/phenological-stages");
+        setPhenologicalStages(response.data);
+      } catch (error) {
+        console.error("Error al cargar las etapas fenológicas:", error);
+        setErrorMessage("Hubo un problema al cargar las etapas fenológicas.");
+      }
+    };
+
+    fetchPhenologicalStages();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "nombre" && value.length >= 99) {
+    if (name === "precio_hora_real" && parseFloat(value) < 0) {
+      setErrorMessage("El precio por hora no puede ser negativo.");
+    } else if (name === "nombre" && value.length >= 99) {
       setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
     } else if (name === "descripcion" && value.length >= 299) {
       setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
@@ -139,30 +141,16 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
       setErrorMessage("");
     }
 
-    if (name === "nombre" && value.length <= 100) {
-      setFormData({ ...formData, [name]: value });
-    } else if (name === "descripcion" && value.length <= 300) {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (formData.nombre.length > 100) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
-      return;
-    }
-
-    if (formData.descripcion.length > 300) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
-      return;
-    }
-
     try {
       await axiosInstance.put(`/labor-cultural/update/${labor.id}`, formData);
       setShowSuccessModal(true);
-      onSave({ ...labor, ...formData }); 
+      onSave({ ...labor, ...formData });
     } catch (error) {
       console.error("Error al editar la labor cultural:", error);
       setErrorMessage("Hubo un error al editar la labor cultural.");
@@ -190,10 +178,9 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
                 value={formData.nombre}
                 onChange={handleChange}
                 required
-                maxLength={100} 
+                maxLength={100}
               />
             </InputGroup>
-
             <InputGroup>
               <label>Descripción</label>
               <textarea
@@ -202,10 +189,37 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
                 onChange={handleChange}
                 required
                 rows={3}
-                maxLength={300} 
+                maxLength={300}
               />
             </InputGroup>
-
+            <InputGroup>
+              <label>Precio por Hora</label>
+              <input
+                type="number"
+                name="precio_hora_real"
+                value={formData.precio_hora_real}
+                onChange={handleChange}
+                required
+                min="0"
+                step="0.01"
+              />
+            </InputGroup>
+            <InputGroup>
+              <label>Etapa Fenológica</label>
+              <select
+                name="etapa_fenologica_id"
+                value={formData.etapa_fenologica_id}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>Selecciona una etapa fenológica</option>
+                {phenologicalStages.map((stage) => (
+                  <option key={stage.id} value={stage.id}>
+                    {stage.nombre}
+                  </option>
+                ))}
+              </select>
+            </InputGroup>
             <SubmitButton type="submit">Actualizar</SubmitButton>
           </form>
         </ModalContent>
@@ -213,7 +227,7 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
       {showSuccessModal && (
         <SuccessModal
           onClose={handleCloseSuccessModal}
-          message="¡Labor Cultural Editada Exitosamente!"
+          message="¡Labor cultural actualizada exitosamente!"
         />
       )}
     </>
