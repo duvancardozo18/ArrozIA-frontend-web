@@ -47,6 +47,12 @@ const GestionAgricola = () => {
           Insumos Agrícolas
         </button>
         <button
+          onClick={() => setActiveTable("variedades")}
+          className={`toggle-button ${activeTable === "variedades" ? "active" : ""}`}
+        >
+          variedades
+        </button>
+        <button
           onClick={() => setActiveTable("maquinaria")}
           className={`toggle-button ${activeTable === "maquinaria" ? "active" : ""}`}
         >
@@ -68,7 +74,7 @@ const GestionAgricola = () => {
       </div>
 
       {activeTable === "variedades" && (
-        <ButtonCrear buttonText="Crear Variedad" ModalComponent={CreateInputModal} onSave={handleSave} />
+        <ButtonCrear buttonText="Crear Variedad" ModalComponent={CreateRiceVarietyModal} onSave={handleSave} />
       )}
       {activeTable === "insumos" && (
         <ButtonCrear buttonText="Crear insumo" ModalComponent={CreateInputModal} onSave={handleSave} />
