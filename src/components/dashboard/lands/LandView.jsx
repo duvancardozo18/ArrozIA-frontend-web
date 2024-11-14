@@ -4,7 +4,8 @@ import { Card, CardContent, Typography, Grid, Button } from '@mui/material';
 import axiosInstance from '../../../config/AxiosInstance';
 import NewCrop from '../crops/CreateCropModal';
 import LoanMessage from './LoanMessage';
-import Calendar from './MyCalendarPage';
+import VegetativeCard from '../vegetativecycle/VegetativeCard';
+import CalendarComponent from './CalendarComponent';
 import EventCard from './EventCard';
 import TaskDialog from './TaskDialog';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -25,7 +26,7 @@ const StyledButton = styled(Button)`
     font-size: 16px;
     border-radius: 8px;
     color: white;
-    background-color: #007bff; /* Azul */
+    background-color: #007bff;
     &:hover {
       background-color: #0056b3;
     }
@@ -52,8 +53,8 @@ const ViewLand = ({ onSelectAllotment }) => {
   const [taskEvents, setTaskEvents] = useState([]);
   const [isCreateCropModalOpen, setIsCreateCropModalOpen] = useState(false);
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
-  const [showVegetativeCycle, setShowVegetativeCycle] = useState(false);
   const [selectedLote, setSelectedLote] = useState(null);
+  const [activeSection, setActiveSection] = useState("laboresCulturales");
   const [cultivoNombre, setCultivoNombre] = useState('');
   const [cultivoId, setCultivoId] = useState(null);
 
@@ -67,12 +68,19 @@ const ViewLand = ({ onSelectAllotment }) => {
         setCropDetails(cropResponse.data);
 
         if (cropResponse.data.length > 0) {
+          const fetchedCropId = cropResponse.data[0].id;
           setCultivoNombre(cropResponse.data[0].cropName);
-          setCultivoId(cropResponse.data[0].id);
-        }
+          setCultivoId(fetchedCropId);
 
-        const taskResponse = await axiosInstance.get(`/taskslist`);
-        setTaskEvents(taskResponse.data);
+          const taskResponse = await axiosInstance.get(`/crops/${fetchedCropId}/tasks`);
+          const formattedTasks = taskResponse.data.map(task => ({
+            title: task.descripcion,
+            start: new Date(task.fecha_estimada),
+            end: new Date(task.fecha_estimada),
+            id: task.id
+          }));
+          setTaskEvents(formattedTasks);
+        }
       } catch (error) {
         console.error('Error fetching land, crop, or task details:', error);
       }
@@ -80,6 +88,8 @@ const ViewLand = ({ onSelectAllotment }) => {
 
     fetchLandAndCropDetails();
   }, [loteId]);
+
+  const plantingDate = cropDetails?.length > 0 ? cropDetails[0].plantingDate : null;
 
   const handleOpenTaskDialog = () => {
     setIsTaskDialogOpen(true);
@@ -89,10 +99,6 @@ const ViewLand = ({ onSelectAllotment }) => {
     const lote = { id: loteId, nombre: `${loteId}` };
     setSelectedLote(lote);
     setIsCreateCropModalOpen(true);
-  };
-
-  const handleToggleVegetativeCycle = () => {
-    setShowVegetativeCycle((prev) => !prev);
   };
 
   if (!landDetails || !cropDetails) {
@@ -142,9 +148,33 @@ const ViewLand = ({ onSelectAllotment }) => {
       )}
 
       <ButtonContainer>
-        <GreenButton onClick={handleOpenTaskDialog}>Asignar Labor</GreenButton>
-        
+        <StyledButton 
+          onClick={() => setActiveSection("laboresCulturales")}
+          variant={activeSection === "laboresCulturales" ? "contained" : "outlined"}
+        >
+          Labores Culturales
+        </StyledButton>
+        <StyledButton 
+          onClick={() => setActiveSection("cicloVegetativo")}
+          variant={activeSection === "cicloVegetativo" ? "contained" : "outlined"}
+        >
+          Ciclo Vegetativo
+        </StyledButton>
+        <StyledButton disabled>
+          Costos
+        </StyledButton>
       </ButtonContainer>
+
+      {activeSection === "laboresCulturales" && (
+        <>
+          <ButtonContainer>
+            <GreenButton onClick={handleOpenTaskDialog}>Asignar Labor</GreenButton>
+          </ButtonContainer>
+          <CalendarComponent events={taskEvents} />
+          <EventCard events={taskEvents} />
+        </>
+      )}
+      {activeSection === "cicloVegetativo" && <VegetativeCard plantingDate={plantingDate} />}
 
       {isTaskDialogOpen && (
         <TaskDialog
@@ -157,20 +187,11 @@ const ViewLand = ({ onSelectAllotment }) => {
       )}
 
       {isCreateCropModalOpen && selectedLote && (
-        <NewCrop 
+        <NewCrop
           selectedAllotment={selectedLote}
           closeModal={() => setIsCreateCropModalOpen(false)}
         />
       )}
-
-      {cropDetails.length > 0 && (
-        <>
-          <Calendar />
-          <EventCard events={taskEvents} />
-        </>
-      )}
-
-      
     </div>
   );
 };

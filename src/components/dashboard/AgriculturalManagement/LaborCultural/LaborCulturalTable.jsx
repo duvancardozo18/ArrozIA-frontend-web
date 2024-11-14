@@ -17,6 +17,7 @@ const LaborCulturalTable = ({ refresh }) => {
   const [selectedLabor, setSelectedLabor] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [phenologicalStages, setPhenologicalStages] = useState([]); // Almacena las etapas fenológicas
 
   // Function to fetch labores culturales data
   const fetchLabores = async () => {
@@ -32,8 +33,19 @@ const LaborCulturalTable = ({ refresh }) => {
     }
   };
 
+  // Fetches phenological stages to map names to their IDs
+  const fetchPhenologicalStages = async () => {
+    try {
+      const response = await axiosInstance.get("/phenological-stages");
+      setPhenologicalStages(response.data);
+    } catch (error) {
+      console.error("Error al cargar las etapas fenológicas:", error);
+    }
+  };
+
   useEffect(() => {
     fetchLabores();
+    fetchPhenologicalStages();
   }, [refresh]);
 
   const handleShowCreateModal = () => setShowCreateModal(true);
@@ -68,6 +80,12 @@ const LaborCulturalTable = ({ refresh }) => {
     setShowSuccessModal(true);
   };
 
+  // Helper to get the name of the phenological stage by ID
+  const getPhenologicalStageName = (id) => {
+    const stage = phenologicalStages.find((stage) => stage.id === id);
+    return stage ? stage.nombre : "N/A";
+  };
+
   if (loading) return <div>Cargando labores culturales...</div>;
   if (error) return <div>{error}</div>;
 
@@ -78,6 +96,8 @@ const LaborCulturalTable = ({ refresh }) => {
           <tr>
             <th>Nombre</th>
             <th>Descripción</th>
+            <th>Precio Hora Real</th>
+            <th>Etapa Fenológica</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -87,6 +107,8 @@ const LaborCulturalTable = ({ refresh }) => {
               <tr key={labor.id}>
                 <td>{labor.nombre}</td>
                 <td>{labor.descripcion}</td>
+                <td>{labor.precio_hora_real}</td>
+                <td>{getPhenologicalStageName(labor.etapa_fenologica_id)}</td>
                 <td>
                   <TableLaborAction
                     labor={labor}
@@ -99,7 +121,7 @@ const LaborCulturalTable = ({ refresh }) => {
             ))
           ) : (
             <tr>
-              <td colSpan="3">No se encontraron labores culturales</td>
+              <td colSpan="5">No se encontraron labores culturales</td>
             </tr>
           )}
         </tbody>

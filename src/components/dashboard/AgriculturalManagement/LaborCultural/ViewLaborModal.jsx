@@ -1,9 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "../../../../css/ViewModal.scss"; // Asegúrate de que el archivo CSS está correctamente configurado
+import "../../../../css/ViewModal.scss";
 
 const ViewLaborModal = ({ show, closeModal, labor }) => {
-  // Verificamos que show sea true y labor tenga datos
   if (!show || !labor) return null;
 
   return ReactDOM.createPortal(
@@ -18,10 +17,16 @@ const ViewLaborModal = ({ show, closeModal, labor }) => {
           <p>
             <strong>Descripción:</strong> {labor.descripcion}
           </p>
+          <p>
+            <strong>Precio por Hora:</strong> {labor.precio_hora_real ? `$${labor.precio_hora_real.toFixed(2)}` : "N/A"}
+          </p>
+          <p>
+            <strong>Etapa Fenológica:</strong> {labor.etapa_fenologica?.nombre || "N/A"}
+          </p>
         </div>
       </div>
     </div>,
-    document.body // Renderiza el modal en el body para evitar conflictos de estilo
+    document.body
   );
 };
 

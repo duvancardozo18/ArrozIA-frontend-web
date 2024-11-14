@@ -1,12 +1,61 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import axiosInstance from "../../../config/AxiosInstance";
+import { AuthContext } from '../../../config/AuthProvider';
 import LoteCard from './LoteCard';
 import CreateWeatherRecordModal from './CreateWeatherRecordModal';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import styled from 'styled-components';
 import '../../../css/MonitoringView.scss';
 
+const StyledSelect = styled.select`
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+
+  &:focus {
+    box-shadow: 0 0 5px 2px rgba(0, 128, 0, 0.4);
+  }
+`;
+
+const TableContainer = styled.div`
+  overflow-x: auto;
+  width: 100%;
+  margin-top: 20px;
+
+  .records-table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .table-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    th, td {
+      font-size: 0.9rem;
+    }
+  }
+`;
+
 const WeatherMonitoringView = () => {
+  const { userId } = useContext(AuthContext);
+  const [isAdmin, setIsAdmin] = useState(null);
+  const [farms, setFarms] = useState([]);
+  const [selectedFarmId, setSelectedFarmId] = useState(null);
   const [lotes, setLotes] = useState([]);
   const [selectedLote, setSelectedLote] = useState(null);
   const [selectedLoteNombre, setSelectedLoteNombre] = useState("");
@@ -14,31 +63,43 @@ const WeatherMonitoringView = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [reload, setReload] = useState(false);
-
-  // Estados para las fechas de filtro
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  // Fetch lotes on component mount
-  useEffect(() => {
-    const fetchLotes = async () => {
-      try {
-        const response = await axiosInstance.get('/lands');
-        setLotes(Array.isArray(response.data) ? response.data : []);
-      } catch (error) {
-        console.error('Error fetching lotes:', error);
-        setError('Error loading lotes.');
-      }
-    };
-    fetchLotes();
-  }, []);
+  const checkIfAdmin = async () => {
+    try {
+      const response = await axiosInstance.get(`/users/${userId}/is_admin`);
+      setIsAdmin(response.data.is_admin);
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+    }
+  };
 
-  // Fetch weather records for selected lote with optional date filters
+  const fetchFarms = useCallback(async () => {
+    try {
+      const url = isAdmin ? "/farms" : `/users/${userId}/farms`;
+      const response = await axiosInstance.get(url);
+      setFarms(response.data);
+    } catch (error) {
+      console.error("Error fetching farms:", error);
+      setError("No se pudieron cargar las fincas.");
+    }
+  }, [isAdmin, userId]);
+
+  const fetchLotesForFarm = useCallback(async () => {
+    if (!selectedFarmId) return;
+    try {
+      const response = await axiosInstance.get(`/farmlots/farm/${selectedFarmId}`);
+      setLotes(response.data);
+    } catch (error) {
+      console.error('Error fetching lots:', error);
+      setError("Error loading lots.");
+    }
+  }, [selectedFarmId]);
+
   const fetchWeatherRecords = useCallback(async (loteId, start, end) => {
     setLoading(true);
     setError(null);
-    setWeatherRecords([]);
     try {
       let url = `/meteorology/history/${loteId}`;
       if (start && end) {
@@ -48,13 +109,28 @@ const WeatherMonitoringView = () => {
       setWeatherRecords(response.data);
     } catch (error) {
       console.error('Error fetching weather history:', error);
-      setError('');
+      setWeatherRecords([]);  
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Reload weather records on lote selection or filter change
+  useEffect(() => {
+    if (userId) {
+      checkIfAdmin();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (isAdmin !== null) {
+      fetchFarms();
+    }
+  }, [isAdmin, fetchFarms]);
+
+  useEffect(() => {
+    fetchLotesForFarm();
+  }, [selectedFarmId, fetchLotesForFarm]);
+
   useEffect(() => {
     if (selectedLote) {
       fetchWeatherRecords(
@@ -63,7 +139,13 @@ const WeatherMonitoringView = () => {
         endDate ? endDate.toISOString().split('T')[0] : null
       );
     }
-  }, [selectedLote, reload, startDate, endDate, fetchWeatherRecords]);
+  }, [selectedLote, startDate, endDate, fetchWeatherRecords]);
+
+  const handleFarmSelect = (event) => {
+    setSelectedFarmId(event.target.value);
+    setSelectedLote(null);
+    setWeatherRecords([]);
+  };
 
   const handleLoteSelect = (lote) => {
     setSelectedLote(lote.id);
@@ -73,7 +155,9 @@ const WeatherMonitoringView = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
     setIsModalOpen(false);
-    setReload((prev) => !prev);
+    setStartDate(null);
+    setEndDate(null);
+    fetchWeatherRecords(selectedLote);
   };
 
   const applyDateFilter = () => {
@@ -89,17 +173,28 @@ const WeatherMonitoringView = () => {
   return (
     <div className="monitoring-view">
       <div className="monitoring-sidebar">
-        <h2>Datos Meteorológicos - Lotes</h2>
-        <div className="lot-cards">
-          {lotes.map((lote) => (
-            <LoteCard
-              key={lote.id}
-              lote={lote}
-              isExpanded={selectedLote === lote.id}
-              onToggle={() => handleLoteSelect(lote)}
-            />
+        <h2>Datos Meteorológicos - Fincas</h2>
+        <StyledSelect onChange={handleFarmSelect} value={selectedFarmId || ''}>
+          <option value="" disabled>Selecciona una finca</option>
+          {farms.map((farm) => (
+            <option key={farm.id} value={farm.id}>{farm.nombre}</option>
           ))}
-        </div>
+        </StyledSelect>
+        {selectedFarmId && (
+          <>
+            <h2 style={{ marginTop: '20px' }}>Lotes</h2>
+            <div className="lot-cards">
+              {lotes.map((lote) => (
+                <LoteCard
+                  key={lote.id}
+                  lote={lote}
+                  isExpanded={selectedLote === lote.id}
+                  onToggle={() => handleLoteSelect(lote)}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="monitoring-content">
@@ -128,44 +223,43 @@ const WeatherMonitoringView = () => {
                 <button className="apply-filter-btn" onClick={applyDateFilter}>Aplicar Filtro</button>
               </div>
             </div>
-            {error && <p className="error-message">{error}</p>}
             {loading ? (
               <p>Cargando registros meteorológicos...</p>
             ) : (
-              <table className="records-table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th></th>
-                    <th>Temperatura (°C)</th>
-                    <th>Presión (hPa)</th>
-                    <th>Humedad (%)</th>
-                    <th>Precipitación (mm)</th>
-                    <th>UV</th>
-                    <th>Horas de Sol</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {weatherRecords.length > 0 ? (
-                    weatherRecords.map((record) => (
-                      <tr key={record.id}>
-                        <td>{record.fecha}</td>
-                        <td>{record.hora}</td>
-                        <td>{record.temperatura}</td>
-                        <td>{record.presion_atmosferica}</td>
-                        <td>{record.humedad}</td>
-                        <td>{record.precipitacion || 0}</td>
-                        <td>{record.indice_ultravioleta}</td>
-                        <td>{record.horas_sol}</td>
-                      </tr>
-                    ))
-                  ) : (
+              <TableContainer>
+                <table className="records-table">
+                  <thead>
                     <tr>
-                      <td colSpan="8" style={{ textAlign: "center" }}>No hay registros disponibles</td>
+                      <th>Fecha</th>
+                      <th>Temperatura (°C)</th>
+                      <th>Presión (hPa)</th>
+                      <th>Humedad (%)</th>
+                      <th>Precipitación (mm)</th>
+                      <th>UV</th>
+                      <th>Horas de Sol</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {weatherRecords.length > 0 ? (
+                      weatherRecords.map((record) => (
+                        <tr key={record.id}>
+                          <td>{record.fecha}</td>
+                          <td>{record.temperatura}</td>
+                          <td>{record.presion_atmosferica}</td>
+                          <td>{record.humedad}</td>
+                          <td>{record.precipitacion || 0}</td>
+                          <td>{record.indice_ultravioleta}</td>
+                          <td>{record.horas_sol}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" style={{ textAlign: "center" }}>No hay datos meteorológicos registrados en este lote</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </TableContainer>
             )}
           </>
         ) : (

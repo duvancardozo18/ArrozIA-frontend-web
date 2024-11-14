@@ -4,6 +4,21 @@ import axiosInstance from '../../../config/AxiosInstance';
 import SuccessModal from '../../dashboard/modal/SuccessModal';
 import '../../../css/RegistroMeteorologicoModal.scss';
 
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #218838;
+  }
+`;
+
 const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) => {
   const [formData, setFormData] = useState({
     fecha: '',
@@ -88,7 +103,7 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) 
               <label>Horas de Sol</label>
               <input type="number" name="horas_sol" value={formData.horas_sol} onChange={handleChange} required />
             </div>
-            <button type="submit" className="submit-button">Guardar</button>
+            <SubmitButton type="submit">Guardar</SubmitButton>
           </form>
         </div>
       </div>

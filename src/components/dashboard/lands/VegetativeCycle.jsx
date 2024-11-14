@@ -13,3 +13,4 @@ const VegetativeCycle = () => (
 );
 
 export default VegetativeCycle;
+

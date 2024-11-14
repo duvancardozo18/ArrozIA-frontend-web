@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axiosInstance from "../../../../config/AxiosInstance";
 import SuccessModal from "../../../dashboard/modal/SuccessModal";
@@ -62,13 +62,14 @@ const InputGroup = styled.div`
   }
 
   input,
-  textarea {
+  textarea,
+  select {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
     font-size: 16px;
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: box-shadow 0.3s ease-in-out;
 
     &:focus {
       box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
@@ -96,9 +97,26 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
+    precio_hora_real: "",  // Ajustado a "precio_hora_real" para el envío correcto
+    etapa_fenologica_id: "",  
   });
+  const [phenologicalStages, setPhenologicalStages] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const fetchPhenologicalStages = async () => {
+      try {
+        const response = await axiosInstance.get("/phenological-stages");
+        setPhenologicalStages(response.data);
+      } catch (error) {
+        console.error("Error al cargar las etapas fenológicas:", error);
+        setErrorMessage("Hubo un problema al cargar las etapas fenológicas.");
+      }
+    };
+
+    fetchPhenologicalStages();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,28 +126,14 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
     } else if (name === "descripcion" && value.length >= 299) {
       setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
     } else {
-      setErrorMessage(""); // Limpiar mensaje de error si la entrada es válida
+      setErrorMessage("");
     }
 
-    if (name === "nombre" && value.length <= 100) {
-      setFormData({ ...formData, [name]: value });
-    } else if (name === "descripcion" && value.length <= 300) {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (formData.nombre.length > 100) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
-      return;
-    }
-
-    if (formData.descripcion.length > 300) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
-      return;
-    }
 
     try {
       await axiosInstance.post("/labor-cultural/create", formData);
@@ -142,8 +146,8 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    onSave(); // Actualiza la tabla después de crear
-    closeModal(); // Cierra el modal principal
+    onSave();
+    closeModal();
   };
 
   return (
@@ -175,6 +179,34 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
                 rows={3}
                 maxLength={300}
               />
+            </InputGroup>
+            <InputGroup>
+              <label>Precio por Hora</label>
+              <input
+                type="number"
+                name="precio_hora_real"
+                value={formData.precio_hora_real}
+                onChange={handleChange}
+                required
+                min="0"
+                step="0.01"
+              />
+            </InputGroup>
+            <InputGroup>
+              <label>Etapa Fenológica</label>
+              <select
+                name="etapa_fenologica_id"
+                value={formData.etapa_fenologica_id}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>Selecciona una etapa fenológica</option>
+                {phenologicalStages.map((stage) => (
+                  <option key={stage.id} value={stage.id}>
+                    {stage.nombre}
+                  </option>
+                ))}
+              </select>
             </InputGroup>
             <SubmitButton type="submit">Crear</SubmitButton>
           </form>
