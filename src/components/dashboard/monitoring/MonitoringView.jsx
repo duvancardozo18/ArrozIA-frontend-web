@@ -1,16 +1,49 @@
-
 import React, { useState, useContext, useEffect } from "react";
 import Header from "../Header";
-import ColumCards from "./ColumCards";
+import CropCard from "../tasks/CropCard";
 import ColumMonitoring from "./ColumMonitoring";
 import { AuthContext } from "../../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
 import axiosInstance from "../../../config/AxiosInstance";
 import CreateMonitoringModal from "./CreateMonitoringModal";
+import styled from 'styled-components';
+
+const Container = styled.div`
+  display: flex;
+  padding: 20px;
+`;
+
+const Sidebar = styled.div`
+  width: 30%;
+  padding-right: 20px;
+  border-right: 1px solid #ddd;
+`;
+
+const Content = styled.div`
+  width: 70%;
+  padding-left: 20px;
+`;
+
+const StyledSelect = styled.select`
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+
+  &:focus {
+    box-shadow: 0 0 5px 2px rgba(0, 128, 0, 0.4); /* Sombra verde */
+  }
+`;
 
 const MonitoringView = () => {
   const { isAuthenticated, userId } = useContext(AuthContext);
+  const [farms, setFarms] = useState([]);
   const [crops, setCrops] = useState([]);
+  const [selectedFarmId, setSelectedFarmId] = useState(null);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [monitorings, setMonitorings] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +53,7 @@ const MonitoringView = () => {
     return <Navigate to="/" replace />;
   }
 
+  // Verificar si el usuario es administrador
   const checkIfAdmin = async () => {
     try {
       const response = await axiosInstance.get(`/users/${userId}/is_admin`);
@@ -29,34 +63,14 @@ const MonitoringView = () => {
     }
   };
 
-  // Obtener cultivos según el rol del usuario
-  const fetchAssignedFarmCrops = async () => {
+  // Obtener las fincas según el rol del usuario
+  const fetchFarms = async () => {
     try {
-      if (isAdmin) {
-        // Si es administrador, obtener todos los cultivos
-        const cropsResponse = await axiosInstance.get("/crops/all"); // Ajusta el endpoint si es necesario
-        setCrops(cropsResponse.data);
-      } else {
-        // Si no es administrador, obtener la finca asignada y sus cultivos
-        const farmResponse = await axiosInstance.get(`/users/${userId}/farms`);
-        const assignedFarm = farmResponse.data[0]; // Suponemos que el usuario tiene asignada una sola finca
-
-        if (assignedFarm) {
-          const cropsResponse = await axiosInstance.get(`/farms/${assignedFarm.id}/crops`);
-          setCrops(cropsResponse.data);
-        }
-      }
+      const url = isAdmin ? "/farms" : `/users/${userId}/farms`;
+      const response = await axiosInstance.get(url);
+      setFarms(response.data);
     } catch (error) {
-      console.error("Error fetching crops:", error);
-    }
-  };
-
-  const fetchMonitorings = async (cropId) => {
-    try {
-      const response = await axiosInstance.get(`/monitoring/by_crop/${cropId}`);
-      setMonitorings(response.data || []);
-    } catch (error) {
-      console.error("Error fetching monitorings:", error);
+      console.error("Error fetching farms:", error);
     }
   };
 
@@ -66,13 +80,52 @@ const MonitoringView = () => {
 
   useEffect(() => {
     if (isAdmin !== null) {
-      fetchAssignedFarmCrops(); // Cargar cultivos de la finca asignada o todos si es admin
+      fetchFarms();
     }
   }, [isAdmin]);
 
-  const handleCropSelect = (crop) => {
+  // Obtener cultivos relacionados a la finca seleccionada
+  useEffect(() => {
+    const fetchCropsForFarm = async () => {
+      if (!selectedFarmId) return;
+
+      try {
+        const response = await axiosInstance.get(`/farms/${selectedFarmId}/crops`);
+        setCrops(response.data);
+      } catch (error) {
+        console.error('Error fetching crops:', error);
+      }
+    };
+
+    fetchCropsForFarm();
+  }, [selectedFarmId]);
+
+  // Obtener monitoreos relacionados al cultivo seleccionado
+  useEffect(() => {
+    const fetchMonitoringsForCrop = async () => {
+      if (!selectedCrop) return;
+
+      try {
+        const response = await axiosInstance.get(`/monitoring/by_crop/${selectedCrop.id}`);
+        setMonitorings(response.data || []);
+      } catch (error) {
+        console.error("Error fetching monitorings:", error);
+      }
+    };
+
+    fetchMonitoringsForCrop();
+  }, [selectedCrop]);
+
+  const handleFarmSelection = (event) => {
+    const farmId = event.target.value;
+    setSelectedFarmId(farmId);
+    setSelectedCrop(null); // Limpiar el cultivo seleccionado al cambiar de finca
+    setCrops([]);
+    setMonitorings([]);
+  };
+
+  const handleCropSelection = (crop) => {
     setSelectedCrop(crop);
-    fetchMonitorings(crop.id);
   };
 
   const closeModal = () => {
@@ -80,23 +133,53 @@ const MonitoringView = () => {
   };
 
   const refreshMonitorings = () => {
-    if (selectedCrop) fetchMonitorings(selectedCrop.id);
+    if (selectedCrop) {
+      fetchMonitoringsForCrop();
+    }
   };
 
   return (
     <div className="content-area">
       <Header title="Monitoreo de Cultivos" />
+      <Container>
+        <Sidebar>
+          <h2>Fincas</h2>
+          <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ''}>
+            <option value="" disabled>Selecciona una finca</option>
+            {farms.map((farm) => (
+              <option key={farm.id} value={farm.id}>{farm.nombre}</option>
+            ))}
+          </StyledSelect>
 
-      {/* Lista de cultivos */}
-      <div className="monitoring-view-container">
-        <ColumCards crops={crops} selectedCrop={selectedCrop} onSelectCrop={handleCropSelect} />
-        <ColumMonitoring
-          selectedCrop={selectedCrop}
-          monitorings={monitorings}
-          onOpenModal={() => setIsModalOpen(true)}
-          refreshMonitorings={refreshMonitorings}
-        />
-      </div>
+          {selectedFarmId && (
+            <>
+              <h2 style={{ marginTop: '20px' }}>Cultivos</h2>
+              {crops.map((crop) => (
+                <CropCard
+                  key={crop.id}
+                  cropName={crop.cropName}
+                  onClick={() => handleCropSelection(crop)}
+                  isSelected={selectedCrop?.id === crop.id}
+                />
+              ))}
+            </>
+          )}
+        </Sidebar>
+        <Content>
+          {selectedCrop ? (
+            <ColumMonitoring
+              selectedCrop={selectedCrop}
+              monitorings={monitorings}
+              onOpenModal={() => setIsModalOpen(true)}
+              refreshMonitorings={refreshMonitorings}
+            />
+          ) : (
+            <p style={{ textAlign: "center", fontSize: "18px", color: "#555", marginTop: "20px" }}>
+              Selecciona un cultivo para ver los monitoreos.
+            </p>
+          )}
+        </Content>
+      </Container>
 
       {isModalOpen && (
         <CreateMonitoringModal

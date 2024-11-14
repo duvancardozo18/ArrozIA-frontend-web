@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaTractor, FaSeedling, FaWater, FaBug } from 'react-icons/fa';
+import axiosInstance from '../../../config/AxiosInstance';
 
 // Styled-components para estilizar el contenedor de eventos y las tarjetas
 const Container = styled.div`
@@ -79,6 +80,13 @@ const Responsible = styled.p`
   width: fit-content;
 `;
 
+const LaborCultural = styled.p`
+  font-size: 1em;
+  color: #333;
+  font-weight: bold;
+  margin-top: 10px;
+`;
+
 const IconWrapper = styled.div`
   font-size: 2.5em;
   margin-bottom: 10px;
@@ -101,44 +109,65 @@ const getLaborIcon = (laborType) => {
 };
 
 // Componente de tarjeta de evento
-// Componente de tarjeta de evento
-const EventCard = ({ cultivoId, descripcion, fechaEstimada, fechaRealizacion, esMecanizable, planeadaAutomaticamente }) => {
+const EventCard = ({ title, start, end, userName }) => {
+  console.log('Nombre del usuario recibido en EventCard:', userName); // Log para verificar el nombre del usuario
   return (
     <Card>
       <LeftColumn>
         {/* Dependiendo de si la tarea es mecanizable o no, mostramos un ícono diferente */}
-        <IconWrapper>{esMecanizable ? <FaTractor /> : <FaSeedling />}</IconWrapper>
-        <EventDate>{`Estimada: ${fechaEstimada}`}</EventDate>
-        <EventDate>{`Realizada: ${fechaRealizacion}`}</EventDate>
+        <IconWrapper>{getLaborIcon(title)}</IconWrapper>
+        <EventDate>{`Fecha de Inicio: ${start}`}</EventDate>
+        <EventDate>{`Fecha de Finalización: ${end}`}</EventDate>
       </LeftColumn>
       <RightColumn>
-       {/*<EventTitle>{`Cultivo ID: ${cultivoId}`}</EventTitle>*/}
-        <EventDescription>{descripcion}</EventDescription>
-        <Responsible>{`Automáticamente Planeada: ${planeadaAutomaticamente ? 'Sí' : 'No'}`}</Responsible>
+        <EventDescription>{`Título: ${title}`}</EventDescription>
+        <Responsible>{`Responsable: ${userName}`}</Responsible>
       </RightColumn>
     </Card>
   );
 };
 
-
-// Lista de eventos con valor por defecto para events
-// Componente de tarjeta de evento
 const EventList = ({ events = [] }) => {
-  console.log(events);
+  const [eventsWithUserNames, setEventsWithUserNames] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data: users } = await axiosInstance.get("/users"); // Obtener la lista de usuarios
+
+        // Mapear eventos con los nombres de usuario correspondientes
+        const updatedEvents = events.map((event) => {
+          const user = users.find((u) => u.id === event.usuario_id);
+          const userName = user ? user.nombre : 'Desconocido';
+          return {
+            ...event,
+            responsable: userName,
+            start: new Date(event.start).toLocaleDateString(),
+            end: new Date(event.end).toLocaleDateString(),
+          };
+        });
+
+        setEventsWithUserNames(updatedEvents);
+      } catch (error) {
+        console.error("Error al cargar los usuarios:", error);
+      }
+    };
+
+    fetchUsers();
+  }, [events]);
+
   return (
     <Container>
       <Title>Labores Pendientes</Title>
       <CardGrid>
-        {events.length > 0 ? (
-          events.map((event, index) => (
+        {eventsWithUserNames.length > 0 ? (
+          eventsWithUserNames.map((event, index) => (
             <EventCard
               key={index}
-              cultivoId={event.cultivoId}
-              descripcion={event.descripcion}
-              fechaEstimada={event.fechaEstimada}
-              fechaRealizacion={event.fechaRealizacion}
-              esMecanizable={event.esMecanizable}
-              planeadaAutomaticamente={event.planeadaAutomaticamente}
+              title={event.title}
+              start={event.start}
+              end={event.end}
+              userName={event.responsable} // Usando responsable para mostrar el nombre del usuario
             />
           ))
         ) : (
@@ -148,7 +177,5 @@ const EventList = ({ events = [] }) => {
     </Container>
   );
 };
-
-
 
 export default EventList;
