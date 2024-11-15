@@ -157,13 +157,13 @@ const NewFarm = ({ closeModal, addFarm }) => {
           <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Crear Finca</h2>
           {errorMessage && <p className={styles["error-message"]}>{errorMessage}</p>}
 
-          {/* Contenedor de advertencia */}
+          {/* Contenedor de advertencia 
           <div className={styles["warning-container"]}>
             <p>
               Puedes seleccionar manualmente tu ubicación introduciendo los datos de Departamento, Ciudad, Latitud y Longitud,
               o bien, hacer clic en el mapa para que se complete automáticamente.
             </p>
-          </div>
+          </div>*/}
 
           <form onSubmit={handleSubmit}>
             <div className={styles["input-group"]}>
@@ -172,36 +172,51 @@ const NewFarm = ({ closeModal, addFarm }) => {
             </div>
             <div className={styles["input-group"]}>
               <label>Área Total (m²)</label>
-              <input type="number" name="area_total" value={formData.area_total} onChange={handleChange} required min={0} />
+              <input
+                type="number"
+                name="area_total"
+                value={formData.area_total}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 8) {
+                    handleChange(e); 
+                  }
+                }}
+                required
+               
+              />
             </div>
             <div className={styles["input-group"]}>
-              <label>Departamento (Manual)</label>
+              <label>Departamento</label>
               <AsyncSelect
                 cacheOptions
                 loadOptions={fetchDepartments}
                 defaultOptions={true}
                 onChange={handleSelectDepartment}
-                placeholder="Selecciona Departamento (Opcional)"
+                placeholder=""
                 isClearable
                 value={selectedDepartment}
+                noOptionsMessage={() => "Escribe el nombre del Departamento"}
+                required
               />
             </div>
             <div className={styles["input-group"]}>
-              <label>Departamento (Obtenido del mapa)</label>
-              <input type="text" value={formData.departamento} readOnly />
+              <label style={{ display: "none" }}>Departamento (Obtenido del mapa)</label>
+              <input type="text" value={formData.departamento} readOnly style={{ display: "none" }}/>
             </div>
             <div className={styles["input-group"]}>
-              <label>Ciudad (Manual)</label>
+              <label>Ciudad</label>
               <AsyncSelect
                 cacheOptions
                 loadOptions={fetchCities}
                 defaultOptions={true}
                 onChange={handleSelectCity}
-                placeholder="Selecciona Ciudad (Opcional)"
+                placeholder=""
                 isClearable
                 value={selectedCity}
                 isDisabled={!selectedDepartment}
                 menuPortalTarget={document.body}
+                required
                 styles={{
                   control: (provided) => ({
                     ...provided,
@@ -213,23 +228,51 @@ const NewFarm = ({ closeModal, addFarm }) => {
                   }),
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 }}
+                noOptionsMessage={() => "Escribe el nombre del municipio"}
               />
             </div>
             <div className={styles["input-group"]}>
-              <label>Ciudad (Obtenido del mapa)</label>
-              <input type="text" value={formData.ciudad} readOnly />
+              <label style={{ display: "none" }}>Ciudad (Obtenido del mapa)</label>
+              <input type="text" value={formData.ciudad} readOnly style={{ display: "none" }}/>
             </div>
+
             <div className={styles["input-group"]}>
               <label>Latitud</label>
-              <input type="number" name="latitud" value={formData.latitud || ""} onChange={handleChange} placeholder="Latitud " />
+              <input
+                type="number"
+                name="latitud"
+                value={formData.latitud || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 9 && value >= -90 && value <= 90) {
+                    handleChange(e);
+                  }
+                }}
+                placeholder=""
+                required
+                step="0.000001"
+              />
             </div>
             <div className={styles["input-group"]}>
               <label>Longitud</label>
-              <input type="number" name="longitud" value={formData.longitud || ""} onChange={handleChange} placeholder="Longitud " />
+              <input
+                type="number"
+                name="longitud"
+                value={formData.longitud || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 9 && value >= -180 && value <= 180) {
+                    handleChange(e);
+                  }
+                }}
+                placeholder=""
+                required
+                step="0.000001"
+              />
             </div>
             <div className={styles["input-group"]}>
               <label>Detalles de su ubicación</label>
-              <input type="text" name="descripcion" value={formData.descripcion} onChange={handleChange} maxLength={255} placeholder="Detalles adicionales de ubicación (opcional)" />
+              <input type="text" name="descripcion" value={formData.descripcion} onChange={handleChange} maxLength={50  	} placeholder="Detalles adicionales de ubicación (opcional)" />
             </div>
             <MapsLeaflet formData={formData} setFormData={setFormData} updateLocationData={updateLocationData} />
             <button type="submit" className={styles["submit-button"]}>Crear</button>
