@@ -144,7 +144,7 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
     console.log("Datos a enviar:", dataToSend); // Log para revisar datos antes de enviar
 
     try {
-      await axiosInstance.post("/monitoring", dataToSend);
+      await axiosInstance.post("/monitoring/", dataToSend);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al crear el monitoreo:", error);

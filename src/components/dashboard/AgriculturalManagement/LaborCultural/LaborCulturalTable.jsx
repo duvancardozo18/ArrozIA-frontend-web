@@ -38,6 +38,7 @@ const LaborCulturalTable = ({ refresh }) => {
     try {
       const response = await axiosInstance.get("/phenological-stages");
       setPhenologicalStages(response.data);
+      console.log("Phenological Stages Loaded:", response.data); // Verificar las etapas cargadas
     } catch (error) {
       console.error("Error al cargar las etapas fenológicas:", error);
     }
@@ -82,7 +83,13 @@ const LaborCulturalTable = ({ refresh }) => {
 
   // Helper to get the name of the phenological stage by ID
   const getPhenologicalStageName = (id) => {
+    if (!phenologicalStages || phenologicalStages.length === 0) {
+      console.log("No phenological stages loaded.");
+      return "N/A";
+    }
+
     const stage = phenologicalStages.find((stage) => stage.id === id);
+    console.log("Stage found:", stage); // Verifica si encuentra la etapa correcta
     return stage ? stage.nombre : "N/A";
   };
 
@@ -108,7 +115,7 @@ const LaborCulturalTable = ({ refresh }) => {
                 <td>{labor.nombre}</td>
                 <td>{labor.descripcion}</td>
                 <td>{labor.precio_hora_real}</td>
-                <td>{getPhenologicalStageName(labor.etapa_fenologica_id)}</td>
+                <td>{getPhenologicalStageName(labor.id_etapa_fenologica)}</td>
                 <td>
                   <TableLaborAction
                     labor={labor}
