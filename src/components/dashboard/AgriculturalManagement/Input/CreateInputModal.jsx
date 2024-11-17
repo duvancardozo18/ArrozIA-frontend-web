@@ -145,56 +145,47 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
     unidad_id: "",
     costo_unitario: "",
     descripcion: "",
+    tipo_insumo_id: "", // Nuevo campo
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [units, setUnits] = useState([]); // Estado para almacenar las unidades
+  const [units, setUnits] = useState([]);
+  const [tiposInsumo, setTiposInsumo] = useState([]); // Estado para los tipos de insumo
 
-  // Efecto para obtener las unidades de medida
+  // Efecto para obtener unidades y tipos de insumo
   useEffect(() => {
-    const fetchUnits = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/units"); // Ajusta la ruta según sea necesario
-        setUnits(response.data);
+        const [unitsResponse, tiposResponse] = await Promise.all([
+          axiosInstance.get("/units"), // Ruta para unidades
+          axiosInstance.get("/input-types"), // Ruta para tipos de insumo
+        ]);
+
+        setUnits(unitsResponse.data);
+        setTiposInsumo(tiposResponse.data);
       } catch (error) {
-        setErrorMessage("Error al cargar las unidades de medida.");
+        setErrorMessage("Error al cargar los datos iniciales.");
       }
     };
 
-    fetchUnits();
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "nombre" && value.length > 100) {
-      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
-    } else if (name === "descripcion" && value.length > 300) {
-      setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
-    } else {
-      setFormData({ ...formData, [name]: value });
-      setErrorMessage("");
-    }
+    setFormData({ ...formData, [name]: value });
+    setErrorMessage("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (formData.nombre.length > 100) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
-      return;
-    }
-
-    if (formData.descripcion.length > 300) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
-      return;
-    }
-
     try {
       const dataToSend = {
         ...formData,
         unidad_id: parseInt(formData.unidad_id, 10),
+        tipo_insumo_id: parseInt(formData.tipo_insumo_id, 10),
         costo_unitario: parseFloat(formData.costo_unitario),
       };
 
@@ -266,6 +257,23 @@ const CreateInsumoModal = ({ closeModal, onSave }) => {
                 </select>
               </HalfInputGroup>
             </FlexContainer>
+
+            <InputGroup>
+              <label>Tipo de Insumo</label>
+              <select
+                name="tipo_insumo_id"
+                value={formData.tipo_insumo_id}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecciona un tipo</option>
+                {tiposInsumo.map(tipo => (
+                  <option key={tipo.id} value={tipo.id}>
+                    {tipo.nombre}
+                  </option>
+                ))}
+              </select>
+            </InputGroup>
 
             <InputGroup>
               <label>Costo Unitario</label>
