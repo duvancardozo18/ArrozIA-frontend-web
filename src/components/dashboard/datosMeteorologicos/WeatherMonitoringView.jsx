@@ -3,6 +3,7 @@ import axiosInstance from "../../../config/AxiosInstance";
 import { AuthContext } from '../../../config/AuthProvider';
 import LoteCard from './LoteCard';
 import CreateWeatherRecordModal from './CreateWeatherRecordModal';
+import SuccessModal from '../../dashboard/modal/SuccessModal'; // Importar modal de éxito
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styled from 'styled-components';
@@ -23,6 +24,21 @@ const StyledSelect = styled.select`
   }
 `;
 
+const ActionButton = styled.button`
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #218838;
+  }
+`;
+
 const TableContainer = styled.div`
   overflow-x: auto;
   width: 100%;
@@ -37,17 +53,6 @@ const TableContainer = styled.div`
   th, td {
     padding: 8px;
     text-align: center;
-  }
-
-  @media (max-width: 768px) {
-    .table-header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    th, td {
-      font-size: 0.9rem;
-    }
   }
 `;
 
@@ -65,6 +70,7 @@ const WeatherMonitoringView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const checkIfAdmin = async () => {
     try {
@@ -109,37 +115,34 @@ const WeatherMonitoringView = () => {
       setWeatherRecords(response.data);
     } catch (error) {
       console.error('Error fetching weather history:', error);
-      setWeatherRecords([]);  
+      setWeatherRecords([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    if (userId) {
-      checkIfAdmin();
+  const addWeatherRecordAutomatically = async () => {
+    if (!selectedLote) {
+      alert("Por favor, selecciona un lote antes de registrar el dato meteorológico.");
+      return;
     }
-  }, [userId]);
-
-  useEffect(() => {
-    if (isAdmin !== null) {
-      fetchFarms();
-    }
-  }, [isAdmin, fetchFarms]);
-
-  useEffect(() => {
-    fetchLotesForFarm();
-  }, [selectedFarmId, fetchLotesForFarm]);
-
-  useEffect(() => {
-    if (selectedLote) {
-      fetchWeatherRecords(
-        selectedLote,
-        startDate ? startDate.toISOString().split('T')[0] : null,
-        endDate ? endDate.toISOString().split('T')[0] : null
+    try {
+      await axiosInstance.post(
+        "/meteorology/api",
+        { lote_id: selectedLote },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
+      setShowSuccessModal(true); // Mostrar mensaje de éxito
+      fetchWeatherRecords(selectedLote); // Actualizar registros después de agregar el dato
+    } catch (error) {
+      console.error("Error al registrar el dato meteorológico automáticamente:", error);
+      alert("Hubo un error al registrar el dato meteorológico.");
     }
-  }, [selectedLote, startDate, endDate, fetchWeatherRecords]);
+  };
 
   const handleFarmSelect = (event) => {
     setSelectedFarmId(event.target.value);
@@ -169,6 +172,32 @@ const WeatherMonitoringView = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (userId) {
+      checkIfAdmin();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (isAdmin !== null) {
+      fetchFarms();
+    }
+  }, [isAdmin, fetchFarms]);
+
+  useEffect(() => {
+    fetchLotesForFarm();
+  }, [selectedFarmId, fetchLotesForFarm]);
+
+  useEffect(() => {
+    if (selectedLote) {
+      fetchWeatherRecords(
+        selectedLote,
+        startDate ? startDate.toISOString().split('T')[0] : null,
+        endDate ? endDate.toISOString().split('T')[0] : null
+      );
+    }
+  }, [selectedLote, startDate, endDate, fetchWeatherRecords]);
 
   return (
     <div className="monitoring-view">
@@ -202,9 +231,14 @@ const WeatherMonitoringView = () => {
           <>
             <div className="table-header">
               <h3>Historial Meteorológico del Lote {selectedLoteNombre}</h3>
-              <button className="register-weather-btn" onClick={openModal}>
-                Registrar Datos Meteorológicos
-              </button>
+              <div className="actions">
+                <ActionButton onClick={openModal}>
+                  Registro Manual
+                </ActionButton>
+                <ActionButton onClick={addWeatherRecordAutomatically}>
+                  Registro Automático
+                </ActionButton>
+              </div>
               <div className="date-filter">
                 <DatePicker
                   selected={startDate}
@@ -220,7 +254,9 @@ const WeatherMonitoringView = () => {
                   placeholderText="Fecha Fin"
                   className="date-picker"
                 />
-                <button className="apply-filter-btn" onClick={applyDateFilter}>Aplicar Filtro</button>
+                <button className="apply-filter-btn" onClick={applyDateFilter}>
+                  Aplicar Filtro
+                </button>
               </div>
             </div>
             {loading ? (
@@ -268,10 +304,17 @@ const WeatherMonitoringView = () => {
       </div>
 
       {isModalOpen && (
-        <CreateWeatherRecordModal 
-          loteId={selectedLote} 
-          loteNombre={selectedLoteNombre} 
-          onClose={closeModal} 
+        <CreateWeatherRecordModal
+          loteId={selectedLote}
+          loteNombre={selectedLoteNombre}
+          onClose={closeModal}
+        />
+      )}
+
+      {showSuccessModal && (
+        <SuccessModal
+          onClose={() => setShowSuccessModal(false)}
+          message="¡Datos meteorológicos registrados automáticamente con éxito!"
         />
       )}
     </div>
