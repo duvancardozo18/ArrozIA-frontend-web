@@ -8,12 +8,17 @@ import {
   MdOutlineAgriculture,
   MdOutlineCloud,
   MdOutlineClose,
-  MdOutlineBarChart,
   MdOutlineLogout,
   MdOutlinePeople,
   MdOutlinePerson2,
   MdOutlineAssignment,
 } from "react-icons/md";
+import { GiBarn } from 'react-icons/gi';
+import { BiTask } from "react-icons/bi";
+import { LuMonitorDot } from "react-icons/lu";
+import { FaSearch } from 'react-icons/fa';
+import { FaMapSigns } from 'react-icons/fa';
+import { FaSeedling } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../css/Sidebar.scss";
 import { SidebarContext } from "../../context/SidebarContext";
@@ -88,18 +93,18 @@ const Sidebar = () => {
       <div className="sidebar-body">
         <div className="sidebar-menu">
           <ul className="menu-list">
-            <MenuItem to="/farms" icon={<MdOutlineBarChart size={35} />} text="Fincas" />
+            <MenuItem to="/farms" icon={<GiBarn size={35} />} text="Fincas" />
             <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
-            <MenuItem to="/diagnosis" icon={<FaDrupal   size={35}/>} text="Diagnosticos" />
+            <MenuItem to="/diagnosis" icon={<FaSearch   size={35}/>} text="Diagnosticos" />
 
             {/* Nuevo menú de Tareas */}
-            <MenuItem to="/reports" icon={<MdOutlineAssignment size={35} />} text="Reportes" />
+            <MenuItem to="/reports" icon={<MdOutlineAssignment  size={35} />} text="Reportes" />
 
             {/* Nuevo menú de Tareas */}
-            <MenuItem to="/task" icon={<MdOutlineAssignment size={35} />} text="Tareas" />
+            <MenuItem to="/task" icon={<BiTask size={35} />} text="Tareas" />
 
              {/* Nuevo menú de Tareas */}
-             <MenuItem to="/monitoring" icon={<MdOutlineAssignment size={35} />} text="Monitoreo" />
+             <MenuItem to="/monitoring" icon={<LuMonitorDot size={35} />} text="Monitoreo" />
 
             {/* Menú de Usuarios y Roles con verificación de permisos */}
             <MenuItem
@@ -109,7 +114,7 @@ const Sidebar = () => {
             />
 
             {/* Nuevo menú de análisis edafológico */}
-            <MenuItem to="/soil_analysis" icon={<MdOutlineAssignment size={35} />} text="Análisis edafológico" />
+            <MenuItem to="/soil_analysis" icon={<FaSeedling size={35} />} text="Análisis edafológico" />
 
             {hasPermission("crear_usuario") && (
               <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />

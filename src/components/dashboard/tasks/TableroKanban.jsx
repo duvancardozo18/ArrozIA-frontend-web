@@ -4,26 +4,31 @@ import TaskCard from './TaskCard';
 import axiosInstance from '../../../config/AxiosInstance';
 import styled from 'styled-components';
 
+// Contenedor principal del tablero
 const BoardContainer = styled.div`
   padding: 20px;
-  background-color: #f0f2f5;
   min-height: 100vh;
+  background-color: #f8f9fa;
 `;
 
+// Título principal
 const Title = styled.h2`
   font-size: 24px;
+  font-weight: bold;
+  color: #343a40;
   margin-bottom: 20px;
 
   @media (max-width: 768px) {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   @media (max-width: 480px) {
-    font-size: 18px;
+    font-size: 20px;
     text-align: center;
   }
 `;
 
+// Contenedor de columnas
 const Columns = styled.div`
   display: flex;
   gap: 20px;
@@ -31,43 +36,59 @@ const Columns = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 15px;
   }
 `;
 
 const Column = styled.div`
   flex: 1;
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   min-height: 400px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background-color: ${({ statusId }) =>
-    statusId === '1' ? '#ffe6e6' : statusId === '2' ? '#fff4cc' : '#e6ffe6'};
+    statusId === '1' ? '#fbe9e7' : statusId === '2' ? '#fff8e1' : '#e8f5e9'};
+  border: 1px solid ${({ statusId }) =>
+    statusId === '1' ? '#ffccbc' : statusId === '2' ? '#ffe0b2' : '#c8e6c9'};
 
   h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: 600;
+    color: ${({ statusId }) =>
+      statusId === '1' ? '#d84315' : statusId === '2' ? '#ff8f00' : '#388e3c'};
+    margin-bottom: 20px; /* Espaciado inferior */
+    padding-bottom: 10px;
+    border-bottom: 2px solid
+      ${({ statusId }) =>
+        statusId === '1'
+          ? 'rgba(216, 67, 21, 0.5)'
+          : statusId === '2'
+          ? 'rgba(255, 143, 0, 0.5)'
+          : 'rgba(56, 142, 60, 0.5)'}; /* Color opaco */
 
     @media (max-width: 480px) {
-      font-size: 16px;
+      font-size: 18px;
       text-align: center;
     }
   }
 `;
 
+
+
+// Mensaje de no tareas
 const NoTasksMessage = styled.div`
   text-align: center;
   font-size: 18px;
-  color: #555;
+  color: #6c757d;
   margin-top: 40px;
+  font-style: italic;
 `;
 
 const TableroKanban = ({ tasks, onTaskUpdate, selectedCropName }) => {
   // Clasificar tareas por estado
   const tasksByStatus = {
-    1: tasks.filter(task => task.estado_id === 1), // Pendiente
-    2: tasks.filter(task => task.estado_id === 2), // En Progreso
-    3: tasks.filter(task => task.estado_id === 3), // Completada
+    1: tasks.filter((task) => task.estado_id === 1), // Pendiente
+    2: tasks.filter((task) => task.estado_id === 2), // En Progreso
+    3: tasks.filter((task) => task.estado_id === 3), // Completada
   };
 
   const handleDragEnd = async (result) => {
@@ -86,7 +107,7 @@ const TableroKanban = ({ tasks, onTaskUpdate, selectedCropName }) => {
           estado_id: newStatusId,
         });
 
-        console.log("Respuesta del backend:", response.data);
+        console.log('Respuesta del backend:', response.data);
 
         // Actualizar el estado en el frontend
         onTaskUpdate(taskId, newStatusId);
@@ -98,10 +119,14 @@ const TableroKanban = ({ tasks, onTaskUpdate, selectedCropName }) => {
 
   return (
     <BoardContainer>
-      <Title>Gestión de Tareas {selectedCropName && `- ${selectedCropName}`}</Title>
-      
+      <Title>
+        Mis Tareas {selectedCropName && <span>- {selectedCropName}</span>}
+      </Title>
+
       {tasks.length === 0 ? (
-        <NoTasksMessage>Este cultivo no tiene tareas disponibles.</NoTasksMessage>
+        <NoTasksMessage>
+          NO tienes tareas asignadas.
+        </NoTasksMessage>
       ) : (
         <DragDropContext onDragEnd={handleDragEnd}>
           <Columns>
@@ -113,9 +138,19 @@ const TableroKanban = ({ tasks, onTaskUpdate, selectedCropName }) => {
                     {...provided.droppableProps}
                     statusId={statusId}
                   >
-                    <h3>{statusId === '1' ? 'Pendiente' : statusId === '2' ? 'En Progreso' : 'Completada'}</h3>
+                    <h3>
+                      {statusId === '1'
+                        ? 'Pendiente'
+                        : statusId === '2'
+                        ? 'En Progreso'
+                        : 'Completada'}
+                    </h3>
                     {tasksByStatus[statusId].map((task, index) => (
-                      <Draggable key={task.id} draggableId={String(task.id)} index={index}>
+                      <Draggable
+                        key={task.id}
+                        draggableId={String(task.id)}
+                        index={index}
+                      >
                         {(provided) => (
                           <div
                             ref={provided.innerRef}

@@ -1,4 +1,3 @@
-// TaskCard.jsx
 import React from 'react';
 import { Card, CardContent, Typography, Divider } from '@mui/material';
 import styled from 'styled-components';
@@ -42,29 +41,28 @@ const FieldContainer = styled.div`
 `;
 
 const TaskCard = ({ task }) => {
-  const { descripcion, fecha_estimada, fecha_realizacion, tiempo_hora, estado_id } = task;
+  const { descripcion, fecha_estimada, fecha_realizacion, tiempo_hora, estado_id, labor_cultural } = task;
+
+  // Función para formatear la fecha
+  const formatFecha = (fecha) => {
+    if (!fecha) return 'Sin fecha';
+    const [year, month, day] = fecha.split('-');
+    return `${day}-${month}-${year}`;
+  };
 
   return (
     <StyledCard>
       <TaskContent>
         <Typography variant="h6" component="div">
-          {descripcion || 'Sin descripción'}
+          {labor_cultural?.nombre || 'Sin descripción'}
         </Typography>
         <StatusBadge status={estado_id}>
           {estado_id === 1 ? 'Pendiente' : estado_id === 2 ? 'En Progreso' : 'Completada'}
         </StatusBadge>
         <Divider style={{ margin: '8px 0' }} />
         <FieldContainer>
-          <Typography color="textSecondary">Fecha Estimada:</Typography>
-          <Typography>{fecha_estimada}</Typography>
-        </FieldContainer>
-        <FieldContainer>
-          <Typography color="textSecondary">Fecha Realización:</Typography>
-          <Typography>{fecha_realizacion || 'No realizada'}</Typography>
-        </FieldContainer>
-        <FieldContainer>
-          <Typography color="textSecondary">Tiempo (Horas):</Typography>
-          <Typography>{tiempo_hora || 'No asignado'}</Typography>
+          <Typography color="textSecondary">Programada:</Typography>
+          <Typography>{formatFecha(fecha_estimada)}</Typography>
         </FieldContainer>
       </TaskContent>
     </StyledCard>
