@@ -96,8 +96,8 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
-    precio_hora_real: "",  
-    id_etapa_fenologica: "",  
+    precio_hectaria: "", // Cambiado para usar el nuevo campo
+    id_etapa_fenologica: "",
   });
   const [phenologicalStages, setPhenologicalStages] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -108,7 +108,7 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
       setFormData({
         nombre: labor.nombre,
         descripcion: labor.descripcion || "",
-        precio_hora_real: labor.precio_hora_real || "",
+        precio_hectaria: labor.precio_hectaria || "", // Cargar precio_hectaria
         id_etapa_fenologica: labor.id_etapa_fenologica || "",
       });
     }
@@ -131,8 +131,8 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "precio_hora_real" && parseFloat(value) < 0) {
-      setErrorMessage("El precio por hora no puede ser negativo.");
+    if (name === "precio_hectaria" && parseFloat(value) < 0) {
+      setErrorMessage("El precio por hectaria no puede ser negativo.");
     } else if (name === "nombre" && value.length > 100) {
       setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
     } else {
@@ -145,10 +145,10 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Eliminar el campo precio_hora_estimado para que no sea enviado
+    // Construir el payload
     const payload = {
       ...formData,
-      precio_hora_estimado: null  // Se envía como null de manera predeterminada
+      precio_hectaria_estimada: null, // Siempre enviar null
     };
 
     try {
@@ -196,11 +196,11 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Precio por Hora Real</label>
+              <label>Precio Hectaria</label>
               <input
                 type="number"
-                name="precio_hora_real"
-                value={formData.precio_hora_real}
+                name="precio_hectaria"
+                value={formData.precio_hectaria} // Cambiado para usar precio_hectaria
                 onChange={handleChange}
                 min="0"
                 step="0.01"

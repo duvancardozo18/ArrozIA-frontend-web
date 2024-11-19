@@ -97,8 +97,8 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
-    precio_hora_real: "",  // Ajustado a "precio_hora_real" para el envío correcto
-    etapa_fenologica_id: "",  
+    precio_hectaria: "", // Usando precio_hectaria en lugar de precio_hora_real
+    id_etapa_fenologica: "", // Nombre actualizado
   });
   const [phenologicalStages, setPhenologicalStages] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -121,9 +121,9 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "nombre" && value.length >= 99) {
+    if (name === "nombre" && value.length > 100) {
       setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
-    } else if (name === "descripcion" && value.length >= 299) {
+    } else if (name === "descripcion" && value.length > 300) {
       setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
     } else {
       setErrorMessage("");
@@ -135,12 +135,24 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Preparar datos para enviar
+    const dataToSend = {
+      nombre: formData.nombre,
+      descripcion: formData.descripcion,
+      precio_hectaria: parseFloat(formData.precio_hectaria) || 0, // Convertir a número
+      precio_hectaria_estimada: null, // Siempre enviar null
+      id_etapa_fenologica: parseInt(formData.id_etapa_fenologica, 10), // Convertir a entero
+    };
+
+    console.log("Datos enviados al backend:", dataToSend);
+
     try {
-      await axiosInstance.post("/labor-cultural/create", formData);
+      const response = await axiosInstance.post("/labor-cultural/create", dataToSend);
+      console.log("Respuesta del servidor:", response.data);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al crear la labor cultural:", error);
-      setErrorMessage("Hubo un error al crear la labor cultural.");
+      setErrorMessage("Hubo un error al crear la labor cultural. Por favor, verifica los datos.");
     }
   };
 
@@ -181,11 +193,11 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Precio por Hora</label>
+              <label>Precio Hectaria</label>
               <input
                 type="number"
-                name="precio_hora_real"
-                value={formData.precio_hora_real}
+                name="precio_hectaria"
+                value={formData.precio_hectaria}
                 onChange={handleChange}
                 required
                 min="0"
@@ -195,8 +207,8 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
             <InputGroup>
               <label>Etapa Fenológica</label>
               <select
-                name="etapa_fenologica_id"
-                value={formData.etapa_fenologica_id}
+                name="id_etapa_fenologica"
+                value={formData.id_etapa_fenologica}
                 onChange={handleChange}
                 required
               >
