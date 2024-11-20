@@ -12,6 +12,10 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import SpaIcon from '@mui/icons-material/Spa';
 import styled from 'styled-components';
+import HarvestForm from '../lands/HarvestForm';
+import ExpensesForm from '../lands/ExpensesForm';
+import CostsDataTable from '../lands/CostsDataTable';
+import HarvestsDataTable from '../lands/HarvestsDataTable';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -54,7 +58,7 @@ const ViewLand = ({ onSelectAllotment }) => {
   const [isCreateCropModalOpen, setIsCreateCropModalOpen] = useState(false);
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [selectedLote, setSelectedLote] = useState(null);
-  const [activeSection, setActiveSection] = useState("laboresCulturales");
+  const [activeSection, setActiveSection] = useState('laboresCulturales');
   const [cultivoNombre, setCultivoNombre] = useState('');
   const [cultivoId, setCultivoId] = useState(null);
 
@@ -73,11 +77,11 @@ const ViewLand = ({ onSelectAllotment }) => {
           setCultivoId(fetchedCropId);
 
           const taskResponse = await axiosInstance.get(`/crops/${fetchedCropId}/tasks`);
-          const formattedTasks = taskResponse.data.map(task => ({
+          const formattedTasks = taskResponse.data.map((task) => ({
             title: task.descripcion,
             start: new Date(task.fecha_estimada),
             end: new Date(task.fecha_estimada),
-            id: task.id
+            id: task.id,
           }));
           setTaskEvents(formattedTasks);
         }
@@ -88,6 +92,10 @@ const ViewLand = ({ onSelectAllotment }) => {
 
     fetchLandAndCropDetails();
   }, [loteId]);
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+  };
 
   const plantingDate = cropDetails?.length > 0 ? cropDetails[0].plantingDate : null;
 
@@ -148,24 +156,33 @@ const ViewLand = ({ onSelectAllotment }) => {
       )}
 
       <ButtonContainer>
-        <StyledButton 
-          onClick={() => setActiveSection("laboresCulturales")}
-          variant={activeSection === "laboresCulturales" ? "contained" : "outlined"}
+        <StyledButton
+          onClick={() => handleSectionChange('laboresCulturales')}
+          variant={activeSection === 'laboresCulturales' ? 'contained' : 'outlined'}
         >
           Labores Culturales
         </StyledButton>
-        <StyledButton 
-          onClick={() => setActiveSection("cicloVegetativo")}
-          variant={activeSection === "cicloVegetativo" ? "contained" : "outlined"}
+        <StyledButton
+          onClick={() => handleSectionChange('cicloVegetativo')}
+          variant={activeSection === 'cicloVegetativo' ? 'contained' : 'outlined'}
         >
           Ciclo Vegetativo
         </StyledButton>
-        <StyledButton disabled>
-          Costos
+        <StyledButton
+          onClick={() => handleSectionChange('gastos')}
+          variant={activeSection === 'gastos' ? 'contained' : 'outlined'}
+        >
+          Gastos
+        </StyledButton>
+        <StyledButton
+          onClick={() => handleSectionChange('cosecha')}
+          variant={activeSection === 'cosecha' ? 'contained' : 'outlined'}
+        >
+          Cosecha
         </StyledButton>
       </ButtonContainer>
 
-      {activeSection === "laboresCulturales" && (
+      {activeSection === 'laboresCulturales' && (
         <>
           <ButtonContainer>
             <GreenButton onClick={handleOpenTaskDialog}>Asignar Labor</GreenButton>
@@ -174,13 +191,25 @@ const ViewLand = ({ onSelectAllotment }) => {
           <EventCard events={taskEvents} />
         </>
       )}
-      {activeSection === "cicloVegetativo" && <VegetativeCard plantingDate={plantingDate} />}
+      {activeSection === 'cicloVegetativo' && <VegetativeCard plantingDate={plantingDate} />}
+      {activeSection === 'gastos' && (
+        <>
+          <ExpensesForm cultivoId={cultivoId} />
+          <CostsDataTable cultivoId={cultivoId} />
+        </>
+      )}
+      {activeSection === 'cosecha' && (
+        <>
+          <HarvestForm cultivoId={cultivoId} />
+          <HarvestsDataTable cultivoId={cultivoId} />
+        </>
+      )}
 
       {isTaskDialogOpen && (
         <TaskDialog
           open={isTaskDialogOpen}
           onClose={() => setIsTaskDialogOpen(false)}
-          onSave={(taskData) => console.log("Tarea guardada:", taskData)}
+          onSave={(taskData) => console.log('Tarea guardada:', taskData)}
           cultivoNombre={cultivoNombre}
           cultivoId={cultivoId}
         />

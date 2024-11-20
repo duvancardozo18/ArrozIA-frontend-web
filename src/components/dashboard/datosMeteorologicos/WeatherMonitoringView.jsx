@@ -38,17 +38,6 @@ const TableContainer = styled.div`
     padding: 8px;
     text-align: center;
   }
-
-  @media (max-width: 768px) {
-    .table-header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    th, td {
-      font-size: 0.9rem;
-    }
-  }
 `;
 
 const WeatherMonitoringView = () => {
@@ -109,37 +98,35 @@ const WeatherMonitoringView = () => {
       setWeatherRecords(response.data);
     } catch (error) {
       console.error('Error fetching weather history:', error);
-      setWeatherRecords([]);  
+      setWeatherRecords([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    if (userId) {
-      checkIfAdmin();
+  const addWeatherRecordAutomatically = async () => {
+    if (!selectedLote) {
+      alert("Por favor, selecciona un lote antes de registrar el dato meteorológico.");
+      return;
     }
-  }, [userId]);
-
-  useEffect(() => {
-    if (isAdmin !== null) {
-      fetchFarms();
-    }
-  }, [isAdmin, fetchFarms]);
-
-  useEffect(() => {
-    fetchLotesForFarm();
-  }, [selectedFarmId, fetchLotesForFarm]);
-
-  useEffect(() => {
-    if (selectedLote) {
-      fetchWeatherRecords(
-        selectedLote,
-        startDate ? startDate.toISOString().split('T')[0] : null,
-        endDate ? endDate.toISOString().split('T')[0] : null
+    try {
+      const response = await axiosInstance.post(
+        "/meteorology/api", // URL del endpoint
+        { lote_id: selectedLote }, // Enviar datos en el cuerpo
+        {
+          headers: {
+            "Content-Type": "application/json", // Especificar tipo de contenido
+          },
+        }
       );
+      alert("¡Dato meteorológico registrado automáticamente!");
+      fetchWeatherRecords(selectedLote); // Actualizar registros después de agregar el dato
+    } catch (error) {
+      console.error("Error al registrar el dato meteorológico automáticamente:", error);
+      alert("Hubo un error al registrar el dato meteorológico.");
     }
-  }, [selectedLote, startDate, endDate, fetchWeatherRecords]);
+  };
+  
 
   const handleFarmSelect = (event) => {
     setSelectedFarmId(event.target.value);
@@ -169,6 +156,32 @@ const WeatherMonitoringView = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (userId) {
+      checkIfAdmin();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (isAdmin !== null) {
+      fetchFarms();
+    }
+  }, [isAdmin, fetchFarms]);
+
+  useEffect(() => {
+    fetchLotesForFarm();
+  }, [selectedFarmId, fetchLotesForFarm]);
+
+  useEffect(() => {
+    if (selectedLote) {
+      fetchWeatherRecords(
+        selectedLote,
+        startDate ? startDate.toISOString().split('T')[0] : null,
+        endDate ? endDate.toISOString().split('T')[0] : null
+      );
+    }
+  }, [selectedLote, startDate, endDate, fetchWeatherRecords]);
 
   return (
     <div className="monitoring-view">
@@ -202,9 +215,20 @@ const WeatherMonitoringView = () => {
           <>
             <div className="table-header">
               <h3>Historial Meteorológico del Lote {selectedLoteNombre}</h3>
-              <button className="register-weather-btn" onClick={openModal}>
-                Registrar Datos Meteorológicos
-              </button>
+              <div className="actions">
+                <button 
+                  className="register-weather-btn" 
+                  onClick={openModal}
+                >
+                  Registrar Datos Meteorológicos
+                </button>
+                <button 
+                  className="prefill-weather-btn" 
+                  onClick={addWeatherRecordAutomatically}
+                >
+                  Registro Automático (API)
+                </button>
+              </div>
               <div className="date-filter">
                 <DatePicker
                   selected={startDate}
@@ -220,7 +244,9 @@ const WeatherMonitoringView = () => {
                   placeholderText="Fecha Fin"
                   className="date-picker"
                 />
-                <button className="apply-filter-btn" onClick={applyDateFilter}>Aplicar Filtro</button>
+                <button className="apply-filter-btn" onClick={applyDateFilter}>
+                  Aplicar Filtro
+                </button>
               </div>
             </div>
             {loading ? (

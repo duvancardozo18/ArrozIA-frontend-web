@@ -49,7 +49,13 @@
     color: #586170;
   }
 
-  .register-weather-btn {
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .register-weather-btn,
+  .add-weather-automatic-btn {
     background-color: #28a745;
     color: white;
     padding: 10px 15px;
@@ -59,10 +65,18 @@
     font-size: 14px;
     font-weight: bold;
     transition: background-color 0.3s;
+  }
 
-    &:hover {
-      background-color: #218838;
-    }
+  .register-weather-btn:hover {
+    background-color: #218838;
+  }
+
+  .add-weather-automatic-btn {
+    background-color: #007bff;
+  }
+
+  .add-weather-automatic-btn:hover {
+    background-color: #0069d9;
   }
 }
 
@@ -151,7 +165,14 @@
     align-items: flex-start;
   }
 
-  .register-weather-btn {
+  .actions {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .register-weather-btn,
+  .add-weather-automatic-btn {
     margin-top: 10px;
     width: 100%;
   }
@@ -166,7 +187,8 @@
 
 /* Ajustes de responsividad para pantallas muy pequeñas */
 @media (max-width: 480px) {
-  .register-weather-btn {
+  .register-weather-btn,
+  .add-weather-automatic-btn {
     font-size: 12px;
     padding: 8px 10px;
   }
