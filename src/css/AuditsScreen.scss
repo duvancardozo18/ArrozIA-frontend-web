@@ -1,0 +1,160 @@
+/* Contenedor de los filtros */
+.filters {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los filtros se acomoden en varias filas si es necesario */
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background-color: #ffffff; /* Fondo blanco */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  /* Etiqueta y campo de entrada de los filtros */
+  .filters label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2d2d42; /* Azul oscuro */
+    margin-right: 10px;
+  }
+  
+  .filters input {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    width: 200px;
+    transition: box-shadow 0.3s ease;
+  
+    &:focus {
+      box-shadow: 0 0 5px 2px rgba(39, 174, 96, 0.3);
+      outline: none;
+    }
+  }
+  
+  /* Botón de aplicar filtro */
+  .filter-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  
+    &:hover {
+      background-color: #218838;
+      transform: scale(1.05); /* Pequeño efecto de aumento */
+    }
+  
+    &:active {
+      transform: scale(1); /* Restaurar tamaño al hacer clic */
+    }
+  }
+  
+  /* Ajustes de responsividad para los filtros */
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
+    }
+  
+    .filters input {
+      width: 100%; /* Los campos ocuparán todo el ancho disponible */
+    }
+  
+    .filter-btn {
+      width: 100%;
+      font-size: 14px;
+      padding: 10px;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .filters {
+      padding: 8px;
+    }
+  
+    .filters input {
+      font-size: 12px;
+      padding: 8px;
+    }
+  
+    .filter-btn {
+      font-size: 12px;
+      padding: 8px 12px;
+    }
+  }
+  
+  /* Tabla de auditorías */
+  .audits-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .audits-table th,
+  .audits-table td {
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .audits-table th {
+    background-color: #2d2d42; /* Azul oscuro */
+    color: white;
+    font-weight: bold;
+  }
+  
+  .audits-table tbody tr:hover {
+    background-color: #f3f3f3; /* Resaltar fila al pasar el mouse */
+    transition: background-color 0.3s;
+  }
+  
+  .audits-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .audits-table .no-data {
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+    padding: 20px;
+  }
+  
+  /* Mensajes de error */
+  .error-message {
+    color: #ff6b6b;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Ajustes de responsividad para la tabla */
+  @media (max-width: 768px) {
+    .audits-table th,
+    .audits-table td {
+      font-size: 12px;
+      padding: 10px;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .audits-table th,
+    .audits-table td {
+      font-size: 12px;
+      padding: 8px;
+    }
+  }
+  
