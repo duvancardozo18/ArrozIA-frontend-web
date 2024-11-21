@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import * as XLSX from "xlsx";
+//import * as XLSX from "xlsx";
 import logoBase64 from "../../../assets/images/logoBase64"; // Importa el logo como Base64
 import siembraBase64 from "../../../assets/images/siembraBase64"; // Icono de siembra en Base64
 import cosechaBase64 from "../../../assets/images/cosechaBase64"; // Icono de cosecha en Base64
