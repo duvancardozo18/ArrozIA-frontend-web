@@ -48,8 +48,7 @@
     "recharts": "^2.10.3",
     "sass": "^1.69.7",
     "slick-carousel": "^1.8.1",
-    "styled-components": "^6.1.13",
-    "xlsx": "^0.18.5"
+    "styled-components": "^6.1.13"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
