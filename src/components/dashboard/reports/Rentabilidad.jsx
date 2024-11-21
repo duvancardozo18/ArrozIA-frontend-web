@@ -1,86 +1,121 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../../css/ReportSummary.scss';
-import CultivoInsumosTable from '../../dashboard/reports/CropInputsTable';
+import CropInputsTable from '../../dashboard/reports/CropInputsTable';
 import CulturalWorkTable from '../../dashboard/reports/CulturalWorkTable';
+import AgriculturalInputTable from '../../dashboard/reports/AgriculturalInputTable'; // Importa el nuevo componente
+import ExportModal from './ExportModal';
+import axiosInstance from "../../../config/AxiosInstance";
 
+const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [overallTotalCost, setOverallTotalCost] = useState("no recibido");
+  const [filteredCulturalWorks, setFilteredCulturalWorks] = useState([]);
 
-const ReportSummary = () => {
+  const handleFilteredDataChange = (filteredData) => {
+    setFilteredCulturalWorks(filteredData);
+  };
+
+  useEffect(() => {
+    const fetchOverallTotalCost = async () => {
+      if (!cultivoId) return;
+      try {
+        const response = await axiosInstance.get(`/overall-total/${cultivoId}`);
+        setOverallTotalCost(response.data.total || 2);
+      } catch (error) {
+        console.error("Error al obtener el costo total:", error);
+      }
+    };
+
+    fetchOverallTotalCost();
+  }, [cultivoId]);
+
+  const totalIncome = income.reduce((acc, item) => acc + item.amount, 0);
+  const totalExpenses = expenses.reduce((acc, item) => acc + item.cost, 0);
+  const utility = totalIncome - totalExpenses;
+
+  const handleExport = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className=''>
-    <div className="report-summary">
-      <div className="dates">
-        <div className="date-item">
-          <span className="icon">🌱</span>
-          <div>
-            <h3>Fecha de siembra</h3>
-            <p>20 de febrero 2024</p>
+    <div className="report-summary-container">
+      <div className="report-summary">
+        <div className="dates">
+          <div className="date-item">
+            <span className="icon">🌱</span>
+            <div>
+              <h3>Fecha de siembra</h3>
+              <p>{plantingDate || 'No disponible'}</p>
+            </div>
+          </div>
+          <div className="date-item">
+            <span className="icon">🌾</span>
+            <div>
+              <h3>Fecha de Cosecha</h3>
+              <p>{harvestDate || 'No disponible'}</p>
+            </div>
           </div>
         </div>
-        <div className="date-item">
-          <span className="icon">🌾</span>
-          <div>
-            <h3>Fecha de Cosecha</h3>
-            <p>19 de junio 2024</p>
-          </div>
+
+        <div className="production">
+          <h3>Producción</h3>
+          <p>{totalIncome} toneladas</p>
+          <h3>Ingresos</h3>
+          <p>${totalIncome.toLocaleString()}</p>
+        </div>
+
+        <div className="utility">
+          <h3>Utilidad</h3>
+          <p>${utility.toLocaleString()}</p>
+        </div>
+
+        <div className="total-costs">
+          <h3>Costos totales</h3>
+          <table>
+            <tbody>
+              {expenses.map((expense, index) => (
+                <tr key={index}>
+                  <td>{expense.name}</td>
+                  <td>${expense.cost.toLocaleString()}</td>
+                </tr>
+              ))}
+              <tr className="total-row">
+                <td>VALOR TOTAL</td>
+                <td>${overallTotalCost.toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div className="production">
-        <h3>Producción</h3>
-        <p>75 toneladas</p>
-        <h3>Ingresos</h3>
-        <p>$124.200.000</p>
+      {/* Tablas de Insumos y Labores Culturales */}
+      <CropInputsTable cultivoId={cultivoId} />
+      <CulturalWorkTable cultivoId={cultivoId} onFilteredDataChange={handleFilteredDataChange} />
+      <AgriculturalInputTable /> {/* Nueva tabla de insumos agrícolas */}
+
+      {/* Botón para abrir el modal */}
+      <div className="export-button-container">
+        <button className="export-button" onClick={handleExport}>
+          Exportar Informe
+        </button>
       </div>
 
-      <div className="utility">
-        <h3>Utilidad</h3>
-        <p>$</p>
-      </div>
-
-      <div className="total-costs">
-        <h3>Costos totales</h3>
-        <table>
-          <tbody>
-            <tr>
-              <td>Arriendo</td>
-              <td>$14.000.000</td>
-            </tr>
-            <tr>
-              <td>Preparación del Terreno</td>
-              <td>$5.700.000</td>
-            </tr>
-            <tr>
-              <td>Instalación de Riego</td>
-              <td>$5.600.000</td>
-            </tr>
-            <tr>
-              <td>Servicio de agua</td>
-              <td>$9.000.000</td>
-            </tr>
-            <tr>
-              <td>Insumos</td>
-              <td>-</td>
-            </tr>
-            <tr>
-              <td>Labores Culturales</td>
-              <td>$17.775.000</td>
-            </tr>
-            <tr>
-              <td>Cuota de Fomento</td>
-              <td>$1.240.000</td>
-            </tr>
-            <tr className="total-row">
-              <td>VALOR TOTAL</td>
-              <td>$</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <CultivoInsumosTable />
-     <CulturalWorkTable />
+      {/* Modal para exportación */}
+      {isModalOpen && (
+        <ExportModal
+          onClose={handleCloseModal}
+          cropDetails={{ plantingDate, harvestDate, expenses, income }}
+          inputs={[]} // Suponiendo que los insumos vienen desde otra fuente
+          culturalWorks={filteredCulturalWorks}
+          cultivoId={cultivoId}
+        />
+      )}
     </div>
   );
 };
 
-export default ReportSummary;
+export default Rentabilidad;

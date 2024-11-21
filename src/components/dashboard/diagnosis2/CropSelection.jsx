@@ -44,7 +44,7 @@ const StyledSelect = styled.select`
 `;
 
 const CropSelection = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, userId } = useContext(AuthContext); // Asegúrate de que `userId` esté disponible en el contexto
   const [farms, setFarms] = useState([]);
   const [crops, setCrops] = useState([]);
   const [selectedFarmId, setSelectedFarmId] = useState(null);
@@ -56,42 +56,36 @@ const CropSelection = () => {
   const [selectedDiagnosisId, setSelectedDiagnosisId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-    // Verificar si el usuario es administrador
+  // Verificar si el usuario es administrador
+  useEffect(() => {
     const checkIfAdmin = async () => {
       try {
         const response = await axiosInstance.get(`/users/${userId}/is_admin`);
-        setIsAdmin(response.data.is_admin); // Usar la respuesta para determinar si es admin
+        setIsAdmin(response.data.is_admin);
       } catch (error) {
-        console.error("Error checking admin status:", error);
+        console.error('Error checking admin status:', error);
       }
-    };    
+    };
 
-
+    checkIfAdmin();
+  }, [userId]);
 
   // Obtener las fincas del usuario
   useEffect(() => {
     const fetchFarms = async () => {
       try {
-        const url = isAdmin ? "/farms" : `/users/${userId}/farms`;
-        const response = await axiosInstance.get('/farms');
+        const url = isAdmin ? '/farms' : `/users/${userId}/farms`;
+        const response = await axiosInstance.get(url);
         setFarms(response.data);
       } catch (error) {
         console.error('Error fetching farms:', error);
       }
     };
-    //fetchFarms();
-  }, []);
 
-
-  useEffect(() => {
-    checkIfAdmin(); // Verificar si el usuario es administrador al cargar el componente
-  }, []);
-
-  useEffect(() => {
-    if (isAdmin !== null) { // Esperar a que se determine el rol del usuario
+    if (isAdmin !== null) {
       fetchFarms();
     }
-  }, [isAdmin]);
+  }, [isAdmin, userId]);
 
   // Obtener cultivos relacionados a la finca seleccionada
   useEffect(() => {
@@ -105,17 +99,18 @@ const CropSelection = () => {
         console.error('Error fetching crops:', error);
       }
     };
+
     fetchCropsForFarm();
   }, [selectedFarmId]);
 
   const handleFarmSelection = (event) => {
     const farmId = event.target.value;
     setSelectedFarmId(farmId);
-    setSelectedCropId(null); // Restablece la selección de cultivo
-    setSelectedCropName(''); // Limpiar el nombre del cultivo
-    setCrops([]); // Limpiar los cultivos al cambiar finca
-    setImages([]); // Limpiar imágenes al cambiar finca
-    setResults(null); // Limpiar resultados al cambiar finca
+    setSelectedCropId(null);
+    setSelectedCropName('');
+    setCrops([]);
+    setImages([]);
+    setResults(null);
   };
 
   const handleCropSelection = (cropId, cropName) => {
@@ -239,7 +234,5 @@ const CropSelection = () => {
     </div>
   );
 };
-
-
 
 export default CropSelection;
