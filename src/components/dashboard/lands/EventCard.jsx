@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaTractor, FaSeedling, FaWater, FaBug } from 'react-icons/fa';
+import axiosInstance from '../../../config/AxiosInstance';
 
 // Styled-components para estilizar el contenedor de eventos y las tarjetas
 const Container = styled.div`
@@ -79,13 +80,23 @@ const Responsible = styled.p`
   width: fit-content;
 `;
 
+const LaborCultural = styled.p`
+  font-size: 1em;
+  color: #333;
+  font-weight: bold;
+  margin-top: 10px;
+`;
+
 const IconWrapper = styled.div`
   font-size: 2.5em;
   margin-bottom: 10px;
 `;
 
-// Componente de íconos personalizados para cada labor
-const getLaborIcon = (laborType) => {
+const getLaborIcon = (laborType, isMecanizable) => {
+  if (isMecanizable) {
+    return <FaTractor />; // Ícono de mecanización para labores mecanizables
+  }
+
   switch (laborType) {
     case 'siembra':
       return <FaSeedling />;
@@ -93,52 +104,85 @@ const getLaborIcon = (laborType) => {
       return <FaWater />;
     case 'fumigacion':
       return <FaBug />;
-    case 'mecanizacion':
-      return <FaTractor />;
     default:
       return <FaSeedling />; // Ícono por defecto si no se encuentra el tipo
   }
 };
 
 // Componente de tarjeta de evento
-// Componente de tarjeta de evento
-const EventCard = ({ cultivoId, descripcion, fechaEstimada, fechaRealizacion, esMecanizable, planeadaAutomaticamente }) => {
+const EventCard = ({ title, start, end, userName, isMecanizable }) => {
+  console.log('Nombre del usuario recibido en EventCard:', userName); // Log para verificar el nombre del usuario
   return (
     <Card>
       <LeftColumn>
         {/* Dependiendo de si la tarea es mecanizable o no, mostramos un ícono diferente */}
-        <IconWrapper>{esMecanizable ? <FaTractor /> : <FaSeedling />}</IconWrapper>
-        <EventDate>{`Estimada: ${fechaEstimada}`}</EventDate>
-        <EventDate>{`Realizada: ${fechaRealizacion}`}</EventDate>
+        <IconWrapper>{getLaborIcon(title, isMecanizable)}</IconWrapper>
+        <EventDate>{`Fecha de Inicio: ${start}`}</EventDate>
+        <EventDate>{`Fecha de Finalización: ${end}`}</EventDate>
       </LeftColumn>
       <RightColumn>
-       {/*<EventTitle>{`Cultivo ID: ${cultivoId}`}</EventTitle>*/}
-        <EventDescription>{descripcion}</EventDescription>
-        <Responsible>{`Automáticamente Planeada: ${planeadaAutomaticamente ? 'Sí' : 'No'}`}</Responsible>
+        <EventDescription>{`Labor Cultural: ${title}`}</EventDescription>
+        <Responsible>{`Responsable: ${userName}`}</Responsible>
       </RightColumn>
     </Card>
   );
 };
 
-
-// Lista de eventos con valor por defecto para events
-// Componente de tarjeta de evento
 const EventList = ({ events = [] }) => {
-  console.log(events);
+  const [eventsWithDetails, setEventsWithDetails] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Obtener usuarios y labores culturales
+        const [usersResponse, laborsResponse] = await Promise.all([
+          axiosInstance.get("/users"),
+          axiosInstance.get("/labor-cultural/read")
+        ]);
+
+        const users = usersResponse.data;
+        const labors = laborsResponse.data;
+
+        // Mapear eventos con los nombres de usuario y labor cultural correspondientes
+        const updatedEvents = events.map((event) => {
+          const user = users.find((u) => u.id === event.usuario_id);
+          const userName = user ? user.nombre : 'Desconocido';
+
+          const labor = labors.find((l) => l.id === event.labor_cultural_id);
+          const laborName = labor ? labor.nombre : 'Labor desconocida';
+
+          return {
+            ...event,
+            responsable: userName,
+            laborCultural: laborName, // Asigna el nombre de la labor cultural
+            start: new Date(event.start).toLocaleDateString(),
+            end: new Date(event.end).toLocaleDateString(),
+            isMecanizable: event.es_mecanizable, // Añadir esMecanizable al evento
+          };
+        });
+
+        setEventsWithDetails(updatedEvents);
+      } catch (error) {
+        console.error("Error al cargar datos:", error);
+      }
+    };
+
+    fetchData();
+  }, [events]);
+
   return (
     <Container>
       <Title>Labores Pendientes</Title>
       <CardGrid>
-        {events.length > 0 ? (
-          events.map((event, index) => (
+        {eventsWithDetails.length > 0 ? (
+          eventsWithDetails.map((event, index) => (
             <EventCard
               key={index}
-              cultivoId={event.cultivoId}
-              descripcion={event.descripcion}
-              fechaEstimada={event.fechaEstimada}
-              fechaRealizacion={event.fechaRealizacion}
-              esMecanizable={event.esMecanizable}
-              planeadaAutomaticamente={event.planeadaAutomaticamente}
+              title={event.laborCultural} // Usando el nombre de la labor cultural en lugar de title
+              start={event.start}
+              end={event.end}
+              userName={event.responsable} // Usando responsable para mostrar el nombre del usuario
+              isMecanizable={event.isMecanizable} // Pasando isMecanizable como prop
             />
           ))
         ) : (
@@ -148,7 +192,5 @@ const EventList = ({ events = [] }) => {
     </Container>
   );
 };
-
-
 
 export default EventList;

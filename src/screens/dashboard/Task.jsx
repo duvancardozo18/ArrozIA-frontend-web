@@ -1,41 +1,52 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import Header from '../../components/dashboard/Header';
 import { AuthContext } from '../../config/AuthProvider';
 import { Navigate } from 'react-router-dom';
-import CropCard from '../../components/dashboard/tasks/CropCard';
-import TableroKanban from '../../components/dashboard/tasks/TableroKanban';
 import styled from 'styled-components';
 import axiosInstance from '../../config/AxiosInstance';
+import CropCard from '../../components/dashboard/tasks/CropCard';
+import TableroKanban from '../../components/dashboard/tasks/TableroKanban';
 
+// Styled components
 const Container = styled.div`
   display: flex;
-  padding: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
 `;
 
-const Sidebar = styled.div`
-  width: 30%;
-  padding-right: 20px;
-  border-right: 1px solid #ddd;
+const ContainerBox = styled.div`
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  margin: 20px auto;
 `;
 
 const Content = styled.div`
-  width: 70%;
-  padding-left: 20px;
+  width: 100%;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 10px;
+  }
+`;
+
+const Sidebar = styled.div`
+  flex: 1;
 `;
 
 const StyledSelect = styled.select`
   width: 100%;
   padding: 10px;
   font-size: 1rem;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
   border-radius: 5px;
   border: 1px solid #ddd;
-  outline: none;
-  transition: box-shadow 0.3s ease;
-
-  &:focus {
-    box-shadow: 0 0 5px 2px rgba(0, 128, 0, 0.4); /* Sombra verde */
-  }
+  background-color: #f9f9f9;
 `;
 
 const NoTasksMessage = styled.div`
@@ -45,108 +56,129 @@ const NoTasksMessage = styled.div`
   margin-top: 20px;
 `;
 
+const CropNavigation = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+
+  .crop-navigation-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 10px;
+    width: 100%;
+
+    /* Esconder scrollbar */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none; /* IE 10+ */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  @media (max-width: 768px) {
+    .crop-navigation-scroll {
+      width: 90%; /* Limitar ancho en móviles */
+    }
+  }
+
+  button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+`;
+
+
+// Tasks Component
 const Tasks = () => {
   const { isAuthenticated, userId } = useContext(AuthContext);
   const [farms, setFarms] = useState([]);
   const [crops, setCrops] = useState([]);
   const [selectedFarmId, setSelectedFarmId] = useState(null);
   const [selectedCropId, setSelectedCropId] = useState(null);
-  const [selectedCropName, setSelectedCropName] = useState(''); // Estado para el nombre del cultivo
+  const [selectedCropName, setSelectedCropName] = useState('');
   const [tasks, setTasks] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const scrollRef = useRef(null);
 
-  // Verificar si el usuario es administrador
   const checkIfAdmin = async () => {
     try {
       const response = await axiosInstance.get(`/users/${userId}/is_admin`);
-      setIsAdmin(response.data.is_admin); // Usar la respuesta para determinar si es admin
+      setIsAdmin(response.data.is_admin);
     } catch (error) {
-      console.error("Error checking admin status:", error);
+      console.error('Error checking admin status:', error);
     }
   };
 
-  // Obtener las fincas según el rol del usuario
   const fetchFarms = async () => {
     try {
-      const url = isAdmin ? "/farms" : `/users/${userId}/farms`;
+      const url = isAdmin ? '/farms' : `/users/${userId}/farms`;
       const response = await axiosInstance.get(url);
       setFarms(response.data);
-      console.log('Fincas obtenidas:', response.data);
     } catch (error) {
-      console.error("Error fetching farms:", error);
+      console.error('Error fetching farms:', error);
     }
   };
 
   useEffect(() => {
-    checkIfAdmin(); // Verificar si el usuario es administrador al cargar el componente
+    checkIfAdmin();
   }, []);
 
   useEffect(() => {
-    if (isAdmin !== null) { // Esperar a que se determine el rol del usuario
+    if (isAdmin !== null) {
       fetchFarms();
     }
   }, [isAdmin]);
 
-  // Obtener cultivos relacionados a la finca seleccionada
-  useEffect(() => {
-    const fetchCropsForFarm = async () => {
-      if (!selectedFarmId) return;
+  const fetchCropsForFarm = async (farmId) => {
+    try {
+      const response = await axiosInstance.get(`/farms/${farmId}/crops`);
+      setCrops(response.data);
+    } catch (error) {
+      console.error('Error fetching crops:', error);
+    }
+  };
 
-      try {
-        const response = await axiosInstance.get(`/farms/${selectedFarmId}/crops`);
-        setCrops(response.data);
-        console.log(`Cultivos obtenidos para la finca ${selectedFarmId}:`, response.data);
-      } catch (error) {
-        console.error('Error fetching crops:', error);
-      }
-    };
-
-    fetchCropsForFarm();
-  }, [selectedFarmId]);
-
-  // Obtener tareas relacionadas al cultivo seleccionado
-  useEffect(() => {
-    const fetchTasksForCrop = async () => {
-      if (!selectedCropId) return;
-
-      try {
-        const response = await axiosInstance.get(`/crops/${selectedCropId}/tasks`);
-        setTasks(response.data);
-        console.log(`Tareas obtenidas para el cultivo ${selectedCropId}:`, response.data);
-      } catch (error) {
-        if (error.response && error.response.status === 404) {
-          setTasks([]); // Limpiar tareas si no hay ninguna
-        } else {
-          console.error('Error fetching tasks:', error);
-        }
-      }
-    };
-
-    fetchTasksForCrop();
-  }, [selectedCropId]);
+  const fetchTasksForCrop = async (cropId) => {
+    try {
+      const response = await axiosInstance.get(`/crops/${cropId}/tasks`);
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+      setTasks([]);
+    }
+  };
 
   const handleFarmSelection = (event) => {
     const farmId = event.target.value;
-    console.log('Finca seleccionada:', farmId);
     setSelectedFarmId(farmId);
-    setSelectedCropId(null);
-    setSelectedCropName(''); // Limpiar el nombre del cultivo al cambiar finca
     setCrops([]);
     setTasks([]);
+    setSelectedCropId(null);
+    setSelectedCropName('');
+    fetchCropsForFarm(farmId);
   };
 
   const handleCropSelection = (cropId, cropName) => {
-    console.log('Cultivo seleccionado:', cropId);
     setSelectedCropId(cropId);
-    setSelectedCropName(cropName); // Actualizar el nombre del cultivo seleccionado
+    setSelectedCropName(cropName);
+    fetchTasksForCrop(cropId);
   };
 
-  const updateTaskStatusInState = (taskId, newStatusId) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, estado_id: newStatusId } : task
-      )
-    );
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -150, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+    }
   };
 
   if (!isAuthenticated) {
@@ -155,39 +187,65 @@ const Tasks = () => {
 
   return (
     <div className="content-area">
-      <Header title="Tareas" />
+      <Header />
+      <h2>Tareas</h2>
       <Container>
-        <Sidebar>
-          <h2>Fincas</h2>
-          <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ''}>
-            <option value="" disabled>Selecciona una finca</option>
-            {farms.map((farm) => (
-              <option key={farm.id} value={farm.id}>{farm.nombre}</option>
-            ))}
-          </StyledSelect>
-
-          {selectedFarmId && (
-            <>
-              <h2 style={{ marginTop: '20px' }}>Cultivos</h2>
-              {crops.map((crop) => (
-                <CropCard
-                  key={crop.id}
-                  cropName={crop.cropName}
-                  onClick={() => handleCropSelection(crop.id, crop.cropName)} // Pasa el nombre del cultivo
-                  isSelected={selectedCropId === crop.id}
-                />
+        <ContainerBox>
+          <Sidebar>
+            <h3>Fincas</h3>
+            <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ''}>
+              <option value="" disabled>
+                Selecciona una finca
+              </option>
+              {farms.map((farm) => (
+                <option key={farm.id} value={farm.id}>
+                  {farm.nombre}
+                </option>
               ))}
-            </>
-          )}
-        </Sidebar>
-        <Content>
-          {tasks.length === 0 ? (
-            <NoTasksMessage>Este cultivo no tiene tareas disponibles.</NoTasksMessage>
-          ) : (
-            <TableroKanban tasks={tasks} onTaskUpdate={updateTaskStatusInState} selectedCropName={selectedCropName} />
-          )}
-        </Content>
+            </StyledSelect>
+          </Sidebar>
+          <Content>
+            {selectedFarmId && (
+              <>
+                <h3>Cultivos</h3>
+                <CropNavigation>
+                  <button className="arrow-button" onClick={scrollLeft}>
+                    {'<'}
+                  </button>
+                  <div className="crop-navigation-scroll" ref={scrollRef}>
+                    {crops.map((crop) => (
+                      <CropCard
+                        key={crop.id}
+                        cropName={crop.cropName}
+                        onClick={() => handleCropSelection(crop.id, crop.cropName)}
+                        isSelected={selectedCropId === crop.id}
+                      />
+                    ))}
+                  </div>
+                  <button className="arrow-button" onClick={scrollRight}>
+                    {'>'}
+                  </button>
+                </CropNavigation>
+                {tasks.length === 0 && <NoTasksMessage>No tienes tareas asignadas.</NoTasksMessage>}
+              </>
+            )}
+          </Content>
+        </ContainerBox>
       </Container>
+
+      {tasks.length > 0 && (
+        <TableroKanban
+          tasks={tasks}
+          onTaskUpdate={(taskId, newStatusId) =>
+            setTasks((prevTasks) =>
+              prevTasks.map((task) =>
+                task.id === taskId ? { ...task, estado_id: newStatusId } : task
+              )
+            )
+          }
+          selectedCropName={selectedCropName}
+        />
+      )}
     </div>
   );
 };

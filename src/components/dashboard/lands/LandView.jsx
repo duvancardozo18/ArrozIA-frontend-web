@@ -82,6 +82,9 @@ const ViewLand = ({ onSelectAllotment }) => {
             start: new Date(task.fecha_estimada),
             end: new Date(task.fecha_estimada),
             id: task.id,
+            usuario_id: task.usuario_id, // Añadir el usuario_id
+            labor_cultural_id: task.labor_cultural_id,
+            es_mecanizable: task.es_mecanizable, // Añadir es_mecanizable
           }));
           setTaskEvents(formattedTasks);
         }
@@ -112,6 +115,8 @@ const ViewLand = ({ onSelectAllotment }) => {
   if (!landDetails || !cropDetails) {
     return <div>No se encontró información válida</div>;
   }
+
+  console.log('Tareas enviadas a EventCard desde ViewLand:', taskEvents); // Log para verificar las tareas enviadas a EventCard
 
   return (
     <div>

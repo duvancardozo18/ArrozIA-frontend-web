@@ -92,7 +92,7 @@ const HalfInputGroup = styled.div`
 
   label {
     font-size: 0.9em;
-    font-weight: bold; /* Aplicar negrita */
+    font-weight: bold;
   }
 
   input,
@@ -150,27 +150,33 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
     nombre: insumo?.nombre || "",
     cantidad: insumo?.cantidad || "",
     unidad_id: insumo?.unidad?.id || "",
+    tipo_insumo_id: insumo?.tipo_insumo?.id || "",
     costo_unitario: insumo?.costo_unitario || "",
     descripcion: insumo?.descripcion || "",
   });
 
   const [unidades, setUnidades] = useState([]);
+  const [tiposInsumo, setTiposInsumo] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchUnidades = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/units");
-        setUnidades(response.data);
+        const [unidadesResponse, tiposResponse] = await Promise.all([
+          axiosInstance.get("/units"),
+          axiosInstance.get("/input-types"),
+        ]);
+        setUnidades(unidadesResponse.data);
+        setTiposInsumo(tiposResponse.data);
       } catch (error) {
-        console.error("Error al obtener las unidades de medida:", error);
-        setErrorMessage("Error al cargar las unidades de medida.");
+        console.error("Error al cargar datos:", error);
+        setErrorMessage("Error al cargar los datos necesarios.");
       }
     };
 
     if (insumo) {
-      fetchUnidades();
+      fetchData();
     }
   }, [insumo]);
 
@@ -179,28 +185,12 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "nombre" && value.length > 100) {
-      setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
-    } else if (name === "descripcion" && value.length > 300) {
-      setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
-    } else {
-      setFormData({ ...formData, [name]: value });
-      setErrorMessage("");
-    }
+    setFormData({ ...formData, [name]: value });
+    setErrorMessage("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (formData.nombre.length > 100) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 100 caracteres en el campo 'Nombre'.");
-      return;
-    }
-
-    if (formData.descripcion.length > 300) {
-      setErrorMessage("No se puede enviar porque se superó el límite de 300 caracteres en el campo 'Descripción'.");
-      return;
-    }
 
     try {
       setErrorMessage("");
@@ -267,6 +257,23 @@ const EditInsumoModal = ({ show, closeModal, insumo, onSave }) => {
                   </select>
                 </HalfInputGroup>
               </FlexContainer>
+
+              <InputGroup>
+                <label>Tipo de Insumo</label>
+                <select
+                  name="tipo_insumo_id"
+                  value={formData.tipo_insumo_id}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Seleccionar Tipo</option>
+                  {tiposInsumo.map((tipo) => (
+                    <option key={tipo.id} value={tipo.id}>
+                      {tipo.nombre}
+                    </option>
+                  ))}
+                </select>
+              </InputGroup>
 
               <InputGroup>
                 <label>Costo Unitario</label>

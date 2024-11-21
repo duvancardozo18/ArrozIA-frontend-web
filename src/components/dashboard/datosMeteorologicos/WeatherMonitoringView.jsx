@@ -3,6 +3,7 @@ import axiosInstance from "../../../config/AxiosInstance";
 import { AuthContext } from '../../../config/AuthProvider';
 import LoteCard from './LoteCard';
 import CreateWeatherRecordModal from './CreateWeatherRecordModal';
+import SuccessModal from '../../dashboard/modal/SuccessModal'; // Importar modal de éxito
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styled from 'styled-components';
@@ -20,6 +21,21 @@ const StyledSelect = styled.select`
 
   &:focus {
     box-shadow: 0 0 5px 2px rgba(0, 128, 0, 0.4);
+  }
+`;
+
+const ActionButton = styled.button`
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #218838;
   }
 `;
 
@@ -54,6 +70,7 @@ const WeatherMonitoringView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const checkIfAdmin = async () => {
     try {
@@ -126,8 +143,6 @@ const WeatherMonitoringView = () => {
       alert("Hubo un error al registrar el dato meteorológico.");
     }
   };
-  
-
   const handleFarmSelect = (event) => {
     setSelectedFarmId(event.target.value);
     setSelectedLote(null);
@@ -228,6 +243,12 @@ const WeatherMonitoringView = () => {
                 >
                   Registro Automático (API)
                 </button>
+                <ActionButton onClick={openModal}>
+                  Registro Manual
+                </ActionButton>
+                <ActionButton onClick={addWeatherRecordAutomatically}>
+                  Registro Automático
+                </ActionButton>
               </div>
               <div className="date-filter">
                 <DatePicker
@@ -294,10 +315,17 @@ const WeatherMonitoringView = () => {
       </div>
 
       {isModalOpen && (
-        <CreateWeatherRecordModal 
-          loteId={selectedLote} 
-          loteNombre={selectedLoteNombre} 
-          onClose={closeModal} 
+        <CreateWeatherRecordModal
+          loteId={selectedLote}
+          loteNombre={selectedLoteNombre}
+          onClose={closeModal}
+        />
+      )}
+
+      {showSuccessModal && (
+        <SuccessModal
+          onClose={() => setShowSuccessModal(false)}
+          message="¡Datos meteorológicos registrados automáticamente con éxito!"
         />
       )}
     </div>

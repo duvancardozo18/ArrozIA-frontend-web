@@ -7,7 +7,7 @@ import EditLaborModal from "./EditLaborModal";
 import ViewLaborModal from "./ViewLaborModal";
 import SuccessModal from "../../modal/SuccessModal";
 
-const LaborCulturalTable = ({ refresh }) => {
+const LaborCulturalTable = () => {
   const [labores, setLabores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,7 +17,8 @@ const LaborCulturalTable = ({ refresh }) => {
   const [selectedLabor, setSelectedLabor] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [phenologicalStages, setPhenologicalStages] = useState([]); // Almacena las etapas fenológicas
+  const [refresh, setRefresh] = useState(false); // Agregado: Controla el refresco de la tabla
+  const [phenologicalStages, setPhenologicalStages] = useState([]);
 
   // Function to fetch labores culturales data
   const fetchLabores = async () => {
@@ -33,7 +34,7 @@ const LaborCulturalTable = ({ refresh }) => {
     }
   };
 
-  // Fetches phenological stages to map names to their IDs
+  // Fetch phenological stages
   const fetchPhenologicalStages = async () => {
     try {
       const response = await axiosInstance.get("/phenological-stages");
@@ -46,7 +47,7 @@ const LaborCulturalTable = ({ refresh }) => {
   useEffect(() => {
     fetchLabores();
     fetchPhenologicalStages();
-  }, [refresh]);
+  }, [refresh]); // Cambiará cuando `refresh` cambie, forzando la recarga
 
   const handleShowCreateModal = () => setShowCreateModal(true);
   const handleShowEditModal = (labor) => {
@@ -58,29 +59,26 @@ const LaborCulturalTable = ({ refresh }) => {
     setShowViewModal(true);
   };
 
-  const handleCreateLabor = (newLabor) => {
-    setLabores((prevLabores) => [newLabor, ...prevLabores]);
+  const handleCreateLabor = () => {
     setSuccessMessage("¡Labor cultural creada exitosamente!");
     setShowSuccessModal(true);
     setShowCreateModal(false);
+    setRefresh((prev) => !prev); // Cambia el estado para refrescar la tabla
   };
 
-  const handleEditLabor = (updatedLabor) => {
-    setLabores((prevLabores) =>
-      prevLabores.map((labor) => (labor.id === updatedLabor.id ? updatedLabor : labor))
-    );
+  const handleEditLabor = () => {
     setShowEditModal(false);
     setSuccessMessage("¡Labor cultural editada exitosamente!");
     setShowSuccessModal(true);
+    setRefresh((prev) => !prev); // Cambia el estado para refrescar la tabla
   };
 
-  const handleDeleteLabor = (deletedLaborId) => {
-    setLabores((prevLabores) => prevLabores.filter((labor) => labor.id !== deletedLaborId));
+  const handleDeleteLabor = () => {
     setSuccessMessage("¡Labor cultural eliminada exitosamente!");
     setShowSuccessModal(true);
+    setRefresh((prev) => !prev); // Cambia el estado para refrescar la tabla
   };
 
-  // Helper to get the name of the phenological stage by ID
   const getPhenologicalStageName = (id) => {
     const stage = phenologicalStages.find((stage) => stage.id === id);
     return stage ? stage.nombre : "N/A";
@@ -90,13 +88,13 @@ const LaborCulturalTable = ({ refresh }) => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="table-container" style={{ width: "100%", overflowX: "auto" }}>
-      <table className="table" style={{ width: "100%", minWidth: "600px", borderCollapse: "collapse" }}>
+    <div className="table-container">
+      <table className="table">
         <thead>
           <tr>
             <th>Nombre</th>
             <th>Descripción</th>
-            <th>Precio Hora Real</th>
+            <th>Precio Hectaria</th>
             <th>Etapa Fenológica</th>
             <th>Acciones</th>
           </tr>
@@ -107,12 +105,12 @@ const LaborCulturalTable = ({ refresh }) => {
               <tr key={labor.id}>
                 <td>{labor.nombre}</td>
                 <td>{labor.descripcion}</td>
-                <td>{labor.precio_hora_real}</td>
-                <td>{getPhenologicalStageName(labor.etapa_fenologica_id)}</td>
+                <td>{labor.precio_hectaria}</td>
+                <td>{getPhenologicalStageName(labor.id_etapa_fenologica)}</td>
                 <td>
                   <TableLaborAction
                     labor={labor}
-                    onEdit={handleEditLabor}
+                    onEdit={() => handleShowEditModal(labor)}
                     onDelete={() => handleDeleteLabor(labor.id)}
                     onView={() => handleShowViewModal(labor)}
                   />
@@ -130,14 +128,14 @@ const LaborCulturalTable = ({ refresh }) => {
       {showCreateModal && (
         <CreateLaborModal
           closeModal={() => setShowCreateModal(false)}
-          onSave={handleCreateLabor}
+          onSave={handleCreateLabor} // Actualiza el estado para refrescar
         />
       )}
       {showEditModal && selectedLabor && (
         <EditLaborModal
           labor={selectedLabor}
           closeModal={() => setShowEditModal(false)}
-          onSave={handleEditLabor}
+          onSave={handleEditLabor} // Actualiza el estado para refrescar
         />
       )}
       {showViewModal && selectedLabor && (

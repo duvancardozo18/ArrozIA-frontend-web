@@ -335,7 +335,7 @@ const DiagnosisHistory = ({ selectedCrop, cropName }) => {
           )}
         </Box>
       </Modal>
-    </div>
+    </div>  
   );
 };
 

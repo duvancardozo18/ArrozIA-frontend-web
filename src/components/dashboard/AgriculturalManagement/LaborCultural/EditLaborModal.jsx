@@ -96,8 +96,8 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
-    precio_hora_real: "",  
-    etapa_fenologica_id: "",  
+    precio_hectaria: "", // Cambiado para usar el nuevo campo
+    id_etapa_fenologica: "",
   });
   const [phenologicalStages, setPhenologicalStages] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -107,9 +107,9 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
     if (labor) {
       setFormData({
         nombre: labor.nombre,
-        descripcion: labor.descripcion,
-        precio_hora_real: labor.precio_hora_real || "",
-        etapa_fenologica_id: labor.etapa_fenologica_id || "",
+        descripcion: labor.descripcion || "",
+        precio_hectaria: labor.precio_hectaria || "", // Cargar precio_hectaria
+        id_etapa_fenologica: labor.id_etapa_fenologica || "",
       });
     }
   }, [labor]);
@@ -131,12 +131,10 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "precio_hora_real" && parseFloat(value) < 0) {
-      setErrorMessage("El precio por hora no puede ser negativo.");
-    } else if (name === "nombre" && value.length >= 99) {
+    if (name === "precio_hectaria" && parseFloat(value) < 0) {
+      setErrorMessage("El precio por hectaria no puede ser negativo.");
+    } else if (name === "nombre" && value.length > 100) {
       setErrorMessage("El campo 'Nombre' no puede exceder los 100 caracteres.");
-    } else if (name === "descripcion" && value.length >= 299) {
-      setErrorMessage("El campo 'Descripción' no puede exceder los 300 caracteres.");
     } else {
       setErrorMessage("");
     }
@@ -147,10 +145,16 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Construir el payload
+    const payload = {
+      ...formData,
+      precio_hectaria_estimada: null, // Siempre enviar null
+    };
+
     try {
-      await axiosInstance.put(`/labor-cultural/update/${labor.id}`, formData);
+      await axiosInstance.put(`/labor-cultural/update/${labor.id}`, payload);
       setShowSuccessModal(true);
-      onSave({ ...labor, ...formData });
+      onSave({ ...labor, ...payload });
     } catch (error) {
       console.error("Error al editar la labor cultural:", error);
       setErrorMessage("Hubo un error al editar la labor cultural.");
@@ -187,19 +191,17 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
                 name="descripcion"
                 value={formData.descripcion}
                 onChange={handleChange}
-                required
                 rows={3}
                 maxLength={300}
               />
             </InputGroup>
             <InputGroup>
-              <label>Precio por Hora</label>
+              <label>Precio Hectaria</label>
               <input
                 type="number"
-                name="precio_hora_real"
-                value={formData.precio_hora_real}
+                name="precio_hectaria"
+                value={formData.precio_hectaria} // Cambiado para usar precio_hectaria
                 onChange={handleChange}
-                required
                 min="0"
                 step="0.01"
               />
@@ -207,10 +209,9 @@ const EditLaborModal = ({ closeModal, labor, onSave }) => {
             <InputGroup>
               <label>Etapa Fenológica</label>
               <select
-                name="etapa_fenologica_id"
-                value={formData.etapa_fenologica_id}
+                name="id_etapa_fenologica"
+                value={formData.id_etapa_fenologica}
                 onChange={handleChange}
-                required
               >
                 <option value="" disabled>Selecciona una etapa fenológica</option>
                 {phenologicalStages.map((stage) => (

@@ -1,0 +1,254 @@
+.reports-view {
+  padding: 20px;
+}
+
+.crop-navigation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.arrow-button {
+  background-color: #4caf50; /* Verde */
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.arrow-button:hover {
+  background-color: #388e3c;
+}
+
+.crop-navigation-scroll {
+  display: flex;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  margin: 0 10px;
+  width: 100%;
+  scrollbar-width: none; /* Firefox */
+}
+
+.crop-navigation-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Opera */
+}
+
+
+.crop-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px; /* Aumentamos el padding */
+  margin: 0 8px; /* Más espacio entre cada tarjeta */
+  background-color: white;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  min-width: 150px; /* Aumentamos el ancho mínimo */
+  max-width: 180px; /* Aumentamos el ancho máximo */
+  font-size: 16px; /* Tamaño de texto más grande */
+}
+
+.crop-card:hover {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.crop-card.selected {
+  box-shadow: 0px 6px 14px rgba(0, 128, 0, 0.3);
+  border: 2px solid #4caf50;
+}
+
+.icon-container {
+  background-color: #4caf50;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* Aumentamos el tamaño del ícono */
+  height: 40px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.crop-card span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px; /* Aumentamos el tamaño del texto */
+  flex-grow: 1;
+}
+
+.crop-details {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  font-size: 1.1em;
+}
+.crop-details h3 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+    margin: 5px 0;
+  color: #555;
+}
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 8px 16px;
+  background-color: #f4f4f4;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tabs button.active {
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+}
+
+.tab-content {
+  margin-top: 20px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.general-info-card {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.export-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.export-button:hover {
+  background-color: #388e3c;
+}
+
+/* Rentabilidad.scss */
+.rentabilidad-container {
+  position: relative;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: auto;
+}
+
+.export-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.export-button:hover {
+  background-color: #388e3c;
+}
+
+.performance-chart {
+  height: 150px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.general-info-card h4 {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.expenses-section, .income-section {
+  margin-top: 20px;
+}
+
+.expenses-section h5, .income-section h5 {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+}
+
+td button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+td button:hover {
+  background-color: #388e3c;
+}
+
+.total-value, .utility-value {
+  font-weight: bold;
+  margin-top: 10px;
+  color: #333;
+  text-align: right;
+}

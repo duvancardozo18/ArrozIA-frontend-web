@@ -39,7 +39,14 @@ const InsumosTable = ({ refresh }) => {
     <div className="table-container">
       <table className="table">
         <thead>
-          <tr><th>Nombre</th><th>Cantidad</th><th>Unidad de Medida</th><th>Costo Unitario</th><th>Acciones</th></tr>
+          <tr>
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>Unidad de Medida</th>
+            <th>Costo Unitario</th>
+            <th>Tipo de Insumo</th> {/* Nueva columna */}
+            <th>Acciones</th>
+          </tr>
         </thead>
         <tbody>
           {insumos.map((insumo) => (
@@ -48,7 +55,10 @@ const InsumosTable = ({ refresh }) => {
               <td>{insumo.cantidad || "N/A"}</td>
               <td>{insumo.unidad ? insumo.unidad.nombre : "N/A"}</td>
               <td>{insumo.costo_unitario}</td>
-              <td><TablaInsumosAction insumo={insumo} onSave={fetchInsumos} /></td>
+              <td>{insumo.tipo_insumo ? insumo.tipo_insumo.nombre : "N/A"}</td> {/* Mostrar el tipo de insumo */}
+              <td>
+                <TablaInsumosAction insumo={insumo} onSave={fetchInsumos} />
+              </td>
             </tr>
           ))}
         </tbody>

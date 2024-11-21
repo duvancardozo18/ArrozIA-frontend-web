@@ -1,0 +1,43 @@
+/* CultivoInsumosTable.css */
+
+.cultivo-insumos-table {
+    font-family: Arial, sans-serif;
+    margin-top: 50px;
+  }
+  
+  .cultivo-insumos-table h3 {
+    color: #3a3a3a;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .cultivo-insumos-table h4 {
+    color: #3a3a3a;
+    font-weight: bold;
+    margin-left: 15px;
+  }
+  
+  .cultivo-insumos-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+  }
+  
+  .cultivo-insumos-table th,
+  .cultivo-insumos-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .cultivo-insumos-table th {
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .cultivo-insumos-table .total-row {
+    font-weight: bold;
+    background-color: #f9f9f9;
+  }
+  

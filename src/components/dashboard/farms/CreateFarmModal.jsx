@@ -1,197 +1,80 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
 import axiosInstance from "../../../config/AxiosInstance";
 import SuccessModal from "../modal/SuccessModal";
 import MapsLeaflet from "./MapsLeaflet";
-import { API_URL } from '../../../config/apiConfig'; // Asegúrate de que este sea correcto
 import AsyncSelect from 'react-select/async';
+import styles from '../../../css/NewFarm.module.scss';
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  width: 450px;
-  max-width: 90%;
-  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
-  transform: translateZ(0);
-  transition: transform 0.3s ease-in-out;
-
-  &:hover {
-    transform: translateY(-10px) scale(1.03) perspective(1000px);
-  }
-`;
-
-const ErrorMessage = styled.p`
-  color: #ff6b6b;
-  font-size: 18px;
-  margin-bottom: 20px;
-  text-align: center;
-  font-weight: bold;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-  transition: color 0.2s ease-in-out;
-
-  &:hover {
-    color: #ff6b6b;
-  }
-`;
-
-const InputGroup = styled.div`
-  margin-bottom: 20px;
-
-  label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-    font-size: 16px;
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
-
-    &:focus {
-      box-shadow: 0px 0px 8px 2px rgba(39, 174, 96, 0.3);
-      transform: translateY(-3px);
-      outline: none;
-    }
-  }
-`;
-
-const SuggestionBox = styled.ul`
-  list-style: none;
-  background: white;
-  border: 1px solid #ddd;
-  max-height: 150px;
-  overflow-y: auto;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-`;
-
-const SuggestionItem = styled.li`
-  padding: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
-
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 12px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 18px;
-  font-family: 'Roboto', sans-serif;
-  cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
-
-  &:hover {
-    background-color: #218838;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  }
-`;
 const NewFarm = ({ closeModal, addFarm }) => {
   const [formData, setFormData] = useState({
     nombre: "",
-    ubicacion: "",
     area_total: "",
     latitud: null,
     longitud: null,
+    ciudad: "",
+    departamento: "",
+    pais: "Colombia",
+    descripcion: ""
   });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [selectedCity, setSelectedCity] = useState(null); // Nuevo estado para la ciudad seleccionada
-  const [initialOptions, setInitialOptions] = useState([]); // Estado para opciones iniciales
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
 
-  useEffect(() => {
-    const fetchInitialCities = async () => {
-      try {
-        const defaultQuery = "an"; // Cambia "an" por cualquier par de caracteres relevantes
-        const response = await axiosInstance.get(`${API_URL}/City/search/${defaultQuery}`);
-        const options = response.data.map((city) => ({
-          value: city.id,
-          label: city.name,
-        }));
-        setInitialOptions(options);
-      } catch (error) {
-        console.error("Error fetching initial cities:", error);
-        setInitialOptions([]);
-      }
-    };
-  
-    fetchInitialCities();
-  }, []);
-  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-const fetchCities = async (inputValue) => {
-  if (!inputValue || inputValue.length < 2) {
-    return [];
-  }
-  try {
-    const response = await axiosInstance.get(`${API_URL}/City/search/${inputValue}`);
-    const options = response.data.map((city) => ({
-      value: city.id,
-      label: city.name,
-    }));
-    return options;
-  } catch (error) {
-    console.error("Error fetching cities:", error);
-    return [];
-  }
-};
+  const fetchDepartments = async (inputValue) => {
+    if (!inputValue || inputValue.length < 1) return [];
+    try {
+      const response = await axiosInstance.get(`http://127.0.0.1:8000/api/departments/filter?query=${inputValue}`);
+      const options = response.data.map((department) => ({
+        value: department.id,
+        label: department.departamento,
+      }));
+      return options;
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+      return [];
+    }
+  };
 
-  
+  const fetchCities = async (inputValue) => {
+    if (!inputValue || inputValue.length < 1 || !selectedDepartment) return [];
+    try {
+      const response = await axiosInstance.get(`http://127.0.0.1:8000/api/departments/${selectedDepartment.value}/cities/filter?query=${inputValue}`);
+      const options = response.data.ciudades.map((city) => ({
+        value: city,
+        label: city,
+      }));
+      return options;
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+      return [];
+    }
+  };
+
+  const handleSelectDepartment = (selectedOption) => {
+    setSelectedDepartment(selectedOption);
+    setFormData({ ...formData, departamento: selectedOption ? selectedOption.label : "" });
+    setSelectedCity(null);
+  };
 
   const handleSelectCity = async (selectedOption) => {
     setSelectedCity(selectedOption);
+    setFormData({ ...formData, ciudad: selectedOption ? selectedOption.label : "" });
     if (selectedOption) {
       const cityName = selectedOption.label;
       try {
-        // Realiza una solicitud a Nominatim para obtener coordenadas
         const response = await axiosInstance.get(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}, Colombia&format=json`);
-        const locationData = response.data[0]; // Toma el primer resultado
-  
+        const locationData = response.data[0];
         if (locationData) {
-          // Actualiza los datos del formulario
           setFormData({
             ...formData,
-            ubicacion: cityName,
+            ciudad: cityName,
             latitud: locationData.lat,
             longitud: locationData.lon,
           });
@@ -202,32 +85,54 @@ const fetchCities = async (inputValue) => {
         console.error("Error al obtener coordenadas por nombre de ciudad:", error);
       }
     } else {
-      // Si se elimina la selección
       setFormData({
         ...formData,
-        ubicacion: "",
+        ciudad: "",
         latitud: null,
         longitud: null,
       });
     }
   };
-  
+
+  const updateLocationData = async (newPosition) => {
+    try {
+      const [lat, lon] = newPosition;
+      const response = await axiosInstance.get(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+      );
+
+      const address = response.data.address;
+      console.log("Datos de geocodificación inversa:", address);
+
+      setFormData((prevData) => ({
+        ...prevData,
+        latitud: lat.toString(),
+        longitud: lon.toString(),
+        departamento: address.state || "No disponible",
+        ciudad: address.city || address.town || address.village || "No disponible",
+      }));
+    } catch (error) {
+      console.error("Error al obtener la ciudad y el departamento:", error);
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       setErrorMessage("");
+      const farmData = {
+        ...formData,
+        area_total: formData.area_total ? parseFloat(formData.area_total) : null,
+        latitud: formData.latitud ? parseFloat(formData.latitud) : null,
+        longitud: formData.longitud ? parseFloat(formData.longitud) : null,
+        ubicacion: formData.descripcion,  // Reemplaza "descripcion" con "ubicacion"
+      };
+      delete farmData.descripcion;  // Elimina el campo "descripcion" del objeto
 
+      // Consola para verificar los datos que se enviarán en el POST
+      console.log("Datos preparados para enviar:", farmData);
 
-       // Convertir valores numéricos a números (area_total, latitud, longitud)
-    const farmData = {
-      ...formData,
-      area_total: formData.area_total ? parseFloat(formData.area_total) : null,
-      latitud: formData.latitud ? parseFloat(formData.latitud) : null,
-      longitud: formData.longitud ? parseFloat(formData.longitud) : null,
-    }
-
-      const response = await axiosInstance.post("/register-farm", formData);
+      await axiosInstance.post("/register-farm", farmData);
       setShowSuccessModal(true);
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -246,45 +151,72 @@ const fetchCities = async (inputValue) => {
 
   return (
     <>
-      <ModalOverlay>
-        <ModalContent>
-          <CloseButton onClick={closeModal}>×</CloseButton>
+      <div className={styles["modal-overlay"]}>
+        <div className={styles["modal-content"]}>
+          <button className={styles["close-button"]} onClick={closeModal}>×</button>
           <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Crear Finca</h2>
-          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+          {errorMessage && <p className={styles["error-message"]}>{errorMessage}</p>}
+
+          {/* Contenedor de advertencia 
+          <div className={styles["warning-container"]}>
+            <p>
+              Puedes seleccionar manualmente tu ubicación introduciendo los datos de Departamento, Ciudad, Latitud y Longitud,
+              o bien, hacer clic en el mapa para que se complete automáticamente.
+            </p>
+          </div>*/}
+
           <form onSubmit={handleSubmit}>
-            <InputGroup>
+            <div className={styles["input-group"]}>
               <label>Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-                maxLength={50} // según BD es el tope
-              />
-            </InputGroup>
-            <InputGroup>
+              <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required maxLength={50} />
+            </div>
+            <div className={styles["input-group"]}>
               <label>Área Total (m²)</label>
               <input
                 type="number"
                 name="area_total"
                 value={formData.area_total}
-                onChange={handleChange}
-                required // Campo obligatorio
-                min={0}  // Evita valores negativos
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 8) {
+                    handleChange(e); 
+                  }
+                }}
+                required
+               
               />
-            </InputGroup>
-            <InputGroup>
-              <label>Municipio / Vereda</label>
+            </div>
+            <div className={styles["input-group"]}>
+              <label>Departamento</label>
+              <AsyncSelect
+                cacheOptions
+                loadOptions={fetchDepartments}
+                defaultOptions={true}
+                onChange={handleSelectDepartment}
+                placeholder=""
+                isClearable
+                value={selectedDepartment}
+                noOptionsMessage={() => "Escribe el nombre del Departamento"}
+                required
+              />
+            </div>
+            <div className={styles["input-group"]}>
+              <label style={{ display: "none" }}>Departamento (Obtenido del mapa)</label>
+              <input type="text" value={formData.departamento} readOnly style={{ display: "none" }}/>
+            </div>
+            <div className={styles["input-group"]}>
+              <label>Ciudad</label>
               <AsyncSelect
                 cacheOptions
                 loadOptions={fetchCities}
                 defaultOptions={true}
                 onChange={handleSelectCity}
-                placeholder="Selecciona Municipio / Vereda..."
+                placeholder=""
                 isClearable
                 value={selectedCity}
-                menuPortalTarget={document.body} // Añade esta línea
+                isDisabled={!selectedDepartment}
+                menuPortalTarget={document.body}
+                required
                 styles={{
                   control: (provided) => ({
                     ...provided,
@@ -292,20 +224,61 @@ const fetchCities = async (inputValue) => {
                     padding: '2px',
                     borderColor: '#ddd',
                     boxShadow: 'none',
-                    '&:hover': {
-                      borderColor: '#aaa',
-                    },
+                    '&:hover': { borderColor: '#aaa' },
                   }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // Asegura que el menú esté por encima
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 }}
+                noOptionsMessage={() => "Escribe el nombre del municipio"}
               />
-            </InputGroup>
-            {/* Mapa actualizado con la latitud y longitud del municipio seleccionado */}
-            <MapsLeaflet formData={formData} setFormData={setFormData} />
-            <SubmitButton type="submit">Crear</SubmitButton>
+            </div>
+            <div className={styles["input-group"]}>
+              <label style={{ display: "none" }}>Ciudad (Obtenido del mapa)</label>
+              <input type="text" value={formData.ciudad} readOnly style={{ display: "none" }}/>
+            </div>
+
+            <div className={styles["input-group"]}>
+              <label>Latitud</label>
+              <input
+                type="number"
+                name="latitud"
+                value={formData.latitud || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 9 && value >= -90 && value <= 90) {
+                    handleChange(e);
+                  }
+                }}
+                placeholder=""
+                required
+                step="0.000001"
+              />
+            </div>
+            <div className={styles["input-group"]}>
+              <label>Longitud</label>
+              <input
+                type="number"
+                name="longitud"
+                value={formData.longitud || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 9 && value >= -180 && value <= 180) {
+                    handleChange(e);
+                  }
+                }}
+                placeholder=""
+                required
+                step="0.000001"
+              />
+            </div>
+            <div className={styles["input-group"]}>
+              <label>Detalles de su ubicación</label>
+              <input type="text" name="descripcion" value={formData.descripcion} onChange={handleChange} maxLength={50  	} placeholder="Detalles adicionales de ubicación (opcional)" />
+            </div>
+            <MapsLeaflet formData={formData} setFormData={setFormData} updateLocationData={updateLocationData} />
+            <button type="submit" className={styles["submit-button"]}>Crear</button>
           </form>
-        </ModalContent>
-      </ModalOverlay>
+        </div>
+      </div>
       {showSuccessModal && (
         <SuccessModal message="¡Finca Creada!" onClose={handleCloseSuccessModal} />
       )}
