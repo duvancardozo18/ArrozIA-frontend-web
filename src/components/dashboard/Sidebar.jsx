@@ -3,7 +3,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { LIGHT_THEME } from "../../constants/themeConstants";
 import LogoBlue from "../../assets/images/logo.png";
 import LogoWhite from "../../assets/images/logo.png";
-import { FaUserCog,FaDrupal } from "react-icons/fa";
+import { FaUserCog, FaDrupal, FaClock } from "react-icons/fa"; // Importamos FaClock para el ícono del reloj
 import {
   MdOutlineAgriculture,
   MdOutlineCloud,
@@ -13,12 +13,10 @@ import {
   MdOutlinePerson2,
   MdOutlineAssignment,
 } from "react-icons/md";
-import { GiBarn } from 'react-icons/gi';
+import { GiBarn } from "react-icons/gi";
 import { BiTask } from "react-icons/bi";
 import { LuMonitorDot } from "react-icons/lu";
-import { FaSearch } from 'react-icons/fa';
-import { FaMapSigns } from 'react-icons/fa';
-import { FaSeedling } from 'react-icons/fa';
+import { FaSearch, FaMapSigns, FaSeedling } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../css/Sidebar.scss";
 import { SidebarContext } from "../../context/SidebarContext";
@@ -84,7 +82,9 @@ const Sidebar = () => {
             width="50"
             height="50"
           />
-          <p style={{ fontSize: '20px', color: '#ABABB5', fontWeight: 'bold' }}>Arroz IA</p>
+          <p style={{ fontSize: "20px", color: "#ABABB5", fontWeight: "bold" }}>
+            Arroz IA
+          </p>
         </div>
         <button className="sidebar-close-btn" onClick={closeSidebar}>
           <MdOutlineClose size={24} />
@@ -94,46 +94,69 @@ const Sidebar = () => {
         <div className="sidebar-menu">
           <ul className="menu-list">
             <MenuItem to="/farms" icon={<GiBarn size={35} />} text="Fincas" />
-            <MenuItem to="/agricultural_management" icon={<MdOutlineAgriculture size={35} />} text="Gestión Agrícola" />
-            <MenuItem to="/diagnosis" icon={<FaSearch   size={35}/>} text="Diagnosticos" />
-
-            {/* Nuevo menú de Tareas */}
-            <MenuItem to="/reports" icon={<MdOutlineAssignment  size={35} />} text="Reportes" />
-
-            {/* Nuevo menú de Tareas */}
-            <MenuItem to="/task" icon={<BiTask size={35} />} text="Tareas" />
-
-             {/* Nuevo menú de Tareas */}
-             <MenuItem to="/monitoring" icon={<LuMonitorDot size={35} />} text="Monitoreo" />
-
-            {/* Menú de Usuarios y Roles con verificación de permisos */}
             <MenuItem
-              to="/weather-monitoring"  // Ruta para el módulo meteorológico
+              to="/agricultural_management"
+              icon={<MdOutlineAgriculture size={35} />}
+              text="Gestión Agrícola"
+            />
+            <MenuItem to="/diagnosis" icon={<FaSearch size={35} />} text="Diagnósticos" />
+            <MenuItem
+              to="/reports"
+              icon={<MdOutlineAssignment size={35} />}
+              text="Reportes"
+            />
+            <MenuItem to="/task" icon={<BiTask size={35} />} text="Tareas" />
+            <MenuItem
+              to="/monitoring"
+              icon={<LuMonitorDot size={35} />}
+              text="Monitoreo"
+            />
+            <MenuItem
+              to="/weather-monitoring"
               icon={<MdOutlineCloud size={35} />}
               text="Datos Meteorológicos"
             />
-
-            {/* Nuevo menú de análisis edafológico */}
-            <MenuItem to="/soil_analysis" icon={<FaSeedling size={35} />} text="Análisis edafológico" />
-
+            <MenuItem
+              to="/soil_analysis"
+              icon={<FaSeedling size={35} />}
+              text="Análisis edafológico"
+            />
+            <MenuItem
+              to="/audits" // Nueva ruta para Auditorías
+              icon={<FaClock size={35} />} // Ícono de reloj
+              text="Auditorías"
+            />
             {hasPermission("crear_usuario") && (
-              <MenuItem to="/users" icon={<MdOutlinePeople size={35} />} text="Usuarios" />
+              <MenuItem
+                to="/users"
+                icon={<MdOutlinePeople size={35} />}
+                text="Usuarios"
+              />
             )}
             {hasPermission("crear_rol") && (
-              <MenuItem to="/roles" icon={<FaUserCog size={35}/>} text="Roles" />
+              <MenuItem to="/roles" icon={<FaUserCog size={35} />} text="Roles" />
             )}
           </ul>
         </div>
 
         <div className="sidebar-menu sidebar-menu2">
           <ul className="menu-list">
-            <MenuItem to="/profile" icon={<MdOutlinePerson2 size={35} />} text="Perfil" />
+            <MenuItem
+              to="/profile"
+              icon={<MdOutlinePerson2 size={35} />}
+              text="Perfil"
+            />
             <li className="menu-item">
               <button className="menu-link" onClick={handleLogout}>
                 <span className="menu-link-icon">
                   <MdOutlineLogout size={35} />
                 </span>
-                <span className="menu-link-text" style={{ fontSize: '16px' }}>Cerrar sesión</span>
+                <span
+                  className="menu-link-text"
+                  style={{ fontSize: "16px" }}
+                >
+                  Cerrar sesión
+                </span>
               </button>
             </li>
           </ul>
