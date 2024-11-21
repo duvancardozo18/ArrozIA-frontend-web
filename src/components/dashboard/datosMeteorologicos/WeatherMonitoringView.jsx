@@ -127,23 +127,22 @@ const WeatherMonitoringView = () => {
       return;
     }
     try {
-      await axiosInstance.post(
-        "/meteorology/api",
-        { lote_id: selectedLote },
+      const response = await axiosInstance.post(
+        "/meteorology/api", // URL del endpoint
+        { lote_id: selectedLote }, // Enviar datos en el cuerpo
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", // Especificar tipo de contenido
           },
         }
       );
-      setShowSuccessModal(true); // Mostrar mensaje de éxito
+      alert("¡Dato meteorológico registrado automáticamente!");
       fetchWeatherRecords(selectedLote); // Actualizar registros después de agregar el dato
     } catch (error) {
       console.error("Error al registrar el dato meteorológico automáticamente:", error);
       alert("Hubo un error al registrar el dato meteorológico.");
     }
   };
-
   const handleFarmSelect = (event) => {
     setSelectedFarmId(event.target.value);
     setSelectedLote(null);
@@ -232,6 +231,18 @@ const WeatherMonitoringView = () => {
             <div className="table-header">
               <h3>Historial Meteorológico del Lote {selectedLoteNombre}</h3>
               <div className="actions">
+                <button 
+                  className="register-weather-btn" 
+                  onClick={openModal}
+                >
+                  Registrar Datos Meteorológicos
+                </button>
+                <button 
+                  className="prefill-weather-btn" 
+                  onClick={addWeatherRecordAutomatically}
+                >
+                  Registro Automático (API)
+                </button>
                 <ActionButton onClick={openModal}>
                   Registro Manual
                 </ActionButton>
