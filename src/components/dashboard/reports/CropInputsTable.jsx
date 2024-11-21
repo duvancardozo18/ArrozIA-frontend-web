@@ -1,51 +1,69 @@
-import React from 'react';
-import '../../../css/CropInputsTable.scss';
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../../config/AxiosInstance";
+import "../../../css/cropinputstable.scss";
 
-const CultivoInsumosTable = () => {
-  const insumos = [
-    { concepto: 'Semilla Sikuani', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Glifosato', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Oxadiazon', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Butaclor', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Propanil', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Hormonal', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Dap', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Sulfato de amonio', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Cloruro de potasio', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Urea', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Elementos menores', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Tryciclazol', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-    { concepto: 'Azoxystrobin', valorUnitario: null, cantidad: null, descripcion: '', valorTotal: null },
-  ];
+const CropInputsTable = ({ cultivoId }) => {
+  const [inputs, setInputs] = useState([]);
+  const [totalCost, setTotalCost] = useState(0); // Nuevo estado para el total
 
-  const total = insumos.reduce((sum, item) => sum + (item.valorTotal || 0), 0);
+  useEffect(() => {
+    console.log("CropInputsTable - cultivoId recibido:", cultivoId); // Debug
+    if (!cultivoId) {
+      console.error("Error: cultivoId es undefined en CropInputsTable");
+      return;
+    }
+
+    // Función para obtener los insumos
+    const fetchInputs = async () => {
+      try {
+        const response = await axiosInstance.get(`/cultivos/${cultivoId}/insumos`);
+        setInputs(response.data);
+      } catch (error) {
+        console.error("Error fetching inputs:", error);
+      }
+    };
+
+    // Función para obtener el costo total de los insumos
+    const fetchTotalCost = async () => {
+      try {
+        const response = await axiosInstance.get(`/cultivos/${cultivoId}/insumos/total-cost`);
+        setTotalCost(response.data.total_cost || 0); // Manejar el valor total
+      } catch (error) {
+        console.error("Error fetching total input cost:", error);
+      }
+    };
+
+    // Llamar a ambas funciones
+    fetchInputs();
+    fetchTotalCost();
+  }, [cultivoId]);
 
   return (
     <div className="cultivo-insumos-table">
-      <h4>Insumos Utilizados</h4>
+      <h3>Insumos Utilizados</h3>
       <table>
         <thead>
           <tr>
             <th>Concepto</th>
-            <th>Valor unitario</th>
+            <th>Valor Unitario</th>
             <th>Cantidad</th>
             <th>Descripción</th>
             <th>Valor Total</th>
           </tr>
         </thead>
         <tbody>
-          {insumos.map((insumo, index) => (
+          {inputs.map((input, index) => (
             <tr key={index}>
-              <td>{insumo.concepto}</td>
-              <td>{insumo.valorUnitario ? `$${insumo.valorUnitario.toLocaleString()}` : ''}</td>
-              <td>{insumo.cantidad || ''}</td>
-              <td>{insumo.descripcion || ''}</td>
-              <td>{insumo.valorTotal ? `$${insumo.valorTotal.toLocaleString()}` : ''}</td>
+              <td>{input.concepto}</td>
+              <td>${input.valor_unitario.toLocaleString()}</td>
+              <td>{input.cantidad}</td>
+              <td>{input.descripcion}</td>
+              <td>${input.valor_total.toLocaleString()}</td>
             </tr>
           ))}
           <tr className="total-row">
             <td colSpan="4">Valor total</td>
-            <td>{`$${total.toLocaleString()}`}</td>
+            <td>${totalCost.toLocaleString()}</td> {/* Mostrar el valor total del endpoint */}
           </tr>
         </tbody>
       </table>
@@ -53,4 +71,4 @@ const CultivoInsumosTable = () => {
   );
 };
 
-export default CultivoInsumosTable;
+export default CropInputsTable;

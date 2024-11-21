@@ -1,128 +1,113 @@
-import React from 'react';
-import '../../../css/CropInputsTable.scss';
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../../config/AxiosInstance";
+import "../../../css/cropinputstable.scss";
 
-const CultivoInsumosTable = () => {
-  const labores = [
-    { 
-      fechaInicio: '12/02/2024 9:00 am', 
-      fechaFin: '12/02/2024 4:20 pm', 
-      actividad: 'Adecuación del terreno', 
-      maquinaria: 'Tractor John Deere 5060E', 
-      operario: 'Samuel Guzmán', 
-      descripcion: 'Se realizó 3 pasones de rastra y un pase con grada pesada por hectárea', 
-      valor: 4700000 
-    },
-    { 
-      fechaInicio: '13/02/2024', 
-      fechaFin: '13/02/2024', 
-      actividad: 'Calabonizado', 
-      maquinaria: 'Tractor John Deere 5060E', 
-      operario: 'Samuel Guzmán', 
-      descripcion: '', 
-      valor: 1000000 
-    },
-    { 
-      fechaInicio: '15/02/2024', 
-      fechaFin: '15/02/2024', 
-      actividad: 'Aplicación de Herbicida', 
-      maquinaria: 'Glifosato', 
-      operario: 'Carlos Silva', 
-      descripcion: '', 
-      valor: 300000 
-    },
-    { 
-      fechaInicio: '18/02/2024', 
-      fechaFin: '18/02/2024', 
-      actividad: 'Aplicación de fungicida', 
-      maquinaria: 'Azoxystrobin', 
-      operario: 'Carlos Silva', 
-      descripcion: '', 
-      valor: 300000 
-    },
-    { 
-      fechaInicio: '20/02/2024', 
-      fechaFin: '20/02/2024', 
-      actividad: 'Siembra', 
-      maquinaria: 'Tractor John Deere 5060E', 
-      operario: 'Samuel Guzmán', 
-      descripcion: 'Implemento sembrador', 
-      valor: 4000000 
-    },
-    { 
-      fechaInicio: '20/02/2024', 
-      fechaFin: '20/02/2024', 
-      actividad: 'Riego', 
-      maquinaria: 'No aplica', 
-      operario: 'Mario Villalba', 
-      descripcion: 'Suplemento diario para el riego hasta parte del regador', 
-      valor: 500000 
-    },
-    { 
-      fechaInicio: '21/02/2024', 
-      fechaFin: '21/02/2024', 
-      actividad: 'Inspección de campo', 
-      maquinaria: 'No aplica', 
-      operario: 'Carlos Silva', 
-      descripcion: '', 
-      valor: 300000 
-    },
-    { 
-      fechaInicio: '25/02/2024', 
-      fechaFin: '25/02/2024', 
-      actividad: 'Aplicación de abonos', 
-      maquinaria: 'No aplica', 
-      operario: 'Carlos Silva', 
-      descripcion: '25 días después de germinada', 
-      valor: 300000 
-    },
-    { 
-      fechaInicio: '07/03/2024', 
-      fechaFin: '07/03/2024', 
-      actividad: 'Aplicación de abonos', 
-      maquinaria: 'No aplica', 
-      operario: 'Carlos Silva', 
-      descripcion: '', 
-      valor: 300000 
-    },
-    { 
-      fechaInicio: '25/07/2024', 
-      fechaFin: '25/07/2024', 
-      actividad: 'Aplicación de abonos', 
-      maquinaria: 'No aplica', 
-      operario: 'Carlos Silva', 
-      descripcion: '', 
-      valor: 300000 
-    },
-    { 
-      fechaInicio: '19/08/2024', 
-      fechaFin: '19/08/2024', 
-      actividad: 'Cosecha', 
-      maquinaria: 'Combinada Kubota DC - 105X', 
-      operario: 'Carlos Silva', 
-      descripcion: 'Recolección 120 bultos (granel)', 
-      valor: 600000 
-    },
-    { 
-      fechaInicio: '19/08/2024', 
-      fechaFin: '19/08/2024', 
-      actividad: 'Transporte de cosecha', 
-      maquinaria: 'No aplica', 
-      operario: 'Mario Losada', 
-      descripcion: 'Recolección al molino', 
-      valor: 1875000 
-    },
-  ];
+const CulturalWorkTable = ({ cultivoId, onFilteredDataChange }) => {
+  const [culturalWorks, setCulturalWorks] = useState([]);
+  const [totalValue, setTotalValue] = useState(0);
+  const [filters, setFilters] = useState({
+    activity: "",
+    machinery: "",
+    operator: "",
+    startDate: "",
+    endDate: "",
+  });
 
-  const total = labores.reduce((sum, item) => sum + (item.valor || 0), 0);
+  useEffect(() => {
+    if (!cultivoId) return;
+
+    const fetchCulturalWorks = async () => {
+      try {
+        const response = await axiosInstance.get(`/crops/${cultivoId}/cultural-works`);
+        setCulturalWorks(response.data);
+        setTotalValue(response.data.reduce((acc, work) => acc + work.valor, 0));
+        onFilteredDataChange(response.data); // Envía los datos iniciales
+      } catch (error) {
+        console.error("Error fetching cultural works:", error);
+      }
+    };
+
+    fetchCulturalWorks();
+  }, [cultivoId]);
+
+  const handleFilter = async () => {
+    try {
+      const { activity, machinery, operator, startDate, endDate } = filters;
+      let url = `/crops/${cultivoId}/cultural-works`;
+
+      if (activity) {
+        url = `/crops/${cultivoId}/cultural-works/filter-by-activity?activity_name=${activity}`;
+      } else if (machinery) {
+        url = `/crops/${cultivoId}/cultural-works/filter-by-machinery?machinery_name=${machinery}`;
+      } else if (operator) {
+        url = `/crops/${cultivoId}/cultural-works/filter-by-operator?operator_name=${operator}`;
+      } else if (startDate && endDate) {
+        url = `/crops/${cultivoId}/cultural-works/filter-by-date-range?start_date=${startDate}&end_date=${endDate}`;
+      }
+
+      const response = await axiosInstance.get(url);
+      setCulturalWorks(response.data);
+      setTotalValue(response.data.reduce((acc, work) => acc + work.valor, 0));
+      onFilteredDataChange(response.data); // Envía los datos filtrados
+    } catch (error) {
+      console.error("Error applying filters:", error);
+    }
+  };
+
+  const handleFilterChange = (e) => {
+    setFilters({
+      ...filters,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <div className="cultivo-insumos-table">
-      <h4>Labores Culturales</h4>
+      <h3>Labores Culturales</h3>
+      <div className="filters">
+        <input
+          type="text"
+          name="activity"
+          placeholder="Filtrar por actividad"
+          value={filters.activity}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="text"
+          name="machinery"
+          placeholder="Filtrar por maquinaria"
+          value={filters.machinery}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="text"
+          name="operator"
+          placeholder="Filtrar por operador"
+          value={filters.operator}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="date"
+          name="startDate"
+          placeholder="Fecha inicio"
+          value={filters.startDate}
+          onChange={handleFilterChange}
+        />
+        <input
+          type="date"
+          name="endDate"
+          placeholder="Fecha fin"
+          value={filters.endDate}
+          onChange={handleFilterChange}
+        />
+        <button onClick={handleFilter}>Aplicar Filtros</button>
+      </div>
+
       <table>
         <thead>
           <tr>
             <th>Fecha Inicio</th>
-            <th>Fecha de culminación</th>
+            <th>Fecha de Culminación</th>
             <th>Actividad</th>
             <th>Maquinaria / Insumo</th>
             <th>Operario</th>
@@ -131,20 +116,20 @@ const CultivoInsumosTable = () => {
           </tr>
         </thead>
         <tbody>
-          {labores.map((labor, index) => (
+          {culturalWorks.map((work, index) => (
             <tr key={index}>
-              <td>{labor.fechaInicio}</td>
-              <td>{labor.fechaFin}</td>
-              <td>{labor.actividad}</td>
-              <td>{labor.maquinaria}</td>
-              <td>{labor.operario}</td>
-              <td>{labor.descripcion}</td>
-              <td>{labor.valor ? `$${labor.valor.toLocaleString()}` : ''}</td>
+              <td>{new Date(work.fecha_inicio).toLocaleString()}</td>
+              <td>{new Date(work.fecha_culminacion).toLocaleString()}</td>
+              <td>{work.actividad}</td>
+              <td>{work.maquinaria || "No aplica"}</td>
+              <td>{work.operario}</td>
+              <td>{work.descripcion}</td>
+              <td>${work.valor.toLocaleString()}</td>
             </tr>
           ))}
           <tr className="total-row">
             <td colSpan="6">Valor Total</td>
-            <td>{`$${total.toLocaleString()}`}</td>
+            <td>${totalValue.toLocaleString()}</td>
           </tr>
         </tbody>
       </table>
@@ -152,4 +137,4 @@ const CultivoInsumosTable = () => {
   );
 };
 
-export default CultivoInsumosTable;
+export default CulturalWorkTable;

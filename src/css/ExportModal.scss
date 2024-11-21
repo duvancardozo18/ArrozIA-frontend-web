@@ -10,6 +10,46 @@
   align-items: center;
   z-index: 1000;
 
+  .export-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+.export-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.close-button {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.export-button {
+  margin-top: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.export-button:hover {
+  background-color: #45a049;
+}
+
   .export-modal-content {
     background-color: #ffffff;
     padding: 20px;
@@ -85,6 +125,34 @@
       &:hover {
         background-color: #45a049;
       }
+    }
+  }
+}
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .details {
+    flex: 1;
+  }
+
+  .export-button-container {
+    flex: 0;
+  }
+
+  .export-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #45a049;
     }
   }
 }

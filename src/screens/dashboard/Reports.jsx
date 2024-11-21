@@ -16,10 +16,15 @@ const Reports = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await axiosInstance.get('/crops/all'); // Cambia el endpoint si es necesario
-        setReports(response.data);
+        const response = await axiosInstance.get('/crops/all');
+        if (response.data && Array.isArray(response.data)) {
+          console.log("Cultivos obtenidos:", response.data); // Agregar log para depuración
+          setReports(response.data);
+        } else {
+          console.error("Respuesta inesperada del backend:", response.data);
+        }
       } catch (error) {
-        console.error("Error fetching reports:", error);
+        console.error("Error al obtener los cultivos:", error);
       }
     };
     fetchReports();
@@ -31,9 +36,10 @@ const Reports = () => {
       const fetchReportDetails = async () => {
         try {
           const response = await axiosInstance.get(`/crops/${selectedReportId}`);
+          console.log("Detalles del cultivo seleccionado:", response.data); // Agregar log para depuración
           setSelectedReportDetails(response.data);
         } catch (error) {
-          console.error("Error fetching report details:", error);
+          console.error("Error al obtener los detalles del cultivo:", error);
         }
       };
       fetchReportDetails();
@@ -46,6 +52,7 @@ const Reports = () => {
     setSelectedReportId(reportId);
   };
 
+  // Redirigir si no está autenticado
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
@@ -59,11 +66,15 @@ const Reports = () => {
         <label htmlFor="report-select">Selecciona un Reporte:</label>
         <select id="report-select" onChange={handleSelectChange} value={selectedReportId || ''}>
           <option value="">Selecciona un reporte</option>
-          {reports.map((report) => (
-            <option key={report.id} value={report.id}>
-              {report.cropName} {/* Ajusta este campo según los datos del reporte */}
-            </option>
-          ))}
+            {reports.map((report) => {
+              console.log("Cultivo en mapeo:", report);
+               return (
+                <option key={report.id} value={report.id}>
+                  {report.cropName}
+                 </option>
+  );
+})}
+
         </select>
       </div>
 
