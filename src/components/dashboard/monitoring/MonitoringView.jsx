@@ -10,18 +10,37 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
+  flex-direction: row;
   padding: 20px;
+  gap: 20px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const Sidebar = styled.div`
   width: 30%;
   padding-right: 20px;
   border-right: 1px solid #ddd;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding-right: 0;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+  }
 `;
 
 const Content = styled.div`
   width: 70%;
   padding-left: 20px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding-left: 0;
+  }
 `;
 
 const StyledSelect = styled.select`
@@ -74,6 +93,19 @@ const MonitoringView = () => {
     }
   };
 
+  // Obtener monitoreos relacionados al cultivo seleccionado
+  const fetchMonitoringsForCrop = async () => {
+    if (!selectedCrop) return;
+
+    try {
+      const response = await axiosInstance.get(`/monitoring/by_crop/${selectedCrop.id}`);
+      console.log("obtener monitoreos del cultivo", response.data);
+      setMonitorings(response.data || []);
+    } catch (error) {
+      console.error("Error fetching monitorings:", error);
+    }
+  };
+
   useEffect(() => {
     checkIfAdmin();
   }, []);
@@ -93,26 +125,14 @@ const MonitoringView = () => {
         const response = await axiosInstance.get(`/farms/${selectedFarmId}/crops`);
         setCrops(response.data);
       } catch (error) {
-        console.error('Error fetching crops:', error);
+        console.error("Error fetching crops:", error);
       }
     };
 
     fetchCropsForFarm();
   }, [selectedFarmId]);
 
-  // Obtener monitoreos relacionados al cultivo seleccionado
   useEffect(() => {
-    const fetchMonitoringsForCrop = async () => {
-      if (!selectedCrop) return;
-
-      try {
-        const response = await axiosInstance.get(`/monitoring/by_crop/${selectedCrop.id}`);
-        setMonitorings(response.data || []);
-      } catch (error) {
-        console.error("Error fetching monitorings:", error);
-      }
-    };
-
     fetchMonitoringsForCrop();
   }, [selectedCrop]);
 
@@ -133,9 +153,7 @@ const MonitoringView = () => {
   };
 
   const refreshMonitorings = () => {
-    if (selectedCrop) {
-      fetchMonitoringsForCrop();
-    }
+    fetchMonitoringsForCrop();
   };
 
   return (
@@ -144,16 +162,20 @@ const MonitoringView = () => {
       <Container>
         <Sidebar>
           <h2>Fincas</h2>
-          <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ''}>
-            <option value="" disabled>Selecciona una finca</option>
+          <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ""}>
+            <option value="" disabled>
+              Selecciona una finca
+            </option>
             {farms.map((farm) => (
-              <option key={farm.id} value={farm.id}>{farm.nombre}</option>
+              <option key={farm.id} value={farm.id}>
+                {farm.nombre}
+              </option>
             ))}
           </StyledSelect>
 
           {selectedFarmId && (
             <>
-              <h2 style={{ marginTop: '20px' }}>Cultivos</h2>
+              <h2 style={{ marginTop: "20px" }}>Cultivos</h2>
               {crops.map((crop) => (
                 <CropCard
                   key={crop.id}
@@ -172,9 +194,18 @@ const MonitoringView = () => {
               monitorings={monitorings}
               onOpenModal={() => setIsModalOpen(true)}
               refreshMonitorings={refreshMonitorings}
+              isAdmin={isAdmin} // Pasa la prop de administrador
+              // setMonitoring={setMonitoring}
             />
           ) : (
-            <p style={{ textAlign: "center", fontSize: "18px", color: "#555", marginTop: "20px" }}>
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "18px",
+                color: "#555",
+                marginTop: "20px",
+              }}
+            >
               Selecciona un cultivo para ver los monitoreos.
             </p>
           )}

@@ -66,7 +66,7 @@ const InputGroup = styled.div`
   }
 
   select,
-  textarea {
+  textarea, input {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
@@ -106,23 +106,38 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
     tipo: "",
     variedad_arroz_etapa_fenologica_id: null,
     recomendacion: "",
+    fecha_programada: "", // Agregamos el campo para la fecha programada
   });
   const [etapasFenologicas, setEtapasFenologicas] = useState([]); // Estado para las etapas fenológicas
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // useEffect(() => {
+  //   const fetchEtapasFenologicas = async () => {
+  //     try {
+  //       const response = await axiosInstance.get("/phenological-stages");
+  //       setEtapasFenologicas(response.data);
+  //     } catch (error) {
+  //       console.error("Error al obtener las etapas fenológicas:", error);
+  //     }
+  //   };
+
+  //   fetchEtapasFenologicas();
+  // }, []);
+
   useEffect(() => {
-    const fetchEtapasFenologicas = async () => {
+    const fetchVarietyRiceStages = async () => {
       try {
-        const response = await axiosInstance.get("/phenological-stages");
-        setEtapasFenologicas(response.data);
+        // Llama a la nueva ruta del backend
+        const response = await axiosInstance.get("/variety-rice-stages");
+        setEtapasFenologicas(response.data); // Guarda los datos obtenidos
       } catch (error) {
-        console.error("Error al obtener las etapas fenológicas:", error);
+        console.error("Error al obtener las variedades de arroz etapa fenológica:", error);
       }
     };
-
-    fetchEtapasFenologicas();
-  }, []);
+  
+    fetchVarietyRiceStages();
+  }, []);  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -138,6 +153,8 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
         ? parseInt(formData.variedad_arroz_etapa_fenologica_id)
         : null,
       recomendacion: formData.recomendacion || null,
+      fecha_programada: formData.fecha_programada, // Incluimos la fecha programada
+      fecha_finalizacion: null, // Asegúrate de que siempre se envíe este campo
       crop_id: selectedCrop.id, // Enviar el `crop_id` del cultivo seleccionado
     };
 
@@ -177,11 +194,29 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
               </select>
             </InputGroup>
             <InputGroup>
+            <label>Etapa Fenológica</label>
+            <select
+              name="variedad_arroz_etapa_fenologica_id"
+              value={formData.variedad_arroz_etapa_fenologica_id || ""}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione etapa fenológica</option>
+              {etapasFenologicas.map((etapa) => (
+                <option key={etapa.id} value={etapa.id}>
+                  {etapa.nombre || `Etapa ${etapa.etapa_fenologica_id}`}
+                </option>
+              ))}
+            </select>
+          </InputGroup>
+
+            {/* <InputGroup>
               <label>Etapa Fenológica</label>
               <select
                 name="variedad_arroz_etapa_fenologica_id"
                 value={formData.variedad_arroz_etapa_fenologica_id || ""}
                 onChange={handleChange}
+                required
               >
                 <option value="">Seleccione etapa fenológica</option>
                 {etapasFenologicas.map((etapa) => (
@@ -190,7 +225,7 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
                   </option>
                 ))}
               </select>
-            </InputGroup>
+            </InputGroup> */}
 
             <InputGroup>
               <label>Recomendación</label>
@@ -201,7 +236,16 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
                 maxLength={255}
               />
             </InputGroup>
-
+            <InputGroup>
+              <label>Fecha Programada</label>
+              <input
+                type="date"
+                name="fecha_programada"
+                value={formData.fecha_programada}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
             <SubmitButton type="submit">Crear Monitoreo</SubmitButton>
           </form>
         </ModalContent>

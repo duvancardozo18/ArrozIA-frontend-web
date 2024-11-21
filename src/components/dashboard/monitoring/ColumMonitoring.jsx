@@ -17,6 +17,7 @@ const MonitoringContainer = styled.div`
   height: 100%;
   padding: 20px;
   box-sizing: border-box;
+  
 `;
 
 const Header = styled.div`
@@ -62,14 +63,23 @@ const AddButton = styled.button`
 `;
 
 const CalendarWrapper = styled.div`
-  flex-grow: 2; /* Permite que el calendario ocupe el espacio necesario */
-  margin-top: 20px;
+  flex-shrink: 0; /* Evita que el calendario cambie de tamaño */
+  flex-grow: 0;
+  max-width: 100%; /* Asegura que no se desborde horizontalmente */
+  height: 400px; /* Tamaño fijo del calendario */
+  margin-bottom: 20px;
+
+  @media (min-width: 768px) {
+    height: 500px; /* Aumenta el tamaño en pantallas más grandes */
+  }
 `;
 
-const ColumMonitoring = ({ selectedCrop, monitorings, onOpenModal, refreshMonitorings }) => {
+const ColumMonitoring = ({ selectedCrop, monitorings, onOpenModal, refreshMonitorings, isAdmin  }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [monitoringToDelete, setMonitoringToDelete] = useState(null);
+
+ 
 
   // Abre el modal de confirmación de eliminación
   const handleDeleteClick = (monitoring) => {
@@ -100,12 +110,15 @@ const ColumMonitoring = ({ selectedCrop, monitorings, onOpenModal, refreshMonito
     setShowSuccessModal(false);
   };
 
-  // Eventos para el calendario
-  const events = monitorings.map((monitoring) => ({
-    title: monitoring.tipo,
-    start: new Date(monitoring.fechaInicio),
-    end: new Date(monitoring.fechaFin),
-  }));
+ // Filtramos los eventos solo si el estado es 1
+ const events = monitorings
+ .filter((monitoring) => monitoring.estado === 1) // Solo incluir monitoreos con estado 1
+ .map((monitoring) => ({
+   title: `${monitoring.tipo} - Estado: Pendiente`,
+   start: new Date(monitoring.fecha_programada),
+   end: new Date(monitoring.fecha_programada), // Si solo tienes fecha de inicio
+   allDay: true, // Si es un evento de todo el día
+ }));
 
   return (
     <MonitoringContainer>
@@ -113,41 +126,29 @@ const ColumMonitoring = ({ selectedCrop, monitorings, onOpenModal, refreshMonito
         <>
           <Header>
             <h2>Monitoreos para {selectedCrop.cropName}</h2>
-            <AddButton onClick={onOpenModal}>
-              <span className="button__text">Agregar</span>
-              <span className="button__icon">
-                <svg
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <line x1="12" x2="12" y1="5" y2="19"></line>
-                  <line x1="5" x2="19" y1="12" y2="12"></line>
-                </svg>
-              </span>
-            </AddButton>
-          </Header>
-          
-          <MonitoringCardsContainer>
-            {monitorings.length > 0 ? (
-              monitorings.map((monitoring) => (
-                <MonitoringCard
-                  key={monitoring.id}
-                  monitoring={monitoring}
-                  onEdit={refreshMonitorings}
-                  onDelete={() => handleDeleteClick(monitoring)}
-                />
-              ))
-            ) : (
-              <p>No hay monitoreos disponibles.</p>
+            {/* Renderizar el botón solo si es administrador */}
+            {isAdmin && (
+              <AddButton onClick={onOpenModal}>
+                <span className="button__text">Agregar</span>
+                <span className="button__icon">
+                  <svg
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <line x1="12" x2="12" y1="5" y2="19"></line>
+                    <line x1="5" x2="19" y1="12" y2="12"></line>
+                  </svg>
+                </span>
+              </AddButton>
             )}
-          </MonitoringCardsContainer>
+          </Header>
 
           <CalendarWrapper>
             <BigCalendar
@@ -158,6 +159,22 @@ const ColumMonitoring = ({ selectedCrop, monitorings, onOpenModal, refreshMonito
               style={{ height: "100%", width: "100%" }}
             />
           </CalendarWrapper>
+          
+          <MonitoringCardsContainer>
+            {monitorings.length > 0 ? (
+              monitorings.map((monitoring) => (
+                <MonitoringCard
+                  key={monitoring.id}
+                  monitoring={monitoring}
+                  onEdit={refreshMonitorings}
+                  onDelete={() => handleDeleteClick(monitoring)} // Delegación al modal
+                  onFinalize={refreshMonitorings} // Pasamos la lógica al hijo para el flujo de finalización
+                />
+              ))
+            ) : (
+              <p>No hay monitoreos disponibles.</p>
+            )}
+          </MonitoringCardsContainer>
         </>
       ) : (
         <p>Seleccione un cultivo para ver los monitoreos.</p>

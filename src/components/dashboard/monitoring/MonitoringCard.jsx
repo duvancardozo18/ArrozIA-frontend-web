@@ -1,117 +1,119 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBug, faLeaf, faHeartbeat, faSeedling } from "@fortawesome/free-solid-svg-icons";
 import "../../../css/MonitoringCard.scss";
-import EditMonitoringModal from "./EditMonitoringModal"; // Importa el modal de edición
-import DeleteModal from "../modal/DeleteModal"; // Importa el modal de eliminación
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import EditMonitoringModal from "./EditMonitoringModal";
+import DeleteModal from "../modal/DeleteModal";
+import FinalizeMonitoringModal from "./FinalizeMonitoringModal";
+import axiosInstance from "../../../config/AxiosInstance";
+import { AuthContext } from "../../../config/AuthProvider";
+import EditIcon from "@mui/icons-material/Edit"; // Importación correcta
+import DeleteIcon from "@mui/icons-material/Delete"; // Importación correcta
 
-const MonitoringCard = ({ monitoring, onEdit, onDelete }) => {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+const MonitoringCard = ({ monitoring, onEdit, onDelete, onFinalize }) => {
+  const { userId } = useContext(AuthContext);
+  const [isAdmin, setIsAdmin] = useState(null);
+  const [modalState, setModalState] = useState(null); // null | "edit" | "finalize"
 
-  // Asigna un ícono y color según el tipo de monitoreo
+  useEffect(() => {
+    const checkIfAdmin = async () => {
+      try {
+        const response = await axiosInstance.get(`/users/${userId}/is_admin`);
+        setIsAdmin(response.data.is_admin);
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+      }
+    };
+    checkIfAdmin();
+  }, [userId]);
+
   const getIcon = (tipo) => {
     switch (tipo) {
       case "Plagas":
-        return { icon: faBug, color: "#E63946" }; // Rojo para plagas
+        return { icon: faBug, color: "#E63946" };
       case "Malezas":
-        return { icon: faLeaf, color: "#8A2BE2" }; // Púrpura para malezas
+        return { icon: faLeaf, color: "#8A2BE2" };
       case "Nutricional":
-        return { icon: faHeartbeat, color: "#FF8C00" }; // Naranja oscuro para nutricional
+        return { icon: faHeartbeat, color: "#FF8C00" };
       case "Enfermedades":
-        return { icon: faSeedling, color: "#20B2AA" }; // Turquesa para enfermedades
+        return { icon: faSeedling, color: "#20B2AA" };
       default:
-        return { icon: faSeedling, color: "#696969" }; // Gris para otros
+        return { icon: faSeedling, color: "#696969" };
     }
   };
 
+  const cardBorderColor = monitoring.estado === 1 ? "#FF6B6B" : "#28A745";
   const { icon, color } = getIcon(monitoring.tipo);
 
-  // Funciones para abrir y cerrar el modal de edición
-  const handleEditClick = () => {
-    setIsEditModalOpen(true);
-  };
-
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
-  };
-
-  // Funciones para abrir y cerrar el modal de eliminación
-  const handleDeleteClick = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-  };
-
-  // Confirmación de eliminación
-  const confirmDelete = () => {
-    onDelete(monitoring.id);
-    closeDeleteModal();
-  };
+  const openModal = (type) => setModalState(type);
+  const closeModal = () => setModalState(null);
 
   return (
-    <div className="monitoring-card" style={{ borderColor: color }}>
+    <div className="monitoring-card" style={{ borderColor: cardBorderColor }}>
       <div className="icon-container" style={{ color }}>
         <FontAwesomeIcon icon={icon} size="2x" />
       </div>
       <div className="monitoring-content">
         <h3 className="monitoring-title">{monitoring.tipo}</h3>
-        <p className="monitoring-recommendation">
+        <p>
           <strong>Recomendación:</strong> {monitoring.recomendacion || "No especificada"}
         </p>
-        {monitoring.etapaNombre ? (
-          <p className="monitoring-stage">
-          <strong>Etapa Fenológica:</strong> {monitoring.etapaNombre}
+        <p>
+          <strong>Etapa Fenológica:</strong> {monitoring.etapaNombre || "No especificada"}
         </p>
-      ) : (
-        <p className="monitoring-stage">No especificada</p>
-      )}
+        <p>
+          <strong>Fecha Programada:</strong> {monitoring.fecha_programada}
+        </p>
       </div>
       <div className="action-buttons">
-        <EditIcon
-          style={{ cursor: "pointer", color: "blue" }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleEditClick();
-          }}
-          onMouseEnter={(e) => (e.target.style.color = "darkblue")}
-          onMouseLeave={(e) => (e.target.style.color = "blue")}
-        />
-        <DeleteIcon
-          style={{ cursor: "pointer", color: "red" }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDeleteClick();
-          }}
-          onMouseEnter={(e) => (e.target.style.color = "darkred")}
-          onMouseLeave={(e) => (e.target.style.color = "red")}
-        />
+        {isAdmin ? (
+          <>
+            <EditIcon
+              style={{ cursor: "pointer", color: "blue" }}
+              onClick={() => openModal("edit")}
+              onMouseEnter={(e) => (e.target.style.color = "darkblue")}
+              onMouseLeave={(e) => (e.target.style.color = "blue")}
+            />
+            <DeleteIcon
+              style={{ cursor: "pointer", color: "red" }}
+              onClick={onDelete}
+              onMouseEnter={(e) => (e.target.style.color = "darkred")}
+              onMouseLeave={(e) => (e.target.style.color = "red")}
+            />
+          </>
+        ) : (
+          monitoring.estado === 1 && (
+            <button
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#28A745",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => openModal("finalize")}
+            >
+              Finalizar
+            </button>
+          )
+        )}
       </div>
 
-      {/* Modal de edición */}
-      {isEditModalOpen && (
+      {modalState === "edit" && (
         <EditMonitoringModal
-          show={isEditModalOpen}
-          closeModal={closeEditModal}
+          show={true}
+          closeModal={closeModal}
           monitoring={monitoring}
           onSave={onEdit}
         />
       )}
-
-      {/* Modal de eliminación */}
-      {isDeleteModalOpen && (
-        <DeleteModal
-          show={isDeleteModalOpen}
-          onClose={closeDeleteModal}
-          onConfirm={confirmDelete}
-          title="Eliminar Monitoreo"
-          message="¿Estás seguro de que deseas eliminar este monitoreo?"
-          cancelText="Cancelar"
-          confirmText="Eliminar"
+      {modalState === "finalize" && (
+        <FinalizeMonitoringModal
+          show={true}
+          closeModal={closeModal}
+          monitoring={monitoring}
+          onFinalize={onFinalize}
         />
       )}
     </div>
