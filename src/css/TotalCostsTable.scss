@@ -1,0 +1,60 @@
+.total-costs-table {
+    font-family: Arial, sans-serif;
+    border: 1px solid #d3d3d3;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  
+    h3 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #006400;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  
+    .table-container {
+      margin-top: 16px;
+      overflow-x: auto;
+  
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+  
+      td {
+        padding: 10px 8px;
+        font-size: 1rem;
+        border-bottom: 1px solid #d3d3d3;
+      }
+  
+      .total-row {
+        font-weight: bold;
+        color: #006400;
+        font-size: 1.2rem;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      padding: 12px;
+  
+      h3 {
+        font-size: 1.2rem;
+      }
+  
+      .table-container {
+        td {
+          font-size: 0.9rem;
+        }
+  
+        .total-row {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+  

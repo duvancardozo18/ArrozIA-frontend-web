@@ -93,3 +93,13 @@
     }
   }
   
+  .cultivo-insumos-table {
+    &.costs-table {
+      margin-top: 20px;
+  
+      h3 {
+        color: #228b22; /* Verde oscuro */
+      }
+    }
+  }
+  

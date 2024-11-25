@@ -3,6 +3,7 @@ import axiosInstance from "../../../config/AxiosInstance";
 import Rentabilidad from './Rentabilidad';
 import Rendimiento from './Rendimiento';
 import TabContent from './TabContent';
+import TotalCostsTable from './TotalCostsTable'; // Importar TotalCostsTable
 import ExportModal from './ExportModal';
 
 const CropDetails = ({ selectedCropId, onClose }) => {
@@ -10,7 +11,7 @@ const CropDetails = ({ selectedCropId, onClose }) => {
   const [inputs, setInputs] = useState([]);
   const [culturalWorks, setCulturalWorks] = useState([]);
   const [showExportModal, setShowExportModal] = useState(false);
-  const [activeTab, setActiveTab] = useState('rendimiento');
+  const [activeTab, setActiveTab] = useState('rentabilidad'); // Cambiar el tab activo inicial a rentabilidad
 
   console.log("CropDetails - selectedCropId recibido:", selectedCropId); // Debug
 
@@ -98,21 +99,27 @@ const CropDetails = ({ selectedCropId, onClose }) => {
       <p>Fecha estimada de cosecha: {cropDetails.estimatedHarvestDate ? new Date(cropDetails.estimatedHarvestDate).toLocaleDateString() : "No disponible"}</p>
       <p>Fecha de cosecha: {cropDetails.harvestDate ? new Date(cropDetails.harvestDate).toLocaleDateString() : "NO realizada"}</p>
 
+   
+
       <div className="tabs">
-        <button onClick={() => setActiveTab('rendimiento')} className={activeTab === 'rendimiento' ? 'active' : ''}>
+        {/* Botón de rendimiento comentado */}
+        {/* <button onClick={() => setActiveTab('rendimiento')} className={activeTab === 'rendimiento' ? 'active' : ''}>
           Rendimiento
-        </button>
+        </button> */}
         <button onClick={() => setActiveTab('rentabilidad')} className={activeTab === 'rentabilidad' ? 'active' : ''}>
           Rentabilidad
         </button>
-        <button onClick={() => setActiveTab('tab')} className={activeTab === 'tab' ? 'active' : ''}>
+        {/* Botón de Tab comentado */}
+        {/* <button onClick={() => setActiveTab('tab')} className={activeTab === 'tab' ? 'active' : ''}>
           Tab
-        </button>
+        </button> */}
       </div>
 
       <div className="tab-content">
         {renderTabContent()}
       </div>
+
+      
 
       <button onClick={() => setShowExportModal(true)} className="export-button">Exportar Informe</button>
       {showExportModal && (

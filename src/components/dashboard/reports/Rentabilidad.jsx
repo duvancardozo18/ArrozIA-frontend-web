@@ -5,6 +5,7 @@ import CulturalWorkTable from '../../dashboard/reports/CulturalWorkTable';
 import AgriculturalInputTable from '../../dashboard/reports/AgriculturalInputTable'; // Importa el nuevo componente
 import ExportModal from './ExportModal';
 import axiosInstance from "../../../config/AxiosInstance";
+import TotalCostsTable from "../../dashboard/reports/TotalCostsTable";
 
 const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -93,9 +94,11 @@ const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }
       </div>
 
       {/* Tablas de Insumos y Labores Culturales */}
+      <TotalCostsTable cultivoId={cultivoId} />
       <CropInputsTable cultivoId={cultivoId} />
       <CulturalWorkTable cultivoId={cultivoId} onFilteredDataChange={handleFilteredDataChange} />
       <AgriculturalInputTable /> {/* Nueva tabla de insumos agrícolas */}
+
 
       {/* Botón para abrir el modal */}
       <div className="export-button-container">
