@@ -5,15 +5,17 @@ import Rendimiento from './Rendimiento';
 import TabContent from './TabContent';
 import TotalCostsTable from './TotalCostsTable'; // Importar TotalCostsTable
 import ExportModal from './ExportModal';
+import "../../../css/CropDetails.scss";
 
-const CropDetails = ({ selectedCropId, onClose }) => {
+const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
   const [cropDetails, setCropDetails] = useState(null);
   const [inputs, setInputs] = useState([]);
   const [culturalWorks, setCulturalWorks] = useState([]);
+  const [lotDetails, setLotDetails] = useState(null); // Estado para los detalles del lote
+  const [harvestDate, setHarvestDate] = useState("NO realizada"); // Estado para la fecha de cosecha
+  const [varietyName, setVarietyName] = useState("Cargando..."); // Nuevo estado para el nombre de la variedad
   const [showExportModal, setShowExportModal] = useState(false);
   const [activeTab, setActiveTab] = useState('rentabilidad'); // Cambiar el tab activo inicial a rentabilidad
-
-  console.log("CropDetails - selectedCropId recibido:", selectedCropId); // Debug
 
   useEffect(() => {
     if (!selectedCropId) {
@@ -23,9 +25,25 @@ const CropDetails = ({ selectedCropId, onClose }) => {
 
     const fetchCropDetails = async () => {
       try {
-        console.log("Fetching details for selectedCropId:", selectedCropId);
         const response = await axiosInstance.get(`/crops/${selectedCropId}`);
+        console.log("Crop details:", response.data);
         setCropDetails(response.data);
+        console.log("CropDetails:", cropDetails);
+
+        // Si el cultivo tiene un lote relacionado, obtener sus detalles
+        if (response.data.plotId) fetchLotDetails(response.data.plotId);
+
+        // Obtener el nombre de la variedad
+        if (response.data.varietyId) {
+          console.log("Fetching variety name for ID:", response.data.varietyId);
+          fetchVarietyName(response.data.varietyId);
+        } else {
+          console.warn("Variety ID is not available in crop details.");
+          setVarietyName("No disponible");
+        }
+
+        // Obtener la fecha de cosecha desde la nueva ruta
+        fetchHarvestDate(selectedCropId);
       } catch (error) {
         console.error("Error fetching crop details:", error);
       }
@@ -49,6 +67,40 @@ const CropDetails = ({ selectedCropId, onClose }) => {
       }
     };
 
+    const fetchLotDetails = async (plotId) => {
+      try {
+        const response = await axiosInstance.get(`/land/${plotId}`);
+        setLotDetails(response.data);
+      } catch (error) {
+        console.error("Error fetching lot details:", error);
+      }
+    };
+
+    const fetchVarietyName = async (varietyId) => {
+      try {
+        const response = await axiosInstance.get(`/get-variety/${varietyId}`);
+        console.log("Variety name response:", response.data);
+        if (response.data && response.data.nombre) {
+          setVarietyName(response.data.nombre);
+        } else {
+          setVarietyName("No disponible");
+        }
+      } catch (error) {
+        console.error("Error fetching variety name:", error);
+        setVarietyName("No disponible");
+      }
+    };
+
+    const fetchHarvestDate = async (cropId) => {
+      try {
+        const response = await axiosInstance.get(`/harvest/crops/${cropId}`);
+        const harvestData = response.data.cosechas?.[0]?.fecha_cosecha; // Obtener la primera cosecha si existe
+        setHarvestDate(harvestData ? new Date(harvestData).toLocaleDateString() : "NO realizada");
+      } catch (error) {
+        console.error("Error fetching harvest date:", error);
+      }
+    };
+
     fetchCropDetails();
     fetchInputs();
     fetchCulturalWorks();
@@ -67,15 +119,10 @@ const CropDetails = ({ selectedCropId, onClose }) => {
       case 'rendimiento':
         return <Rendimiento />;
       case 'rentabilidad':
-        console.log("CropDetails - Pasando cultivoId a Rentabilidad:", selectedCropId); // Debug
         return (
           <Rentabilidad
             plantingDate={cropDetails.plantingDate || "No disponible"}
-            harvestDate={
-              cropDetails.estimatedHarvestDate ||
-              cropDetails.harvestDate ||
-              "No disponible"
-            }
+            harvestDate={harvestDate}
             expenses={cropDetails.expenses || []}
             income={cropDetails.income || []}
             cultivoId={selectedCropId}
@@ -91,45 +138,42 @@ const CropDetails = ({ selectedCropId, onClose }) => {
   return (
     <div className="crop-details">
       <h3>Detalles del Cultivo: {cropDetails.cropName}</h3>
-      <p>Finca: {cropDetails.farm?.cropName || "No disponible"}</p>
-      <p>Variedad: {cropDetails.varietyId || "No disponible"}</p>
+      <p>Finca: {selectedFarmName || "No disponible"}</p>
+      <p>Variedad: {varietyName}</p> {/* Mostrar el nombre de la variedad */}
       <p>Lote: {cropDetails.plotId || "No disponible"}</p>
-      <p>Área cultivada: {cropDetails.cultivatedArea} {cropDetails.areaUnit}</p>
+      <p>Área cultivada:{" "} {lotDetails?.area ? `${(lotDetails.area / 10000).toFixed(2)} hectáreas` : "No disponible"}</p>
       <p>Fecha de siembra: {cropDetails.plantingDate ? new Date(cropDetails.plantingDate).toLocaleDateString() : "No disponible"}</p>
       <p>Fecha estimada de cosecha: {cropDetails.estimatedHarvestDate ? new Date(cropDetails.estimatedHarvestDate).toLocaleDateString() : "No disponible"}</p>
-      <p>Fecha de cosecha: {cropDetails.harvestDate ? new Date(cropDetails.harvestDate).toLocaleDateString() : "NO realizada"}</p>
-
-   
+      <p>Fecha de cosecha: {harvestDate}</p>
 
       <div className="tabs">
-        {/* Botón de rendimiento comentado */}
-        {/* <button onClick={() => setActiveTab('rendimiento')} className={activeTab === 'rendimiento' ? 'active' : ''}>
-          Rendimiento
-        </button> */}
         <button onClick={() => setActiveTab('rentabilidad')} className={activeTab === 'rentabilidad' ? 'active' : ''}>
           Rentabilidad
         </button>
-        {/* Botón de Tab comentado */}
-        {/* <button onClick={() => setActiveTab('tab')} className={activeTab === 'tab' ? 'active' : ''}>
-          Tab
-        </button> */}
       </div>
 
       <div className="tab-content">
         {renderTabContent()}
       </div>
 
-      
-
       <button onClick={() => setShowExportModal(true)} className="export-button">Exportar Informe</button>
       {showExportModal && (
-        <ExportModal 
-          onClose={() => setShowExportModal(false)} 
-          cropDetails={cropDetails}
-          inputs={inputs}
-          culturalWorks={culturalWorks}
-          cultivoId={selectedCropId} // Pasa el cultivoId
-        />
+        <ExportModal
+        onClose={() => setShowExportModal(false)}
+        cropDetails={{
+          ...cropDetails,
+          varietyName,
+          lotDetails,
+          farmName: selectedFarmName,
+          farmId: cropDetails.farm?.id || cropDetails.farmId || null, // Pasamos farmId
+          farmLocation: lotDetails
+            ? `${lotDetails.ciudad || "Ciudad desconocida"} - ${lotDetails.departamento || "Departamento desconocido"}`
+            : "No disponible",
+        }}
+        inputs={inputs}
+        culturalWorks={culturalWorks}
+      />
+      
       )}
     </div>
   );

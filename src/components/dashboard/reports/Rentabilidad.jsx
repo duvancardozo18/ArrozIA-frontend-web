@@ -2,45 +2,61 @@ import React, { useState, useEffect } from 'react';
 import '../../../css/ReportSummary.scss';
 import CropInputsTable from '../../dashboard/reports/CropInputsTable';
 import CulturalWorkTable from '../../dashboard/reports/CulturalWorkTable';
-import AgriculturalInputTable from '../../dashboard/reports/AgriculturalInputTable'; // Importa el nuevo componente
-import ExportModal from './ExportModal';
+import AgriculturalInputTable from '../../dashboard/reports/AgriculturalInputTable';
 import axiosInstance from "../../../config/AxiosInstance";
 import TotalCostsTable from "../../dashboard/reports/TotalCostsTable";
 
 const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [overallTotalCost, setOverallTotalCost] = useState("no recibido");
+  const [overallTotalCost, setOverallTotalCost] = useState("no disponible");
   const [filteredCulturalWorks, setFilteredCulturalWorks] = useState([]);
+  const [production, setProduction] = useState(0); // Estado para producción
+  const [totalIncome, setTotalIncome] = useState(0); // Estado para ingresos
 
   const handleFilteredDataChange = (filteredData) => {
     setFilteredCulturalWorks(filteredData);
   };
 
   useEffect(() => {
+    // Obtener costos totales
     const fetchOverallTotalCost = async () => {
       if (!cultivoId) return;
       try {
         const response = await axiosInstance.get(`/overall-total/${cultivoId}`);
-        setOverallTotalCost(response.data.total || 2);
+        if (response.data && response.data.total !== undefined) {
+          setOverallTotalCost(response.data.total);
+        } else {
+          console.warn("La respuesta no contiene un valor total válido.");
+          setOverallTotalCost(0); // Si falla, el valor será 0 para evitar problemas de cálculo
+        }
       } catch (error) {
         console.error("Error al obtener el costo total:", error);
+        setOverallTotalCost(0); // Si falla, el valor será 0
+      }
+    };
+
+    // Obtener datos de producción
+    const fetchProductionData = async () => {
+      if (!cultivoId) return;
+      try {
+        const response = await axiosInstance.get(`/harvest/crops/${cultivoId}`);
+        const productionData = response.data.cosechas?.[0]?.cantidad_producida_cosecha || 0;
+        setProduction(productionData);
+        const incomeData = response.data.cosechas?.[0]?.venta_cosecha || 0;
+        setTotalIncome(incomeData);
+      } catch (error) {
+        console.error("Error al obtener los datos de producción:", error);
       }
     };
 
     fetchOverallTotalCost();
+    fetchProductionData();
   }, [cultivoId]);
 
-  const totalIncome = income.reduce((acc, item) => acc + item.amount, 0);
-  const totalExpenses = expenses.reduce((acc, item) => acc + item.cost, 0);
-  const utility = totalIncome - totalExpenses;
-
-  const handleExport = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  // Calcular utilidad: ingresos menos costos totales
+  const utility =
+    typeof totalIncome === "number" && typeof overallTotalCost === "number"
+      ? totalIncome - overallTotalCost
+      : "No disponible";
 
   return (
     <div className="report-summary-container">
@@ -64,14 +80,18 @@ const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }
 
         <div className="production">
           <h3>Producción</h3>
-          <p>{totalIncome} toneladas</p>
+          <p>{production} toneladas</p>
           <h3>Ingresos</h3>
           <p>${totalIncome.toLocaleString()}</p>
         </div>
 
         <div className="utility">
           <h3>Utilidad</h3>
-          <p>${utility.toLocaleString()}</p>
+          <p>
+            {typeof utility === "number"
+              ? `$${utility.toLocaleString()}`
+              : "No disponible"}
+          </p>
         </div>
 
         <div className="total-costs">
@@ -86,7 +106,7 @@ const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }
               ))}
               <tr className="total-row">
                 <td>VALOR TOTAL</td>
-                <td>${overallTotalCost.toLocaleString()}</td>
+                <td>${typeof overallTotalCost === 'number' ? overallTotalCost.toLocaleString() : overallTotalCost}</td>
               </tr>
             </tbody>
           </table>
@@ -97,26 +117,7 @@ const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }
       <TotalCostsTable cultivoId={cultivoId} />
       <CropInputsTable cultivoId={cultivoId} />
       <CulturalWorkTable cultivoId={cultivoId} onFilteredDataChange={handleFilteredDataChange} />
-      <AgriculturalInputTable /> {/* Nueva tabla de insumos agrícolas */}
-
-
-      {/* Botón para abrir el modal */}
-      <div className="export-button-container">
-        <button className="export-button" onClick={handleExport}>
-          Exportar Informe
-        </button>
-      </div>
-
-      {/* Modal para exportación */}
-      {isModalOpen && (
-        <ExportModal
-          onClose={handleCloseModal}
-          cropDetails={{ plantingDate, harvestDate, expenses, income }}
-          inputs={[]} // Suponiendo que los insumos vienen desde otra fuente
-          culturalWorks={filteredCulturalWorks}
-          cultivoId={cultivoId}
-        />
-      )}
+      {/*<AgriculturalInputTable />*/}
     </div>
   );
 };

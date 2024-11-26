@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import SpaIcon from '@mui/icons-material/Spa';
+import React, { useState, useEffect, useRef } from "react";
+import SpaIcon from "@mui/icons-material/Spa";
 import axiosInstance from "../../../config/AxiosInstance";
-import CropDetails from './CropDetails';
-import styled from 'styled-components';
+import CropDetails from "./CropDetails";
+import styled from "styled-components";
 
 // Styled components
 const StyledSelect = styled.select`
@@ -43,89 +43,104 @@ const CropNavigation = styled.div`
 `;
 
 const ReportsView = () => {
-  const [farms, setFarms] = useState([]);
-  const [crops, setCrops] = useState([]);
-  const [selectedFarmId, setSelectedFarmId] = useState(null);
-  const [selectedCrop, setSelectedCrop] = useState(null);
+  const [farms, setFarms] = useState([]); // Lista de fincas
+  const [crops, setCrops] = useState([]); // Cultivos por finca
+  const [selectedFarmId, setSelectedFarmId] = useState(null); // ID de la finca seleccionada
+  const [selectedFarmName, setSelectedFarmName] = useState(""); // Nombre de la finca seleccionada
+  const [selectedCrop, setSelectedCrop] = useState(null); // Cultivo seleccionado
   const scrollRef = useRef(null);
 
+  // Obtener las fincas al cargar
   useEffect(() => {
     const fetchFarms = async () => {
       try {
-        const response = await axiosInstance.get('/farms');
+        const response = await axiosInstance.get("/farms");
         setFarms(response.data);
       } catch (error) {
-        console.error('Error fetching farms:', error);
+        console.error("Error fetching farms:", error);
       }
     };
     fetchFarms();
   }, []);
 
+  // Obtener los cultivos de la finca seleccionada
   const fetchCropsForFarm = async (farmId) => {
     try {
       const response = await axiosInstance.get(`/farms/${farmId}/crops`);
-      console.log("Cultivos obtenidos:", response.data); // Verificar datos
       setCrops(response.data);
     } catch (error) {
-      console.error('Error fetching crops:', error);
+      console.error("Error fetching crops:", error);
     }
   };
 
+  // Manejar selección de la finca
   const handleFarmSelection = (event) => {
     const farmId = event.target.value;
+    const farmName = farms.find((farm) => farm.id === parseInt(farmId))?.nombre || "No disponible";
     setSelectedFarmId(farmId);
+    setSelectedFarmName(farmName);
     setSelectedCrop(null);
     fetchCropsForFarm(farmId);
   };
 
+  // Manejar selección de un cultivo
   const handleCropSelect = (cropId) => {
-    console.log("Cultivo seleccionado:", cropId); // Verificar qué valor se está pasando
     setSelectedCrop(cropId);
   };
-  
-  
 
   const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -150, behavior: 'smooth' });
+    scrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
   };
 
   const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+    scrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
   };
 
   return (
     <div className="reports-view">
       <h2>Reportes</h2>
-      <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ''}>
-        <option value="" disabled>Selecciona una finca</option>
+      <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ""}>
+        <option value="" disabled>
+          Selecciona una finca
+        </option>
         {farms.map((farm) => (
-          <option key={farm.id} value={farm.id}>{farm.nombre}</option>
+          <option key={farm.id} value={farm.id}>
+            {farm.nombre}
+          </option>
         ))}
       </StyledSelect>
 
       {selectedFarmId && crops.length > 0 ? (
         <>
           <CropNavigation>
-            <button className="arrow-button green" onClick={scrollLeft}>{"<"}</button>
+            <button className="arrow-button green" onClick={scrollLeft}>
+              {"<"}
+            </button>
             <div className="crop-navigation-scroll" ref={scrollRef}>
               {crops.map((crop) => (
                 <div
                   key={crop.id}
-                  className={`crop-card ${selectedCrop === crop.id ? 'selected' : ''}`}
-                  onClick={() => handleCropSelect(crop.id || "ID no válido")}
+                  className={`crop-card ${selectedCrop === crop.id ? "selected" : ""}`}
+                  onClick={() => handleCropSelect(crop.id)}
                 >
                   <div className="icon-container">
-                    <SpaIcon style={{ color: 'white', fontSize: 24 }} />
+                    <SpaIcon style={{ color: "white", fontSize: 24 }} />
                   </div>
                   <span>{crop.cropName || "Nombre no disponible"}</span>
                 </div>
               ))}
             </div>
-            <button className="arrow-button green" onClick={scrollRight}>{">"}</button>
+            <button className="arrow-button green" onClick={scrollRight}>
+              {">"}
+            </button>
           </CropNavigation>
 
           {selectedCrop ? (
-            <CropDetails selectedCropId={selectedCrop} onClose={() => setSelectedCrop(null)} />
+            <CropDetails
+              selectedCropId={selectedCrop}
+              selectedFarmName={selectedFarmName} // Pasar el nombre de la finca
+              onClose={() => setSelectedCrop(null)}
+            />
           ) : (
             <p>Selecciona un cultivo para ver los detalles...</p>
           )}
