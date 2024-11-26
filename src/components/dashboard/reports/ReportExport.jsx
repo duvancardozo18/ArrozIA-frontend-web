@@ -1,14 +1,24 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import axiosInstance from "../../../config/AxiosInstance"; // Importamos axiosInstance
 //import * as XLSX from "xlsx";
 import logoBase64 from "../../../assets/images/logoBase64"; // Importa el logo como Base64
 import siembraBase64 from "../../../assets/images/siembraBase64"; // Icono de siembra en Base64
 import cosechaBase64 from "../../../assets/images/cosechaBase64"; // Icono de cosecha en Base64
 
-export const generatePDF = (cropDetails, inputs = [], culturalWorks = [], totalInputCost = 0, totalWorkValue = 0) => {
+export const generatePDF = async (
+  cropDetails,
+  inputs = [],
+  culturalWorks = [],
+  totalInputCost = 0,
+  totalWorkValue = 0,
+  production = 0,
+  income = 0,
+  utility = 0
+) => {
   const doc = new jsPDF();
 
-  // Agregar el logo y el título del reporte
+  // Agregar el logo y título
   doc.addImage(logoBase64, "PNG", 10, 10, 30, 30);
   doc.setFontSize(22);
   doc.setTextColor(34, 139, 34);
@@ -17,21 +27,41 @@ export const generatePDF = (cropDetails, inputs = [], culturalWorks = [], totalI
   doc.setTextColor(0, 0, 0);
   doc.text("REPORTE - FINANCIERO", 80, 35);
 
-  // Agregar fecha y hora de generación
+  // Fecha de generación
   const currentDate = new Date().toLocaleString();
   doc.setFontSize(12);
   doc.text(`GENERADO: ${currentDate}`, 80, 42);
 
-  // Información general
+  // Obtener información de la finca desde el endpoint /farm/{farm_id}
+  // Obtener información de la finca desde el endpoint /farm/{farm_id}
+let farmLocation = "No disponible";
+try {
+  const farmId = cropDetails.farmId || null; // Usamos el farmId pasado desde CropDetails
+  console.log("Fetching location for farmId:", farmId); // Para depuración
+  if (farmId) {
+    const response = await axiosInstance.get(`/farm/${farmId}`);
+    console.log("Farm API response:", response.data); // Verifica la respuesta de la API
+    const { ciudad, departamento } = response.data;
+    farmLocation = `${ciudad || "Ciudad desconocida"} - ${departamento || "Departamento desconocido"}`;
+  } else {
+    console.warn("No farmId provided in cropDetails.");
+  }
+} catch (error) {
+  console.error("Error fetching farm location:", error);
+}
+
+
+  // Información General
   doc.setFontSize(12);
-  doc.text(`Ubicación: ${cropDetails.location || "No disponible"}`, 14, 55);
-  doc.text(`Finca: ${cropDetails.farm?.cropName || "No disponible"}`, 14, 63);
+  doc.text(`Ubicación: ${farmLocation}`, 14, 55);
+  doc.text(`Finca: ${cropDetails.farmName || "No disponible"}`, 14, 63);
   doc.text(`Lote: ${cropDetails.plotId || "No disponible"}`, 14, 71);
   doc.text(`Cultivo: ${cropDetails.cropName || "No disponible"}`, 100, 55);
   doc.text(`Área Cultivada: ${cropDetails.cultivatedArea || "No disponible"} ${cropDetails.areaUnit || ""}`, 100, 63);
-  doc.text(`Variedad: ${cropDetails.varietyId || "No disponible"}`, 100, 71);
+  doc.text(`Variedad: ${cropDetails.varietyName || "No disponible"}`, 100, 71);
 
-  // Fechas de siembra y cosecha con íconos
+  // Fechas de siembra y cosecha
+  doc.setFontSize(12);
   doc.text("Fecha de siembra:", 14, 85);
   doc.addImage(siembraBase64, "PNG", 60, 75, 10, 10);
   doc.text(cropDetails.plantingDate ? new Date(cropDetails.plantingDate).toLocaleDateString() : "No disponible", 75, 85);
@@ -40,15 +70,21 @@ export const generatePDF = (cropDetails, inputs = [], culturalWorks = [], totalI
   doc.addImage(cosechaBase64, "PNG", 60, 90, 10, 10);
   doc.text(cropDetails.estimatedHarvestDate ? new Date(cropDetails.estimatedHarvestDate).toLocaleDateString() : "No disponible", 75, 100);
 
-  // Sección de costos totales
-  doc.text("Costos totales", 14, 115);
+  // Producción e ingresos
+  doc.text("Producción", 14, 115);
+  doc.text(`${production} toneladas`, 75, 115);
+  doc.text("Ingresos", 14, 125);
+  doc.text(`$${income.toLocaleString()}`, 75, 125);
+
+  // Costos totales
+  doc.text("Costos totales", 14, 140);
   autoTable(doc, {
-    startY: 120,
+    startY: 145,
     head: [["Descripción", "Valor"]],
     body: [
-      ["Insumos", `$${totalInputCost.toLocaleString() || 0}`],
-      ["Labores Culturales", `$${totalWorkValue.toLocaleString() || 0}`],
-      ["Valor Total", `$${(totalInputCost + totalWorkValue).toLocaleString() || 0}`],
+      ["Insumos", `$${totalInputCost.toLocaleString()}`],
+      ["Labores Culturales", `$${totalWorkValue.toLocaleString()}`],
+      ["Valor Total", `$${(totalInputCost + totalWorkValue).toLocaleString()}`],
     ],
     theme: "grid",
     styles: { halign: "right" },
@@ -71,15 +107,11 @@ export const generatePDF = (cropDetails, inputs = [], culturalWorks = [], totalI
     styles: { halign: "center" },
   });
 
-  // Mostrar total de insumos
-  const finalYInputs = doc.lastAutoTable.finalY + 10;
-  doc.text(`Valor Total de Insumos: $${totalInputCost.toLocaleString() || 0}`, 14, finalYInputs);
-
   // Tabla de labores culturales
-  const finalYInputsTotal = finalYInputs + 10;
-  doc.text("Labores Culturales", 14, finalYInputsTotal);
+  const finalYInputs = doc.lastAutoTable.finalY + 10;
+  doc.text("Labores Culturales", 14, finalYInputs);
   autoTable(doc, {
-    startY: finalYInputsTotal + 5,
+    startY: finalYInputs + 5,
     head: [["Fecha Inicio", "Fecha Fin", "Actividad", "Maquinaria", "Operario", "Descripción", "Valor"]],
     body: culturalWorks.map((work) => [
       work.fecha_inicio ? new Date(work.fecha_inicio).toLocaleDateString() : "No disponible",
@@ -94,13 +126,13 @@ export const generatePDF = (cropDetails, inputs = [], culturalWorks = [], totalI
     styles: { halign: "center" },
   });
 
-  // Mostrar total de labores culturales
-  const finalYWorks = doc.lastAutoTable.finalY + 10;
-  doc.text(`Valor Total de Labores Culturales: $${totalWorkValue.toLocaleString() || 0}`, 14, finalYWorks);
-
   // Guardar PDF
   doc.save(`Reporte_Financiero_${cropDetails.cropName || "No disponible"}.pdf`);
 };
+
+
+
+
 
 export const generateXLS = (cropDetails, inputs = [], culturalWorks = [], totalInputCost = 0, totalWorkValue = 0) => {
   const workbook = XLSX.utils.book_new();
