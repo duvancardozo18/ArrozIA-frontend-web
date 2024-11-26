@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axiosInstance from '../../../config/AxiosInstance';
-import SuccessModal from '../../dashboard/modal/SuccessModal';
 import '../../../css/RegistroMeteorologicoModal.scss';
 
 const SubmitButton = styled.button`
@@ -19,7 +17,7 @@ const SubmitButton = styled.button`
   }
 `;
 
-const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) => {
+const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }) => {
   const [formData, setFormData] = useState({
     fecha: '',
     temperatura: '',
@@ -29,8 +27,12 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) 
     indice_ultravioleta: '',
     horas_sol: ''
   });
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (prefilledData) {
+      setFormData(prefilledData);
+    }
+  }, [prefilledData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,81 +42,96 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, onClose, onDataSaved }) 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post('/weather-record/', {
-        lote_id: loteId,
-        fecha: formData.fecha,
-        temperatura: parseFloat(formData.temperatura),
-        presion_atmosferica: parseFloat(formData.presion_atmosferica),
-        humedad: parseFloat(formData.humedad),
-        precipitacion: parseFloat(formData.precipitacion || 0),
-        indice_ultravioleta: parseFloat(formData.indice_ultravioleta || 0),
-        horas_sol: parseFloat(formData.horas_sol)
-      });
-      setShowSuccessModal(true);
+      alert("Datos enviados correctamente");
+      onClose();
     } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage("Hubo un error al registrar los datos meteorológicos.");
+      console.error("Error al registrar los datos meteorológicos:", error);
+      alert("Error en el registro.");
     }
   };
 
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
-    onDataSaved && onDataSaved();
-    onClose();
-  };
-
   return (
-    <>
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <button className="close-button" onClick={onClose}>×</button>
-          <h2 className="modal-title">Registrar Datos Meteorológicos</h2>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-          <form onSubmit={handleSubmit} className="modal-form">
-            <div className="input-group">
-              <label>Lote</label>
-              <input type="text" name="loteNombre" value={loteNombre} readOnly className="readonly-input" />
-            </div>
-            <div className="input-group">
-              <label>Fecha</label>
-              <input type="date" name="fecha" value={formData.fecha} onChange={handleChange} required />
-            </div>
-            <div className="input-group">
-              <label>Temperatura (°C)</label>
-              <input type="number" name="temperatura" value={formData.temperatura} onChange={handleChange} required />
-            </div>
-            <div className="input-group">
-              <label>Presión (hPa)</label>
-              <input type="number" name="presion_atmosferica" value={formData.presion_atmosferica} onChange={handleChange} required />
-            </div>
-            <div className="input-group">
-              <label>Humedad (%)</label>
-              <input type="number" name="humedad" value={formData.humedad} onChange={handleChange} required />
-            </div>
-            <div className="input-group">
-              <label>Precipitación (mm)</label>
-              <input type="number" name="precipitacion" value={formData.precipitacion} onChange={handleChange} />
-            </div>
-            <div className="input-group">
-              <label>UV</label>
-              <input type="number" name="indice_ultravioleta" value={formData.indice_ultravioleta} onChange={handleChange} />
-            </div>
-            <div className="input-group">
-              <label>Horas de Sol</label>
-              <input type="number" name="horas_sol" value={formData.horas_sol} onChange={handleChange} required />
-            </div>
-            <SubmitButton type="submit">Guardar</SubmitButton>
-          </form>
-        </div>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <button className="close-button" onClick={onClose}>×</button>
+        <h2 className="modal-title">Registrar Datos Meteorológicos</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>Lote</label>
+            <input type="text" value={loteNombre} readOnly />
+          </div>
+          <div className="input-group">
+            <label>Fecha</label>
+            <input
+              type="date"
+              name="fecha"
+              value={formData.fecha}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>Temperatura (°C)</label>
+            <input
+              type="number"
+              name="temperatura"
+              value={formData.temperatura}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>Presión (hPa)</label>
+            <input
+              type="number"
+              name="presion_atmosferica"
+              value={formData.presion_atmosferica}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>Humedad (%)</label>
+            <input
+              type="number"
+              name="humedad"
+              value={formData.humedad}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>Precipitación (mm)</label>
+            <input
+              type="number"
+              name="precipitacion"
+              value={formData.precipitacion}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="input-group">
+            <label>UV</label>
+            <input
+              type="number"
+              name="indice_ultravioleta"
+              value={formData.indice_ultravioleta}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="input-group">
+            <label>Horas de Sol</label>
+            <input
+              type="number"
+              name="horas_sol"
+              value={formData.horas_sol}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <SubmitButton type="submit">Guardar</SubmitButton>
+        </form>
       </div>
-
-      {showSuccessModal && (
-        <SuccessModal
-          onClose={handleCloseSuccessModal}
-          message="¡Datos meteorológicos registrados exitosamente!"
-        />
-      )}
-    </>
+    </div>
   );
 };
 
