@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import '../../../css/RegistroMeteorologicoModal.scss';
+import axiosInstance from '../../../config/AxiosInstance';
+import SuccessModal from '../../dashboard/modal/SuccessModal';
 
 const SubmitButton = styled.button`
   width: 100%;
@@ -17,7 +19,7 @@ const SubmitButton = styled.button`
   }
 `;
 
-const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }) => {
+const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose, fetchWeatherRecords }) => {
   const [formData, setFormData] = useState({
     fecha: '',
     temperatura: '',
@@ -27,6 +29,8 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
     indice_ultravioleta: '',
     horas_sol: ''
   });
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     if (prefilledData) {
@@ -41,8 +45,23 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Datos a enviar:", formData);
+    console.log('loteId:', loteId);  // Verifica el valor de loteId
+
     try {
-      alert("Datos enviados correctamente");
+      const response = await axiosInstance.post(`/meteorology/manual/${loteId}`, formData);
+      console.log("Datos enviados a la BD", response);
+      
+      // Mostrar el modal de éxito
+      setShowSuccessModal(true);
+
+      // Refrescar los registros meteorológicos después de guardar los datos
+      fetchWeatherRecords(loteId);
+
+      // Limpiar el localStorage si los datos meteorológicos se almacenan ahí
+      localStorage.removeItem("weatherData");  // Cambia 'weatherData' por la clave que estés utilizando
+
+      // Cerrar el modal principal después de enviar los datos
       onClose();
     } catch (error) {
       console.error("Error al registrar los datos meteorológicos:", error);
@@ -50,19 +69,25 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
     }
   };
 
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    onClose();  // Cerrar el modal principal después de mostrar el de éxito
+  };
+
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="close-button" onClick={onClose}>×</button>
-        <h2 className="modal-title">Registrar Datos Meteorológicos</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label>Lote</label>
-            <input type="text" value={loteNombre} readOnly />
-          </div>
-          <div className="input-group">
-            <label>Fecha</label>
-            <input
+    <>
+      <div className="modal-overlay">
+       <div className="modal-content">
+         <button className="close-button" onClick={onClose}>×</button>
+         <h2 className="modal-title">Registrar Datos Meteorológicos</h2>
+         <form onSubmit={handleSubmit}>
+           <div className="input-group">
+             <label>Lote</label>
+             <input type="text" value={loteNombre} readOnly />
+           </div>
+           <div className="input-group">
+             <label>Fecha</label>
+             <input
               type="date"
               name="fecha"
               value={formData.fecha}
@@ -76,8 +101,16 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
               type="number"
               name="temperatura"
               value={formData.temperatura}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (parseFloat(value) >= -99.99 && parseFloat(value) <= 999.99)) {
+                  handleChange(e);
+                }
+              }}
               required
+              step="0.01"
+              min="-99.99"
+              max="999.99"
             />
           </div>
           <div className="input-group">
@@ -86,8 +119,16 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
               type="number"
               name="presion_atmosferica"
               value={formData.presion_atmosferica}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (parseFloat(value) >= 0.00 && parseFloat(value) <= 9999.99)) {
+                  handleChange(e);
+                }
+              }}
               required
+              step="0.01"
+              min="0.00"
+              max="9999.99"
             />
           </div>
           <div className="input-group">
@@ -96,8 +137,16 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
               type="number"
               name="humedad"
               value={formData.humedad}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (parseFloat(value) >= 0.00 && parseFloat(value) <= 99.99)) {
+                  handleChange(e);
+                }
+              }}
               required
+              step="0.01"
+              min="0.00"
+              max="99.99"
             />
           </div>
           <div className="input-group">
@@ -106,7 +155,15 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
               type="number"
               name="precipitacion"
               value={formData.precipitacion}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (parseFloat(value) >= 0.00 && parseFloat(value) <= 99.99)) {
+                  handleChange(e);
+                }
+              }}
+              step="0.01"
+              min="0.00"
+              max="99.99"
             />
           </div>
           <div className="input-group">
@@ -115,7 +172,15 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
               type="number"
               name="indice_ultravioleta"
               value={formData.indice_ultravioleta}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (parseFloat(value) >= 0.00 && parseFloat(value) <= 9.99)) {
+                  handleChange(e);
+                }
+              }}
+              step="0.01"
+              min="0.00"
+              max="9.99"
             />
           </div>
           <div className="input-group">
@@ -124,14 +189,30 @@ const CreateWeatherRecordModal = ({ loteId, loteNombre, prefilledData, onClose }
               type="number"
               name="horas_sol"
               value={formData.horas_sol}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (parseFloat(value) >= 0.00 && parseFloat(value) <= 9.99)) {
+                  handleChange(e);
+                }
+              }}
               required
+              step="0.01"
+              min="0.00"
+              max="9.99"
             />
           </div>
           <SubmitButton type="submit">Guardar</SubmitButton>
         </form>
       </div>
-    </div>
+      </div>
+
+      {showSuccessModal && (
+        <SuccessModal 
+          message="Datos meteorológicos registrados con éxito."
+          onClose={handleCloseSuccessModal} 
+        />
+      )}
+    </>
   );
 };
 
