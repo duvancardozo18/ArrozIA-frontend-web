@@ -6,8 +6,8 @@ import NewCrop from '../crops/CreateCropModal';
 import LoanMessage from './LoanMessage';
 import VegetativeCard from '../vegetativecycle/VegetativeCard';
 import CalendarComponent from './CalendarComponent';
-import EventCard from './EventCard';
 import TaskDialog from './TaskDialog';
+import TaskTable from './TaskTable'; // Nuevo componente importado
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import SpaIcon from '@mui/icons-material/Spa';
@@ -76,15 +76,18 @@ const ViewLand = ({ onSelectAllotment }) => {
           setCultivoNombre(cropResponse.data[0].cropName);
           setCultivoId(fetchedCropId);
 
+          // Console log para ver el ID del cultivo
+          console.log('Cultivo ID:', fetchedCropId);
+
           const taskResponse = await axiosInstance.get(`/crops/${fetchedCropId}/tasks`);
           const formattedTasks = taskResponse.data.map((task) => ({
             title: task.descripcion,
             start: new Date(task.fecha_estimada),
             end: new Date(task.fecha_estimada),
             id: task.id,
-            usuario_id: task.usuario_id, // Añadir el usuario_id
+            usuario_id: task.usuario_id, 
             labor_cultural_id: task.labor_cultural_id,
-            es_mecanizable: task.es_mecanizable, // Añadir es_mecanizable
+            es_mecanizable: task.es_mecanizable, 
           }));
           setTaskEvents(formattedTasks);
         }
@@ -116,12 +119,10 @@ const ViewLand = ({ onSelectAllotment }) => {
     return <div>No se encontró información válida</div>;
   }
 
-  console.log('Tareas enviadas a EventCard desde ViewLand:', taskEvents); // Log para verificar las tareas enviadas a EventCard
-
   return (
     <div>
       <h1>{landDetails.nombre}</h1>
-      <p>Finca: {landDetails.finca_id}</p>
+      <p>Finca: {landDetails.finca_nombre}</p>
 
       {cropDetails?.length === 0 ? (
         <>
@@ -140,7 +141,7 @@ const ViewLand = ({ onSelectAllotment }) => {
               <Grid item xs={4} container direction="column" alignItems="center">
                 <SpaIcon sx={{ fontSize: 40 }} color="primary" />
                 <Typography variant="body1" color="textSecondary" align="center">
-                  Variedad: {cropDetails[0].varietyId || 'Desconocida'}
+                  Variedad: {cropDetails[0].varietyName || 'Desconocida'}
                 </Typography>
               </Grid>
               <Grid item xs={4} container direction="column" alignItems="center">
@@ -160,40 +161,43 @@ const ViewLand = ({ onSelectAllotment }) => {
         </Card>
       )}
 
-      <ButtonContainer>
-        <StyledButton
-          onClick={() => handleSectionChange('laboresCulturales')}
-          variant={activeSection === 'laboresCulturales' ? 'contained' : 'outlined'}
-        >
-          Labores Culturales
-        </StyledButton>
-        <StyledButton
-          onClick={() => handleSectionChange('cicloVegetativo')}
-          variant={activeSection === 'cicloVegetativo' ? 'contained' : 'outlined'}
-        >
-          Ciclo Vegetativo
-        </StyledButton>
-        <StyledButton
-          onClick={() => handleSectionChange('gastos')}
-          variant={activeSection === 'gastos' ? 'contained' : 'outlined'}
-        >
-          Gastos
-        </StyledButton>
-        <StyledButton
-          onClick={() => handleSectionChange('cosecha')}
-          variant={activeSection === 'cosecha' ? 'contained' : 'outlined'}
-        >
-          Cosecha
-        </StyledButton>
-      </ButtonContainer>
+      {cropDetails?.length > 0 && (
+        <ButtonContainer>
+          <StyledButton
+            onClick={() => handleSectionChange('laboresCulturales')}
+            variant={activeSection === 'laboresCulturales' ? 'contained' : 'outlined'}
+          >
+            Labores Culturales
+          </StyledButton>
+          <StyledButton
+            onClick={() => handleSectionChange('cicloVegetativo')}
+            variant={activeSection === 'cicloVegetativo' ? 'contained' : 'outlined'}
+          >
+            Ciclo Vegetativo
+          </StyledButton>
+          <StyledButton
+            onClick={() => handleSectionChange('gastos')}
+            variant={activeSection === 'gastos' ? 'contained' : 'outlined'}
+          >
+            Gastos
+          </StyledButton>
+          <StyledButton
+            onClick={() => handleSectionChange('cosecha')}
+            variant={activeSection === 'cosecha' ? 'contained' : 'outlined'}
+          >
+            Cosecha
+          </StyledButton>
+        </ButtonContainer>
+      )}
 
-      {activeSection === 'laboresCulturales' && (
+      {/* Mostrar solo si hay un cultivo */}
+      {cropDetails?.length > 0 && activeSection === 'laboresCulturales' && (
         <>
           <ButtonContainer>
             <GreenButton onClick={handleOpenTaskDialog}>Asignar Labor</GreenButton>
           </ButtonContainer>
-          <CalendarComponent events={taskEvents} />
-          <EventCard events={taskEvents} />
+          <CalendarComponent events={taskEvents} cultivoId={cultivoId} />
+          <TaskTable tasks={taskEvents} cultivoId={cultivoId} />
         </>
       )}
       {activeSection === 'cicloVegetativo' && <VegetativeCard plantingDate={plantingDate} />}
