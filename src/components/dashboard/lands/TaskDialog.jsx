@@ -123,15 +123,20 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
           axiosInstance.get("/users"),
           axiosInstance.get("/machineries"),
         ]);
-
-        setLabors(laborsData.data);
-        setInputs(inputsData.data);
-        setUsers(usersData.data);
-        setMachineries(machineriesData.data);
+    
+        console.log("Labors Data:", laborsData.data); // Log para verificar los datos de labores culturales
+        console.log("Inputs Data:", inputsData.data); // Log para verificar los datos de insumos
+        console.log("Users Data:", usersData.data); // Log para verificar los datos de usuarios
+        console.log("Machineries Data:", machineriesData.data); // Log para verificar los datos de maquinarias
+    
+        setLabors(laborsData.data || []); // Configurar datos o array vacío si no hay datos
+        setInputs(inputsData.data || []); 
+        setUsers(usersData.data || []);
+        setMachineries(machineriesData.data || []);
       } catch (error) {
         console.error("Error al cargar datos:", error);
       }
-    };
+    };    
 
     fetchData();
   }, []);
