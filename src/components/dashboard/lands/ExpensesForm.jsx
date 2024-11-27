@@ -179,7 +179,7 @@ const ExpensesForm = ({ cultivoId, onSave }) => {
 
   return (
     <>
-      <AddButton onClick={() => setIsModalOpen(true)}>Agregar Costo</AddButton>
+      {/* <AddButton onClick={() => setIsModalOpen(true)}>Agregar Costo</AddButton> */}
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>

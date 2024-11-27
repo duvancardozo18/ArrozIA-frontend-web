@@ -18,38 +18,34 @@ const ModalOverlay = styled.div`
 
 const ModalContent = styled.div`
   background: white;
-  padding: 30px;
+  padding: 20px;
   border-radius: 20px;
-  width: 450px;
-  max-width: 90%;
+  width: 500px;
+  max-height: 90%;
+  overflow-y: auto;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
   position: relative;
+
+  @media (max-width: 768px) {
+    width: 90%;
+  }
 `;
 
 const Title = styled.h2`
   text-align: center;
   font-size: 24px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-
-  &:hover {
-    color: #ff6b6b;
-  }
+const SectionTitle = styled.h3`
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #555;
+  text-decoration: underline;
 `;
 
 const InputGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 
   label {
     display: block;
@@ -93,6 +89,22 @@ const SubmitButton = styled.button`
   }
 `;
 
+const CloseButton = styled.button`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+
+  &:hover {
+    color: #ff6b6b;
+  }
+`;
+
 const AddButton = styled.button`
   background-color: #007bff;
   color: white;
@@ -108,7 +120,7 @@ const AddButton = styled.button`
   }
 `;
 
-const HarvestForm = ({ cultivoId, onSave }) => {
+const HarvestForm = ({ cultivoId, onSave, fetchHarvests }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     fecha_cosecha: "",
@@ -123,112 +135,76 @@ const HarvestForm = ({ cultivoId, onSave }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (value.length > 50) {
-      setErrors((prev) => ({ ...prev, [name]: "No puede exceder los 50 caracteres." }));
-    } else {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-
     setFormData({ ...formData, [name]: value });
+    setErrors((prev) => ({ ...prev, [name]: "" })); // Limpia errores al escribir
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validar campos vacíos
-    const newErrors = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      if (!value.trim()) {
-        newErrors[key] = "Este campo no puede estar vacío.";
-      }
-    });
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      return;
-    }
-
     try {
+      // Verificar si ya existe una cosecha para el cultivo
+      const existingHarvests = await axiosInstance.get(`/harvest/crops/${cultivoId}`);
+      if (existingHarvests.data.cosechas.length > 0) {
+        alert("Solo puedes registrar una cosecha por cultivo.");
+        return;
+      }
+
+      const newErrors = {};
+      Object.entries(formData).forEach(([key, value]) => {
+        if (!value.trim()) {
+          newErrors[key] = "Este campo no puede estar vacío.";
+        }
+      });
+
+      setErrors(newErrors);
+
+      if (Object.keys(newErrors).length > 0) {
+        return;
+      }
+
       const response = await axiosInstance.post("/harvest/", {
-        ...formData,
+        cultivo_id: cultivoId,
+        fecha_cosecha: formData.fecha_cosecha,
         precio_carga_mercado: parseFloat(formData.precio_carga_mercado),
         gasto_transporte_cosecha: parseFloat(formData.gasto_transporte_cosecha),
         gasto_recoleccion: parseFloat(formData.gasto_recoleccion),
         cantidad_producida_cosecha: parseFloat(formData.cantidad_producida_cosecha),
         venta_cosecha: parseFloat(formData.venta_cosecha),
-        cultivo_id: cultivoId,
       });
 
       if (response.status === 200) {
         setShowSuccessModal(true);
-        setErrors({}); // Limpia errores en caso de éxito
+        setErrors({});
         onSave(response.data);
-        setIsModalOpen(false); // Cierra el modal solo si se registra correctamente
+        setIsModalOpen(false);
+
+        // Refrescar los datos en la tabla
+        fetchHarvests();
       }
     } catch (error) {
       console.error("Error al registrar la cosecha:", error);
     }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setErrors({}); // Limpia errores al cerrar el modal
-  };
-
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
-  };
-
   return (
     <>
-      <AddButton onClick={() => setIsModalOpen(true)}>Agregar Cosecha</AddButton>
+      {/* <AddButton onClick={() => setIsModalOpen(true)}>Agregar Cosecha</AddButton> */}
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
-            <CloseButton onClick={handleCloseModal}>×</CloseButton>
+            <CloseButton onClick={() => setIsModalOpen(false)}>×</CloseButton>
             <Title>Registrar Cosecha</Title>
             <form onSubmit={handleSubmit}>
+              <SectionTitle>Producción</SectionTitle>
               <InputGroup>
-                <label>Fecha Cosecha</label>
+                <label>Fecha de Cosecha</label>
                 <input
                   type="date"
                   name="fecha_cosecha"
                   value={formData.fecha_cosecha}
                   onChange={handleChange}
                 />
-                {errors.fecha_cosecha && <p>{errors.fecha_cosecha}</p>}
-              </InputGroup>
-              <InputGroup>
-                <label>Precio Carga Mercado</label>
-                <input
-                  type="number"
-                  name="precio_carga_mercado"
-                  value={formData.precio_carga_mercado}
-                  onChange={handleChange}
-                />
-                {errors.precio_carga_mercado && <p>{errors.precio_carga_mercado}</p>}
-              </InputGroup>
-              <InputGroup>
-                <label>Gasto Transporte</label>
-                <input
-                  type="number"
-                  name="gasto_transporte_cosecha"
-                  value={formData.gasto_transporte_cosecha}
-                  onChange={handleChange}
-                />
-                {errors.gasto_transporte_cosecha && <p>{errors.gasto_transporte_cosecha}</p>}
-              </InputGroup>
-              <InputGroup>
-                <label>Gasto Recolección</label>
-                <input
-                  type="number"
-                  name="gasto_recoleccion"
-                  value={formData.gasto_recoleccion}
-                  onChange={handleChange}
-                />
-                {errors.gasto_recoleccion && <p>{errors.gasto_recoleccion}</p>}
               </InputGroup>
               <InputGroup>
                 <label>Cantidad Producida</label>
@@ -238,18 +214,48 @@ const HarvestForm = ({ cultivoId, onSave }) => {
                   value={formData.cantidad_producida_cosecha}
                   onChange={handleChange}
                 />
-                {errors.cantidad_producida_cosecha && <p>{errors.cantidad_producida_cosecha}</p>}
               </InputGroup>
               <InputGroup>
-                <label>Venta Cosecha</label>
+                <label>Valor de la Cosecha</label>
                 <input
                   type="number"
                   name="venta_cosecha"
                   value={formData.venta_cosecha}
                   onChange={handleChange}
                 />
-                {errors.venta_cosecha && <p>{errors.venta_cosecha}</p>}
               </InputGroup>
+
+              <SectionTitle>Gastos</SectionTitle>
+              <InputGroup>
+                <label>Precio de Recolección</label>
+                <input
+                  type="number"
+                  name="gasto_recoleccion"
+                  value={formData.gasto_recoleccion}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
+                <label>Precio de Transporte de Cosecha</label>
+                <input
+                  type="number"
+                  name="gasto_transporte_cosecha"
+                  value={formData.gasto_transporte_cosecha}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+
+              <SectionTitle>Mercado</SectionTitle>
+              <InputGroup>
+                <label>Valor Unitario de Compra de la Carga</label>
+                <input
+                  type="number"
+                  name="precio_carga_mercado"
+                  value={formData.precio_carga_mercado}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+
               <SubmitButton type="submit">Guardar Cosecha</SubmitButton>
             </form>
           </ModalContent>
@@ -258,7 +264,7 @@ const HarvestForm = ({ cultivoId, onSave }) => {
       {showSuccessModal && (
         <SuccessModal
           show={showSuccessModal}
-          onClose={handleCloseSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
           message="¡Cosecha registrada con éxito!"
         />
       )}
