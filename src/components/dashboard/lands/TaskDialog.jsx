@@ -71,6 +71,18 @@ const StyledTextField = styled(TextField)`
   }
 `;
 
+const StyledDisabledTextField = styled(TextField)`
+  && {
+    .MuiInputBase-input {
+      color: #9e9e9e; /* Cambia el color del texto */
+    }
+    .MuiOutlinedInput-notchedOutline {
+      border-color: #d3d3d3; /* Cambia el color del borde */
+    }
+  }
+`;
+
+
 const StyledFormControl = styled(FormControl)`
   && {
     .MuiOutlinedInput-root {
@@ -99,7 +111,8 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
   const [task, setTask] = useState({
     title: "",
     start: "",
-    tiempoHora: "",
+    costoLabor: "", // Campo para el costo de la labor
+    cantidadInsumo: "", // Nuevo campo para la cantidad de insumo
     esMecanizable: false,
     laborCulturalId: "",
     insumoAgricolaId: "",
@@ -145,7 +158,8 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
     const newErrors = {};
 
     if (!task.title) newErrors.title = "Descripción requerida";
-    if (!task.tiempoHora) newErrors.tiempoHora = "Tiempo en horas requerido";
+    if (!task.costoLabor) newErrors.costoLabor = "Costo de la labor requerido";
+    if (!task.cantidadInsumo) newErrors.cantidadInsumo = "Cantidad de insumo requerida";
     if (!task.start) newErrors.start = "Fecha estimada requerida";
     if (!task.laborCulturalId) newErrors.laborCulturalId = "Labor cultural requerida";
     if (!task.insumoAgricolaId) newErrors.insumoAgricolaId = "Insumo requerido";
@@ -170,9 +184,10 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
       labor_cultural_id: task.laborCulturalId,
       insumo_agricola_id: task.insumoAgricolaId,
       usuario_id: task.usuarioId,
-      tiempo_hora: task.tiempoHora,
       maquinaria_agricola_id: task.esMecanizable ? task.maquinariaAgricolaId : null,
       cultivo_id: cultivoId,
+      precio_labor_cultural: task.costoLabor, // Campo para el costo de la labor
+      cantidad_insumo: task.cantidadInsumo, // Nuevo campo
     };
 
     try {
@@ -208,7 +223,7 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
         <DialogContent>
           <ColumnContainer>
             <Tooltip title={errors.cultivoNombre || ""} open={!!errors.cultivoNombre} placement="top" arrow>
-              <StyledTextField
+              <StyledDisabledTextField
                 label="Cultivo"
                 fullWidth
                 value={cultivoNombre || ""}
@@ -227,19 +242,29 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
               />
             </Tooltip>
 
-            <Tooltip title={errors.tiempoHora || ""} open={!!errors.tiempoHora} placement="top" arrow>
+            <Tooltip title={errors.costoLabor || ""} open={!!errors.costoLabor} placement="top" arrow>
               <StyledTextField
-                label="Tiempo en Horas"
+                label="Costo de la Labor"
                 type="number"
                 fullWidth
-                value={task.tiempoHora}
-                onChange={(e) => handleChange("tiempoHora", e.target.value)}
+                value={task.costoLabor}
+                onChange={(e) => handleChange("costoLabor", e.target.value)}
+              />
+            </Tooltip>
+
+            <Tooltip title={errors.cantidadInsumo || ""} open={!!errors.cantidadInsumo} placement="top" arrow>
+              <StyledTextField
+                label="Cantidad de Insumo"
+                type="number"
+                fullWidth
+                value={task.cantidadInsumo}
+                onChange={(e) => handleChange("cantidadInsumo", e.target.value)}
               />
             </Tooltip>
 
             <Tooltip title={errors.start || ""} open={!!errors.start} placement="top" arrow>
               <StyledTextField
-                label="Fecha Estimada"
+                label="Fecha Programada"
                 type="date"
                 fullWidth
                 value={task.start}
@@ -326,9 +351,9 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
           </ColumnContainer>
         </DialogContent>
         <DialogActions>
-        <StyledButton onClick={onClose} className="cancel-button">
-          Cancelar
-        </StyledButton>
+          <StyledButton onClick={onClose} className="cancel-button">
+            Cancelar
+          </StyledButton>
 
           <StyledButton onClick={handleAddTask}>Crear</StyledButton>
         </DialogActions>
