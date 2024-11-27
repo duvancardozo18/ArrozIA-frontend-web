@@ -30,7 +30,9 @@ const NewFarm = ({ closeModal, addFarm }) => {
   const fetchDepartments = async (inputValue) => {
     if (!inputValue || inputValue.length < 1) return [];
     try {
-      const response = await axiosInstance.get(`http://127.0.0.1:8000/api/departments/filter?query=${inputValue}`);
+      const response = await axiosInstance.get(
+        `${import.meta.env.VITE_API_BASE_URL}/departments/filter?query=${inputValue}`
+    );    
       const options = response.data.map((department) => ({
         value: department.id,
         label: department.departamento,
@@ -45,7 +47,9 @@ const NewFarm = ({ closeModal, addFarm }) => {
   const fetchCities = async (inputValue) => {
     if (!inputValue || inputValue.length < 1 || !selectedDepartment) return [];
     try {
-      const response = await axiosInstance.get(`http://127.0.0.1:8000/api/departments/${selectedDepartment.value}/cities/filter?query=${inputValue}`);
+      const response = await axiosInstance.get(
+        `${import.meta.env.VITE_API_BASE_URL}/departments/${selectedDepartment.value}/cities/filter?query=${inputValue}`
+    );    
       const options = response.data.ciudades.map((city) => ({
         value: city,
         label: city,

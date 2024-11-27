@@ -7,25 +7,32 @@ import ImageCaptureForm from '../../../components/dashboard/diagnosis2/ImageCapt
 import ImageUploadHandler from '../../../components/dashboard/diagnosis2/ImageUploadHandler';
 import DiagnosisResultsView from '../../../components/dashboard/diagnosis2/DiagnosisResultsView';
 import DiagnosisHistory from '../../../components/dashboard/diagnosis2/DiagnosisHistory';
-import DiagnosisDetailView from '../../../components/dashboard/diagnosis2/DiagnosisDetailView';
 import styled from 'styled-components';
-import { Button, Dialog } from '@mui/material';
+import { Button } from '@mui/material';
 import axiosInstance from '../../../config/AxiosInstance';
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   padding: 20px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 `;
 
 const Sidebar = styled.div`
-  width: 30%;
-  padding-right: 20px;
-  border-right: 1px solid #ddd;
+  flex: 1;
+  margin-bottom: 20px;
+
+  @media (min-width: 768px) {
+    margin-right: 20px;
+    border-right: 1px solid #ddd;
+  }
 `;
 
 const Content = styled.div`
-  width: 70%;
-  padding-left: 20px;
+  flex: 2;
 `;
 
 const StyledSelect = styled.select`
@@ -39,12 +46,12 @@ const StyledSelect = styled.select`
   transition: box-shadow 0.3s ease;
 
   &:focus {
-    box-shadow: 0 0 5px 2px rgba(0, 128, 0, 0.4); /* Sombra verde */
+    box-shadow: 0 0 5px 2px rgba(0, 128, 0, 0.4);
   }
 `;
 
 const CropSelection = () => {
-  const { isAuthenticated, userId } = useContext(AuthContext); // Asegúrate de que `userId` esté disponible en el contexto
+  const { isAuthenticated, userId } = useContext(AuthContext);
   const [farms, setFarms] = useState([]);
   const [crops, setCrops] = useState([]);
   const [selectedFarmId, setSelectedFarmId] = useState(null);
@@ -53,7 +60,6 @@ const CropSelection = () => {
   const [images, setImages] = useState([]);
   const [results, setResults] = useState(null);
   const [viewHistory, setViewHistory] = useState(false);
-  const [selectedDiagnosisId, setSelectedDiagnosisId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Verificar si el usuario es administrador
@@ -137,14 +143,6 @@ const CropSelection = () => {
     setViewHistory(!viewHistory);
   };
 
-  const handleSelectDiagnosis = (diagnosisId) => {
-    setSelectedDiagnosisId(diagnosisId);
-  };
-
-  const handleCloseDiagnosisDetails = () => {
-    setSelectedDiagnosisId(null);
-  };
-
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
@@ -170,14 +168,13 @@ const CropSelection = () => {
                   key={crop.id}
                   cropName={crop.cropName}
                   onClick={() => handleCropSelection(crop.id, crop.cropName)}
+                  isSelected={selectedCropId === crop.id}
                 />
               ))}
             </>
           )}
         </Sidebar>
         <Content>
-          {!selectedCropId && <p>Seleccione un cultivo para iniciar el diagnóstico.</p>}
-
           {selectedCropId && (
             <>
               <Button
@@ -193,7 +190,6 @@ const CropSelection = () => {
                 <DiagnosisHistory
                   selectedCrop={selectedCropId}
                   cropName={selectedCropName}
-                  onSelectDiagnosis={handleSelectDiagnosis}
                 />
               )}
 
@@ -215,17 +211,6 @@ const CropSelection = () => {
                   onRetakeImages={handleRetakeImages}
                   cropName={selectedCropName}
                 />
-              )}
-
-              {selectedDiagnosisId && (
-                <Dialog
-                  open={Boolean(selectedDiagnosisId)}
-                  onClose={handleCloseDiagnosisDetails}
-                  fullWidth
-                  maxWidth="md"
-                >
-                  <DiagnosisDetailView diagnosisId={selectedDiagnosisId} />
-                </Dialog>
               )}
             </>
           )}

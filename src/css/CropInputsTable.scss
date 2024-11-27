@@ -1,95 +1,117 @@
-/* CultivoInsumosTable.css */
+/* CultivoInsumosTable.scss */
 
 .cultivo-insumos-table {
-    font-family: Arial, sans-serif;
-    margin-top: 50px;
-  }
-  
-  .cultivo-insumos-table h3 {
+  font-family: Arial, sans-serif;
+  margin-top: 50px;
+
+  h3 {
     color: #3a3a3a;
     font-weight: bold;
     text-align: center;
+    margin-bottom: 20px;
   }
-  
-  .cultivo-insumos-table h4 {
-    color: #3a3a3a;
-    font-weight: bold;
-    margin-left: 15px;
-  }
-  
-  .cultivo-insumos-table table {
+
+  table {
     width: 100%;
     border-collapse: collapse;
     margin: 10px 0;
+    border-radius: 8px;
+    overflow: hidden;
   }
-  
-  .cultivo-insumos-table th,
-  .cultivo-insumos-table td {
+
+  th,
+  td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 12px;
     text-align: center;
+    font-size: 14px;
   }
-  
-  .cultivo-insumos-table th {
+
+  th {
     background-color: #4caf50;
     color: white;
     font-weight: bold;
+    font-size: 16px;
   }
-  
-  .cultivo-insumos-table .total-row {
-    font-weight: bold;
+
+  td {
     background-color: #f9f9f9;
   }
-  .filters {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+
+  tr:nth-child(even) {
+    background-color: #f4f4f4;
   }
-  
-  .filters input,
-  .filters button {
+
+  .total-row {
+    font-weight: bold;
+    background-color: #e8f5e9; /* Suave verde */
+    color: #2e7d32; /* Verde oscuro */
+    font-size: 15px;
+  }
+}
+
+/* Estilos para los filtros */
+.filter-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 15px;
+  margin-bottom: 20px;
+
+  input {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    flex: 1;
+    font-size: 14px;
+
+    &:focus {
+      border-color: #4caf50;
+      outline: none;
+    }
   }
-  
-  .filters button {
-    background-color: #28a745;
-    color: white;
+
+  button {
+    padding: 10px 20px;
+    border-radius: 5px;
     border: none;
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
     cursor: pointer;
-  }
-  
-  .filters button:hover {
-    background-color: #218838;
-  }
-  
-  .agricultural-input-table {
-    margin-top: 20px;
-  
-    h3 {
-      text-align: center;
-      color: #228b22; /* Verde oscuro */
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #45a049;
     }
-  
-    table {
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Estilo responsivo */
+@media (max-width: 768px) {
+  .cultivo-insumos-table {
+    font-size: 12px;
+
+    th,
+    td {
+      padding: 10px;
+    }
+  }
+
+  .filter-container {
+    flex-direction: column;
+    gap: 10px;
+
+    input {
       width: 100%;
-      border-collapse: collapse;
-  
-      th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-      }
-  
-      th {
-        background-color: #f4f4f4;
-        font-weight: bold;
-      }
-  
-      tr:nth-child(even) {
-        background-color: #f9f9f9;
-      }
+    }
+
+    button {
+      width: 100%;
     }
   }
-  
+}

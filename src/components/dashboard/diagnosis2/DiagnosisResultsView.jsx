@@ -1,67 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-
-// Estilos para resaltar el resultado de IA
-const HighlightBox = styled.div`
-  border: 3px solid #4caf50;
-  padding: 20px;
-  margin: 30px 0;
-  background-color: #e8f5e9;
-  text-align: center;
-  border-radius: 12px;
-  font-weight: bold;
-  color: #2e7d32;
-  font-size: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-`;
-
-const HighlightText = styled.div`
-  font-size: 1.6rem;
-  color: #388e3c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-`;
-
-const PredictionResult = styled.div`
-  font-size: 2rem;
-  color: #1b5e20;
-  font-weight: bold;
-`;
-
-// Estilos para la imagen y su contenedor
-const ImageContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-
-  img {
-    border: 3px solid #007bff;
-    border-radius: 10px;
-    max-width: 100%;
-    height: auto;
-  }
-`;
-
-// Botón personalizado para acciones
-const CustomButton = styled.button`
-  padding: 10px 20px;
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 20px;
-
-  &:hover {
-    background-color: #218838;
-  }
-`;
+import '../../../css/ImageCaptureForm.scss';
 
 const DiagnosisResultsView = ({ results, onRetakeImages, cropName }) => {
   if (!results || !results.prediction) {
@@ -79,6 +17,26 @@ const DiagnosisResultsView = ({ results, onRetakeImages, cropName }) => {
     resultado_ia,
   } = prediction;
 
+  // Mapeo de traducción de resultados al español
+  const resultadoTraducido = {
+    leaf_blast: "Tizón de la hoja",
+    sheath_blight: "Añublo de la vaina",
+    bacterial_leaf_blight: "Tizón bacteriano de la hoja",
+    brown_spot: "Mancha marrón",
+    healthy: "Sin enfermedades detectadas",
+  };
+
+  // Mensaje relacionado con el resultado
+  const mensajeResultado = {
+    leaf_blast: "Se recomienda aplicar fungicidas específicos para controlar el Tizón de la hoja.",
+    sheath_blight: "Revisa la humedad del suelo, ya que el Añublo de la vaina se ve favorecido por condiciones húmedas.",
+    bacterial_leaf_blight: "El Tizón bacteriano de la hoja puede ser controlado con una buena gestión del riego.",
+    brown_spot: "La Mancha marrón puede ser causada por deficiencias de nutrientes. Considera fertilizar adecuadamente.",
+    healthy: "¡El cultivo se encuentra en buen estado! Continúa con el manejo adecuado para mantenerlo saludable.",
+  };
+
+  const resultadoEnEspanol = resultadoTraducido[resultado_ia] || "Resultado no identificado";
+  const mensaje = mensajeResultado[resultado_ia] || "No hay recomendaciones disponibles para este diagnóstico.";
 
   return (
     <div className="diagnosis-results-view">
@@ -87,32 +45,58 @@ const DiagnosisResultsView = ({ results, onRetakeImages, cropName }) => {
         <div className="result-item">
           {/* Mostrar la imagen que se subió */}
           {uploadedImages && uploadedImages.length > 0 && (
-            <ImageContainer>
+            <div className="image-container">
               <img src={URL.createObjectURL(uploadedImages[0])} alt="Resultado del diagnóstico" />
-            </ImageContainer>
+            </div>
           )}
-          <div className="result-details">
-            <p><strong>Nombre del Cultivo:</strong> {cropName}</p>
-            <p><strong>Confianza:</strong> {confianza_promedio ? (confianza_promedio * 10).toFixed(2) + '%' : 'N/A'}</p>
-            <p><strong>Fecha del Diagnóstico:</strong> {fecha_diagnostico ? new Date(fecha_diagnostico).toLocaleDateString() : 'N/A'}</p>
-            <p><strong>ID del Diagnóstico:</strong> {id}</p>
-            <p><strong>Imágenes Analizadas:</strong> {imagenes_analizadas}</p>
-            <p><strong>Exportado:</strong> {exportado ? 'Sí' : 'No'}</p>
-            <p><strong>Comparación Diagnóstico:</strong> {comparacion_diagnostico || 'N/A'}</p>
+          <div className="result-details-container">
+            <table className="result-table">
+              <tbody>
+                <tr>
+                  <th>Nombre del Cultivo:</th>
+                  <td>{cropName}</td>
+                </tr>
+                <tr>
+                  <th>Confianza:</th>
+                  <td>{confianza_promedio ? (confianza_promedio * 10).toFixed(2) + '%' : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>Fecha del Diagnóstico:</th>
+                  <td>{fecha_diagnostico ? new Date(fecha_diagnostico).toLocaleDateString() : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>ID del Diagnóstico:</th>
+                  <td>{id}</td>
+                </tr>
+                <tr>
+                  <th>Imágenes Analizadas:</th>
+                  <td>{imagenes_analizadas}</td>
+                </tr>
+                <tr>
+                  <th>Exportado:</th>
+                  <td>{exportado ? 'Sí' : 'No'}</td>
+                </tr>
+                <tr>
+                  <th>Comparación Diagnóstico:</th>
+                  <td>{comparacion_diagnostico || 'N/A'}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
         {/* Resaltar el resultado de IA */}
-        <HighlightBox>
-          <HighlightText>Resultado del Análisis</HighlightText>
-          <PredictionResult>{resultado_ia}</PredictionResult>
-        </HighlightBox>
+        <div className="highlight-box">
+          <div className="highlight-text">Resultado del Análisis</div>
+          <div className="prediction-result">{resultadoEnEspanol}</div>
+          <div className="mensaje-resultado">{mensaje}</div>
+        </div>
       </div>
 
       <div className="actions">
-        <CustomButton onClick={onRetakeImages}>
+        <button className="custom-button" onClick={onRetakeImages}>
           Capturar Nuevas Imágenes
-        </CustomButton>
+        </button>
       </div>
     </div>
   );

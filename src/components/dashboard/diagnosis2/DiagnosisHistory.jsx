@@ -6,7 +6,8 @@ import 'jspdf-autotable';
 import { CSVLink } from 'react-csv';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
-
+import DiagnosisDetailModal from './DiagnosisDetailModal';
+import logoBase64 from './../../../assets/images/logoBase64';
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 const DiagnosisHistory = ({ selectedCrop, cropName }) => {
@@ -18,26 +19,34 @@ const DiagnosisHistory = ({ selectedCrop, cropName }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [problemType, setProblemType] = useState('');
+
   const [page, setPage] = useState(1);
   const itemsPerPage = 5; // Máximo de elementos por página
 
   // Cargar historial de diagnósticos para el cultivo seleccionado con filtros
   const fetchDiagnoses = async () => {
     if (!selectedCrop) return;
-
+  
     const params = {
       ...(startDate && { start_date: startDate }),
       ...(endDate && { end_date: endDate }),
-      ...(problemType && { problem_type: problemType })
+      ...(problemType && { problem_type: problemType }),
     };
-
+  
     try {
       const response = await axiosInstance.get(`/diagnostics/history/${selectedCrop}`, { params });
-      setDiagnoses(response.data);
+      const translatedDiagnoses = response.data.map((diagnosis) => ({
+        ...diagnosis,
+        translatedProblemType: translationMap[diagnosis.tipo_problema] || 'Otro', // Traducción del tipo de problema
+      }));
+      setDiagnoses(translatedDiagnoses);
     } catch (error) {
       console.error('Error fetching diagnosis history:', error);
     }
   };
+  
+  
+  
 
   useEffect(() => {
     fetchDiagnoses();
@@ -74,6 +83,7 @@ const DiagnosisHistory = ({ selectedCrop, cropName }) => {
     );
   };
 
+  
   const handleChangePage = (event, value) => {
     setPage(value);
   };
@@ -138,62 +148,113 @@ const DiagnosisHistory = ({ selectedCrop, cropName }) => {
       ]
     };
   };
-
+  const translationMap = {
+    leaf_blast: 'Tizón de la hoja',
+    sheath_blight: 'Añublo de la vaina',
+    bacterial_leaf_blight: 'Tizón bacteriano de la hoja',
+    brown_spot: 'Mancha marrón',
+    healthy: 'Sin enfermedades detectadas',
+  };
+  
   const exportPDF = async () => {
     if (selectedDiagnoses.length === 0) {
       alert("Por favor, selecciona al menos un diagnóstico para exportar.");
       return;
     }
-
+  
     const doc = new jsPDF();
-    doc.text('Resultados del Diagnóstico', 14, 10);
-
-    // Iterar sobre los diagnósticos seleccionados para incluir sus detalles
+  
+    // Logo y encabezado
+    const logoWidth = 30;
+    const logoHeight = 30;
+    doc.addImage(logoBase64, 'PNG', 10, 10, logoWidth, logoHeight); // Logo en la esquina superior izquierda
+  
+    doc.setFontSize(20);
+    doc.setFont('Helvetica', 'bold');
+    doc.setTextColor(22, 160, 133); // Verde
+    doc.text('Arroz IA', 105, 20, { align: 'center' }); // Título centrado
+  
+    doc.setFontSize(16);
+    doc.setFont('Helvetica', 'normal');
+    doc.setTextColor(0, 0, 0); // Negro
+    doc.text('Historial de Diagnósticos', 105, 30, { align: 'center' });
+  
+    doc.line(20, 35, 190, 35); // Línea separadora
+  
+    let yOffset = 40; // Posición inicial para los datos
+  
+    // Iterar sobre los diagnósticos seleccionados para generar el contenido
     for (const diagnosisId of selectedDiagnoses) {
-      const diagnosis = diagnoses.find(d => d.id === diagnosisId);
-
+      const diagnosis = diagnoses.find((d) => d.id === diagnosisId);
+  
       if (!diagnosis) continue;
-
+  
       const {
         fecha_diagnostico,
         tipo_problema,
         resultado_ia,
         confianza_promedio,
         id,
-        imagenes_analizadas,
-        exportado,
-        comparacion_diagnostico,
       } = diagnosis;
-
+  
+      // Título del diagnóstico
+      doc.setFontSize(14);
+      doc.setFont('Helvetica', 'bold');
+      doc.text(`Diagnóstico ID: ${id}`, 20, yOffset);
+      yOffset += 10;
+  
+      // Información general en tabla
       const tableData = [
-        ["Nombre del Cultivo", cropName],
-        ["Confianza", confianza_promedio ? (confianza_promedio * 10).toFixed(2) + '%' : 'N/A'],
-        ["Fecha del Diagnóstico", fecha_diagnostico ? new Date(fecha_diagnostico).toLocaleDateString() : 'N/A'],
-        ["ID del Diagnóstico", id],
-        ["Tipo de Problema", tipo_problema],
-        ["Imágenes Analizadas", imagenes_analizadas || 'N/A'],
-        ["Exportado", exportado ? 'Sí' : 'No'],
-        ["Comparación Diagnóstico", comparacion_diagnostico || 'N/A'],
-        ["Resultado del Análisis", resultado_ia],
+        ['Campo', 'Valor'],
+        ['Nombre del Cultivo', cropName],
+        ['Confianza', confianza_promedio ? `${(confianza_promedio * 10).toFixed(2)}%` : 'N/A'],
+        ['Fecha del Diagnóstico', fecha_diagnostico ? new Date(fecha_diagnostico).toLocaleDateString() : 'N/A'],
+        ['Tipo de Problema', translationMap[tipo_problema] || 'Desconocido'],
+        ['Resultado del Análisis', resultado_ia || 'N/A'],
       ];
-
+  
       doc.autoTable({
-        head: [['Campo', 'Valor']],
-        body: tableData,
-        startY: doc.autoTable.previous ? doc.autoTable.previous.finalY + 10 : 20,
+        startY: yOffset,
+        head: [tableData[0]],
+        body: tableData.slice(1),
+        theme: 'grid',
+        styles: { halign: 'center', fontSize: 10 },
+        headStyles: { fillColor: [22, 160, 133] }, // Verde
+        bodyStyles: { fillColor: [240, 248, 255] }, // Blanco
       });
+  
+      yOffset = doc.lastAutoTable.finalY + 10;
+  
+      // Si la posición sobrepasa el límite, agregar una nueva página
+      if (yOffset > 270) {
+        doc.addPage();
+        yOffset = 20; // Reiniciar la posición en la nueva página
+      }
     }
-
-    doc.save('diagnosis_results.pdf');
+  
+    // Guardar el PDF
+    doc.save('historial_diagnosticos.pdf');
   };
+  
 
   const csvData = diagnoses
-    .filter(diagnosis => selectedDiagnoses.includes(diagnosis.id))
-    .map(diagnosis => ({
-      "Fecha Diagnóstico": diagnosis.fecha_diagnostico,
-      "Tipo de Problema": diagnosis.tipo_problema,
-      "Resultado IA": diagnosis.resultado_ia,
-    }));
+  .filter(diagnosis => selectedDiagnoses.includes(diagnosis.id))
+  .map(diagnosis => ({
+    "ID del Diagnóstico": diagnosis.id,
+    "Nombre del Cultivo": cropName,
+    "Confianza (%)": diagnosis.confianza_promedio
+      ? (diagnosis.confianza_promedio * 10).toFixed(2)
+      : 'N/A',
+    "Fecha Diagnóstico": diagnosis.fecha_diagnostico
+      ? new Date(diagnosis.fecha_diagnostico).toLocaleDateString()
+      : 'N/A',
+    "Tipo de Problema": translationMap[diagnosis.tipo_problema] || "Desconocido",
+    "Resultado IA": diagnosis.resultado_ia || "N/A",
+    "Imágenes Analizadas": diagnosis.imagenes_analizadas || "No Disponible",
+    "Exportado": diagnosis.exportado ? "Sí" : "No",
+    "Comparación Diagnóstico": diagnosis.comparacion_diagnostico || "N/A",
+  }));
+
 
   const filteredDiagnoses = diagnoses.filter(diagnosis => {
     const diagnosisDate = new Date(diagnosis.fecha_diagnostico);
@@ -252,46 +313,44 @@ const DiagnosisHistory = ({ selectedCrop, cropName }) => {
           />
         </Grid>
         <Grid item xs={4}>
-          <Select
-            fullWidth
-            value={problemType}
-            onChange={(e) => setProblemType(e.target.value)}
-            displayEmpty
-          >
-            <MenuItem value="">Tipo de Problema</MenuItem>
-            <MenuItem value="plaga">Plaga</MenuItem>
-            <MenuItem value="enfermedad">Enfermedad</MenuItem>
-            <MenuItem value="maleza">Maleza</MenuItem>
-            <MenuItem value="deficiencia">Deficiencia</MenuItem>
-          </Select>
-        </Grid>
+            <Select
+              fullWidth
+              value={problemType}
+              onChange={(e) => setProblemType(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="">Todos los Tipos</MenuItem>
+              <MenuItem value="leaf_blast">Tizón de la hoja</MenuItem>
+              <MenuItem value="sheath_blight">Añublo de la vaina</MenuItem>
+              <MenuItem value="bacterial_leaf_blight">Tizón bacteriano de la hoja</MenuItem>
+              <MenuItem value="brown_spot">Mancha marrón</MenuItem>
+            </Select>
+          </Grid>
       </Grid>
 
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleApplyFilters}
-        style={{ marginBottom: '20px' }}
-      >
-        Aplicar Filtros
-      </Button>
+
 
       <Grid container spacing={2}>
-        {currentDiagnoses.map((diagnosis) => (
-          <Grid item xs={12} key={diagnosis.id}>
-            <Card variant="outlined" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-              <Checkbox
-                checked={selectedDiagnoses.includes(diagnosis.id)}
-                onChange={() => handleSelectDiagnosis(diagnosis.id)}
-                style={{ marginLeft: '10px' }}
-              />
-              <CardContent onClick={() => handleOpenModal(diagnosis.id)} style={{ flexGrow: 1 }}>
-                <Typography variant="subtitle1">Fecha: {diagnosis.fecha_diagnostico}</Typography>
-                <Typography variant="body2">Tipo de Problema: <span style={{ color: 'green' }}>{diagnosis.tipo_problema}</span></Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+      {currentDiagnoses.map((diagnosis) => (
+  <Grid item xs={12} key={diagnosis.id}>
+    <Card variant="outlined" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+      <Checkbox
+        checked={selectedDiagnoses.includes(diagnosis.id)}
+        onChange={() => handleSelectDiagnosis(diagnosis.id)}
+        style={{ marginLeft: '10px' }}
+      />
+      <CardContent onClick={() => handleOpenModal(diagnosis.id)} style={{ flexGrow: 1 }}>
+        <Typography variant="subtitle1">Fecha: {diagnosis.fecha_diagnostico}</Typography>
+        <Typography variant="body2">
+          Tipo de Problema: <span style={{ color: 'green' }}>{diagnosis.translatedProblemType}</span>
+        </Typography>
+        <Typography variant="body2">Porcentaje : {(diagnosis.confianza_promedio * 10).toFixed(2)}%</Typography>
+      
+      </CardContent>
+    </Card>
+  </Grid>
+))}
+
       </Grid>
 
       <Pagination
@@ -303,24 +362,15 @@ const DiagnosisHistory = ({ selectedCrop, cropName }) => {
       />
 
       {/* Modal con detalles del diagnóstico individual */}
-      <Modal open={open} onClose={handleCloseModal}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80vw', maxWidth: '1000px', bgcolor: 'background.paper', p: 4 }}>
-          {selectedDiagnosis && (
-            <>
-              <Typography variant="h6">Detalles del Diagnóstico</Typography>
-              <Typography variant="body2">Nombre cultivo: {cropName}</Typography>
-              <Typography variant="body2">Confianza: {selectedDiagnosis.confianza_promedio ? (selectedDiagnosis.confianza_promedio * 10).toFixed(2) + '%' : 'N/A'}</Typography>
-              <Typography variant="body2">Fecha: {selectedDiagnosis.fecha_diagnostico}</Typography>
-              <Typography variant="body2">Tipo de Problema: <span style={{ color: 'green' }}>{selectedDiagnosis.tipo_problema}</span></Typography>
+      <DiagnosisDetailModal
+          open={open}
+          onClose={handleCloseModal}
+          diagnosis={selectedDiagnosis}
+          cropName={cropName}
+          chartData={chartData}
+          chartOptions={chartOptions}
+        />
 
-              {/* Gráfica */}
-              <div style={{ marginTop: '20px' }}>
-                <Line data={chartData} options={chartOptions} />
-              </div>
-            </>
-          )}
-        </Box>
-      </Modal>
 
       {/* Modal con comparación de diagnósticos */}
       <Modal open={openComparison} onClose={handleCloseComparisonModal}>
