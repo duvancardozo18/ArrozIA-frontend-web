@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../config/AxiosInstance';
+import '../../../css/ImageCaptureForm.scss';
 
 const ImageUploadHandler = ({ images, cultivoId, onUploadComplete }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    if (images.length > 0) {
+      handleImageUpload();
+    }
+  }, [images]);
 
   const handleImageUpload = () => {
     const formData = new FormData();
@@ -41,9 +48,6 @@ const ImageUploadHandler = ({ images, cultivoId, onUploadComplete }) => {
   return (
     <div className="image-upload-handler">
       <h2>Envío de Imágenes para Diagnóstico</h2>
-      <button onClick={handleImageUpload} disabled={isUploading || images.length === 0}>
-        {isUploading ? 'Subiendo...' : 'Subir Imágenes'}
-      </button>
       {isUploading && <p>Progreso: {uploadProgress}%</p>}
     </div>
   );

@@ -1,0 +1,382 @@
+.image-capture-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    
+    h2 {
+      color: #007bff;
+      margin-bottom: 25px;
+      font-size: 1.5rem;
+    }
+
+
+
+
+    
+  
+    input[type="file"] {
+      margin-bottom: 20px;
+      width: 100%;
+    }
+  
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+  
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+  
+        &.camera-btn {
+          background-color: #28a745;
+  
+          &:hover {
+            background-color: darken(#28a745, 10%);
+          }
+        }
+  
+        &.predict-btn {
+          background-color: #007bff;
+  
+          &:hover {
+            background-color: darken(#007bff, 10%);
+          }
+  
+          &:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  
+    .camera-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+  
+      video {
+        width: 100%;
+        max-width: 400px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+      }
+  
+      .capture-btn {
+        background-color: #28a745;
+        padding: 10px 20px;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+  
+        &:hover {
+          background-color: darken(#28a745, 10%);
+        }
+      }
+    }
+  
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+  
+      img {
+        width: 150px;
+        border-radius: 10px;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      padding: 15px;
+  
+      h2 {
+        font-size: 1.25rem;
+      }
+  
+      .button-group {
+        flex-direction: column;
+        gap: 15px;
+      }
+  
+      .camera-preview video {
+        width: 100%;
+      }
+    }
+  }
+  .image-capture-form {
+    .image-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+  
+      img {
+        border-radius: 10px;
+        max-width: 100%;
+        height: auto;
+      }
+    }
+  }
+  
+  .image-upload-handler {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+    transition: all 0.3s ease;
+  
+    h2 {
+      color: #007bff;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  
+    button {
+      padding: 12px 25px;
+      background-color: #28a745;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 10px;
+  
+      &:hover {
+        background-color: #218838;
+        transform: scale(1.05);
+      }
+  
+      &:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+      }
+    }
+  
+    p {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #333;
+    }
+  
+    .upload-status {
+      font-size: 1.1rem;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+  
+    @media (max-width: 768px) {
+      padding: 15px;
+      max-width: 90%;
+  
+      button {
+        width: 100%;
+      }
+    }
+  }
+  
+
+
+// result detail
+/* Estilos generales del componente DiagnosisResultsView */
+
+/* Estilos generales del componente DiagnosisResultsView */
+.diagnosis-results-view {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Contenedor de resultados */
+.results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Contenedor de imagen */
+.image-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  flex-shrink: 0;
+}
+
+.image-container img {
+  border: 3px solid #007bff;
+  border-radius: 10px;
+  max-width: 30%;
+  height: auto;
+  margin-right: 20px;
+}
+
+/* Contenedor de detalles del resultado */
+.result-details-container {
+  width: 100%;
+  background-color: #f0f8f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.result-details-table th, .result-details-table td {
+  border: 1px solid #d1e7dd;
+  padding: 10px;
+  text-align: left;
+  font-size: 1rem;
+  color: #2e7d32;
+}
+
+.result-details-table th {
+  background-color: #e0f2f1;
+  font-weight: bold;
+}
+
+/* Caja para resaltar el resultado de IA */
+.highlight-box {
+  border: 3px solid #4caf50;
+  padding: 20px;
+  margin: 30px 0;
+  background-color: #e8f5e9;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: bold;
+  color: #2e7d32;
+  font-size: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.highlight-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.highlight-text {
+  font-size: 1.6rem;
+  color: #388e3c;
+}
+
+.prediction-result {
+  font-size: 2rem;
+  color: #1b5e20;
+  font-weight: bold;
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Botón personalizado para acciones */
+.custom-button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.custom-button:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .result-details-container {
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .result-details-table th, .result-details-table td {
+    font-size: 0.9rem;
+  }
+
+  .highlight-box {
+    font-size: 1.2rem;
+  }
+
+  .prediction-result {
+    font-size: 1.5rem;
+  }
+
+  .image-container img {
+    max-width: 50%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .diagnosis-results-view {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .custom-button {
+    width: 100%;
+    padding: 12px;
+  }
+}
+
+/* Efecto de animación */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+

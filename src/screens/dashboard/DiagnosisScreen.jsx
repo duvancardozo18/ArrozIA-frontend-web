@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { AuthContext } from "../../config/AuthProvider";
+import { AuthContext } from '../../config/AuthProvider';
 import Header from '../../components/dashboard/Header';
 import CropSelection from '../../components/dashboard/diagnosis2/CropSelection';
 import ImageCaptureForm from '../../components/dashboard/diagnosis2/ImageCaptureForm';
@@ -7,7 +7,7 @@ import ImageUploadHandler from '../../components/dashboard/diagnosis2/ImageUploa
 import DiagnosisResultsView from '../../components/dashboard/diagnosis2/DiagnosisResultsView';
 import DiagnosisHistory from '../../components/dashboard/diagnosis2/DiagnosisHistory';
 import { Navigate } from 'react-router-dom';
-import axiosInstance from "../../config/AxiosInstance";
+import axiosInstance from '../../config/AxiosInstance';
 import '../../css/Diagnosis.scss';
 
 const DiagnosisScreen = () => {
@@ -42,7 +42,7 @@ const DiagnosisScreen = () => {
         setResults(response.data);
       })
       .catch(error => {
-        console.error("Error uploading images:", error);
+        console.error('Error uploading images:', error);
       });
   };
 
@@ -56,36 +56,38 @@ const DiagnosisScreen = () => {
   };
 
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to='/' replace />;
   }
 
   return (
-    <div className="content-area">
+    <div id="diagnosis-screen" className="diagnosis-content-area" style={{ paddingTop: '60px' }}>
       <Header title="Diagnóstico Fitosanitario" />
 
-      {!selectedCrop && (
-        <CropSelection onSelectCrop={handleCropSelect} />
-      )}
+      <div className="diagnosis-card-container">
+        {!selectedCrop && (
+          <CropSelection onSelectCrop={handleCropSelect} />
+        )}
 
-      {selectedCrop && !images.length && !results && (
-        <ImageCaptureForm onImagesSelected={handleImagesSelected} />
-      )}
+        {selectedCrop && !images.length && !results && (
+          <ImageCaptureForm onImagesSelected={handleImagesSelected} />
+        )}
 
-      {images.length > 0 && !results && (
-        <ImageUploadHandler images={images} onUploadComplete={handleUploadImages} />
-      )}
+        {images.length > 0 && !results && (
+          <ImageUploadHandler images={images} onUploadComplete={handleUploadImages} />
+        )}
 
-      {results && (
-        <DiagnosisResultsView
-          results={results}
-          onRetakeImages={handleRetakeImages}
-          onSaveDiagnosis={handleSaveDiagnosis}
-        />
-      )}
+        {results && (
+          <DiagnosisResultsView
+            results={results}
+            onRetakeImages={handleRetakeImages}
+            onSaveDiagnosis={handleSaveDiagnosis}
+          />
+        )}
 
-      {selectedCrop && viewHistory && (
-        <DiagnosisHistory selectedCrop={selectedCrop} />
-      )}
+        {selectedCrop && viewHistory && (
+          <DiagnosisHistory selectedCrop={selectedCrop} />
+        )}
+      </div>
     </div>
   );
 };
