@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
+import Header from '../Header';
 import axiosInstance from "../../../config/AxiosInstance";
 import { AuthContext } from '../../../config/AuthProvider';
 import CreateWeatherRecordModal from './CreateWeatherRecordModal';
@@ -11,11 +12,10 @@ import CardsView from './CardsView';
 
 const MonitoringView = styled.div`
   display: flex;
-  flex-direction: column; /* Asegura que los elementos se apilen uno encima del otro */
+  flex-direction: column;
   padding: 20px;
-  height: 100vh; /* Ocupa el 100% de la altura de la ventana */
   box-sizing: border-box;
-  
+
   @media (max-width: 768px) {
     padding: 10px; /* Reducir padding en pantallas pequeñas */
   }
@@ -38,41 +38,50 @@ const MonitoringContent = styled.div`
 
 const TableContainer = styled.div`
   overflow-x: auto;
-  min-width: 600px;
   margin-top: 20px;
-  margin-bottom: 20px; /* Añadido margen inferior al contenedor de la tabla */
-
-  /* Aseguramos que haya scroll solo si la tabla excede la altura del contenedor */
-  max-height: 400px;  /* Puedes ajustar la altura según lo necesites */
-  overflow-y: auto;  /* Permite el scroll vertical */
-
+  margin-bottom: 20px;
+  width: 100%; /* Asegurarse de que el contenedor ocupe el ancho completo */
+  
+  /* Asegura que el contenido que exceda el contenedor tenga scroll horizontal */
   .records-table {
-    min-width: 100%;
+    width: 100%;
     margin-top: 20px;
     border-collapse: collapse;
     background-color: #ffffff;
     color: #333;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);   
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
 
   .records-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
   }
 
   .records-table th {
-    background-color: #3a4b63;
-    color: #ffffff;
-    font-weight: bold;
+    padding: 12px;
+    text-align: left;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
   }
 
-  .records-table td {
-    background-color: #f9f9f9;
+  /* Media queries para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .records-table {
+      font-size: 14px; /* Reducir el tamaño de la fuente en pantallas pequeñas */
+    }
+
+    .records-table td, .records-table th {
+      padding: 8px; /* Reducir el padding de las celdas */
+    }
   }
 `;
+
+
 
 const TableHeader = styled.div`
   display: flex;
@@ -81,7 +90,7 @@ const TableHeader = styled.div`
   margin-bottom: 20px;
 
   h3 {
-    font-size: 1.8rem;
+    text-align:center;
     margin-bottom: 10px;
   }
 
@@ -165,7 +174,7 @@ const WeatherMonitoringView = () => {
       const url = isAdmin ? "/farms" : `/users/${userId}/farms`;
       const response = await axiosInstance.get(url);
       setFarms(response.data);  // Guarda todas las fincas en el estado
-      console.log("Fincas cargadas:", response.data);  // Verificar que los datos se han cargado correctamente
+      //console.log("Fincas cargadas:", response.data);  // Verificar que los datos se han cargado correctamente
     } catch (error) {
       console.error("Error fetching farms:", error);
       setError("No se pudieron cargar las fincas.");
@@ -192,11 +201,11 @@ const WeatherMonitoringView = () => {
         url += `?fecha_inicio=${start}&fecha_fin=${end}`;
       }
 
-      console.log('Fetching weather data from URL:', url);  // Log de la URL
+      //console.log('Fetching weather data from URL:', url);  // Log de la URL
 
       const response = await axiosInstance.get(url);
 
-      console.log('Weather data fetched successfully:', response.data);  // Log de la respuesta
+      //console.log('Weather data fetched successfully:', response.data);  // Log de la respuesta
 
       setWeatherRecords(response.data);
     } catch (error) {
@@ -261,13 +270,13 @@ const WeatherMonitoringView = () => {
     if (farms && farms.length > 0) {
       // Buscar los datos completos de la finca seleccionada en el array de fincas
       const selectedFarm = farms.find(farm => farm.id === Number(selectedFarmId));  // Asegurar que ambos sean del mismo tipo
-      console.log("Buscando finca con ID:", selectedFarmId);
+      //console.log("Buscando finca con ID:", selectedFarmId);
   
       if (selectedFarm) {
         setFarm(selectedFarm);  // Guardar los datos completos de la finca en el estado
-        console.log("Finca seleccionada:", selectedFarm);  // Verificar los datos de la finca seleccionada
-        console.log("Latitud de la finca seleccionada:", selectedFarm.latitud); // Verificar latitud
-        console.log("Longitud de la finca seleccionada:", selectedFarm.longitud); // Verificar longitud
+        //console.log("Finca seleccionada:", selectedFarm);  // Verificar los datos de la finca seleccionada
+        //console.log("Latitud de la finca seleccionada:", selectedFarm.latitud); // Verificar latitud
+        //console.log("Longitud de la finca seleccionada:", selectedFarm.longitud); // Verificar longitud
       } else {
         console.log("No se encontró la finca con ID:", selectedFarmId);
         setFarm(null);  // Si no se encuentra la finca, limpiar el estado
@@ -310,8 +319,8 @@ const WeatherMonitoringView = () => {
   useEffect(() => {
     if (farm) {
       // Acceder a los datos completos de la finca, por ejemplo, latitud y longitud
-      console.log("Latitud de la finca:", farm.latitud);
-      console.log("Longitud de la finca:", farm.longitud);
+      //console.log("Latitud de la finca:", farm.latitud);
+      //console.log("Longitud de la finca:", farm.longitud);
     }
   }, [farm]);  // Este efecto se ejecutará solo cuando `farm` cambie
 
@@ -327,9 +336,11 @@ const WeatherMonitoringView = () => {
 
 
   return (
+    <>
+    <Header />
     <MonitoringView>
       <div>
-        <h2>Datos Meteorológicos - Fincas</h2>
+        <h2>Datos Meteorológicos</h2>
         <CardsView 
           farms={farms}
           selectedFarmId={selectedFarmId}
@@ -344,7 +355,7 @@ const WeatherMonitoringView = () => {
         {selectedLote ? (
           <>
             <TableHeader>
-              <h3>Historial Meteorológico del Lote {selectedLoteNombre}</h3>
+              <h3>Historial Meteorológico <br /> {selectedLoteNombre}</h3>
               <div className="actions">
                 <button className="register-weather-btn" onClick={openModal}>
                   Registrar Datos Meteorológicos
@@ -417,6 +428,7 @@ const WeatherMonitoringView = () => {
         />
       )}
     </MonitoringView>
+    </>
   );      
 };
 

@@ -63,7 +63,6 @@ const CardsView = ({ farms, selectedFarmId, handleFarmSelect, lotes, selectedLot
     
   return (
     <div className="cards-view">
-      <h2>Selecciona una finca</h2>
       <StyledSelect onChange={handleFarmSelect} value={selectedFarmId || ''}>
         <option value="" disabled>Selecciona una finca</option>
         
