@@ -11,7 +11,6 @@ import styled from 'styled-components';
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  padding: 20px;
   gap: 20px;
   
   @media (max-width: 768px) {
@@ -175,7 +174,7 @@ const MonitoringView = () => {
 
           {selectedFarmId && (
             <>
-              <h2 style={{ marginTop: "20px" }}>Cultivos</h2>
+              <h2 style={{ marginTop: "15px" }}>Cultivos</h2>
               {crops.map((crop) => (
                 <CropCard
                   key={crop.id}

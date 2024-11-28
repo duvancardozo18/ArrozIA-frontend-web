@@ -56,13 +56,16 @@ const MonitoringCard = ({ monitoring, onEdit, onDelete, onFinalize }) => {
       <div className="monitoring-content">
         <h3 className="monitoring-title">{monitoring.tipo}</h3>
         <p>
-          <strong>Recomendación:</strong> {monitoring.recomendacion || "No especificada"}
+          <strong>Fecha Programada:</strong><br /> {monitoring.fecha_programada}
         </p>
+        <p>
+          <strong>Fecha Realizada:</strong><br /> {monitoring.fecha_finalizacion || "Pendiente"}
+        </p><br />
         <p>
           <strong>Etapa Fenológica:</strong> {monitoring.etapaNombre || "No especificada"}
-        </p>
+        </p><br />
         <p>
-          <strong>Fecha Programada:</strong> {monitoring.fecha_programada}
+          <strong>Recomendación:</strong><br /> {monitoring.recomendacion || "No especificada"}
         </p>
       </div>
       <div className="action-buttons">

@@ -195,6 +195,7 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
             </InputGroup>
             <InputGroup>
             <label>Etapa Fenológica</label>
+            {/*
             <select
               name="variedad_arroz_etapa_fenologica_id"
               value={formData.variedad_arroz_etapa_fenologica_id || ""}
@@ -208,6 +209,13 @@ const CreateMonitoringModal = ({ closeModal, fetchMonitorings, selectedCrop }) =
                 </option>
               ))}
             </select>
+            */}
+              <select name="variedad_arroz_etapa_fenologica_id" value={formData.variedad_arroz_etapa_fenologica_id} onChange={handleChange} required>
+                <option value="">Seleccione etapa fenológica</option>
+                <option value="2">Etapa Vegetativa</option>
+                <option value="3">Etapa Reproductiva</option>
+                <option value="4">Etapa de Maduración</option>
+              </select>
           </InputGroup>
 
             {/* <InputGroup>
