@@ -188,7 +188,7 @@ const CropSelection = () => {
 
               {viewHistory && (
                 <DiagnosisHistory
-                  selectedCrop={selectedCropId}
+                  selectedCrop={selectedCropId} // Solo mostramos los historiales para el cultivo seleccionado
                   cropName={selectedCropName}
                 />
               )}
