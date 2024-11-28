@@ -38,10 +38,8 @@ const ExportModal = ({ onClose, cropDetails, inputs = [], culturalWorks = [], cu
         console.error("Error al obtener los totales:", error);
       }
     };
-
-    if (cultivoId) {
-      fetchTotals();
-    }
+    
+    fetchTotals();
   }, [cultivoId]);
 
   const handleGenerateReport = () => {

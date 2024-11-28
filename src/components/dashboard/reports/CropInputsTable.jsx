@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../config/AxiosInstance";
 import "../../../css/CropInputsTable.scss";
 
-const CropInputsTable = ({ cultivoId }) => {
+const CropInputsTable = ({ cultivoId, onTotalCostChange }) => {
   const [inputs, setInputs] = useState([]);
   const [totalCost, setTotalCost] = useState(0); // Estado para el costo total
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
@@ -29,7 +29,11 @@ const CropInputsTable = ({ cultivoId }) => {
     const fetchTotalCost = async () => {
       try {
         const response = await axiosInstance.get(`/cultivos/${cultivoId}/insumos/total-cost`);
-        setTotalCost(response.data.total_cost || 0); // Manejar el valor total
+        const total = response.data.total_cost || 0;
+        setTotalCost(total); // Manejar el valor total
+        if (onTotalCostChange) {
+          onTotalCostChange(total); // Pasamos el total al componente superior
+        }
       } catch (error) {
         console.error("Error fetching total input cost:", error);
       }
@@ -37,7 +41,7 @@ const CropInputsTable = ({ cultivoId }) => {
 
     fetchInputs();
     fetchTotalCost();
-  }, [cultivoId]);
+  }, [cultivoId,onTotalCostChange]);
 
   // Manejar la búsqueda de insumos
   const handleSearch = async () => {
