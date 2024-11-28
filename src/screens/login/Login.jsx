@@ -128,7 +128,7 @@ const Login = () => {
       login(access_token); // Utiliza la función login del contexto para guardar el token
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('userName', user_name);
-      navigate('/farms');
+      navigate('/task');
     } catch (error) {
       if (error.response) {
         // console.log('Error Status:', error.response.status);

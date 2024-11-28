@@ -93,39 +93,57 @@ const Sidebar = () => {
       <div className="sidebar-body">
         <div className="sidebar-menu">
           <ul className="menu-list">
-            <MenuItem to="/farms" icon={<GiBarn size={35} />} text="Fincas" />
-            <MenuItem
+          {hasPermission("ver_finca") && (
+              <MenuItem to="/farms" icon={<GiBarn size={35} />} text="Fincas" />
+            )}
+            {hasPermission("ver_gestion_agricola") && (
+              <MenuItem
               to="/agricultural_management"
               icon={<MdOutlineAgriculture size={35} />}
               text="Gestión Agrícola"
             />
-            <MenuItem to="/diagnosis" icon={<FaSearch size={35} />} text="Diagnósticos" />
-            <MenuItem
-              to="/reports"
-              icon={<MdOutlineAssignment size={35} />}
-              text="Reportes"
-            />
-            <MenuItem to="/task" icon={<BiTask size={35} />} text="Tareas" />
-            <MenuItem
-              to="/monitoring"
-              icon={<LuMonitorDot size={35} />}
-              text="Monitoreo"
-            />
-            <MenuItem
-              to="/weather-monitoring"
-              icon={<MdOutlineCloud size={35} />}
-              text="Datos Meteorológicos"
-            />
-            <MenuItem
-              to="/soil_analysis"
-              icon={<FaSeedling size={35} />}
-              text="Análisis edafológico"
-            />
-            <MenuItem
-              to="/audits" // Nueva ruta para Auditorías
-              icon={<FaClock size={35} />} // Ícono de reloj
-              text="Auditorías"
-            />
+            )}
+             {hasPermission("ver_diagnosticos") && (
+               <MenuItem to="/diagnosis" icon={<FaSearch size={35} />} text="Diagnósticos" />
+            )}
+             {hasPermission("ver_reportes") && (
+               <MenuItem
+               to="/reports"
+               icon={<MdOutlineAssignment size={35} />}
+               text="Reportes"
+             />
+            )}
+             {hasPermission("ver_tarea") && (
+              <MenuItem to="/task" icon={<BiTask size={35} />} text="Tareas" />
+            )}
+            {hasPermission("ver_monitoreo") && (
+                <MenuItem
+                to="/monitoring"
+                icon={<LuMonitorDot size={35} />}
+                text="Monitoreo"
+              />
+            )}
+             {hasPermission("ver_datos_meteorologicos") && (
+               <MenuItem
+               to="/weather-monitoring"
+               icon={<MdOutlineCloud size={35} />}
+               text="Datos Meteorológicos"
+             />
+            )}
+             {hasPermission("ver_analisis_edafologico") && (
+               <MenuItem
+               to="/soil_analysis"
+               icon={<FaSeedling size={35} />}
+               text="Análisis edafológico"
+             />
+            )}
+             {hasPermission("ver_auditorias") && (
+               <MenuItem
+               to="/audits" // Nueva ruta para Auditorías
+               icon={<FaClock size={35} />} // Ícono de reloj
+               text="Auditorías"
+             />
+            )}
             {hasPermission("crear_usuario") && (
               <MenuItem
                 to="/users"
