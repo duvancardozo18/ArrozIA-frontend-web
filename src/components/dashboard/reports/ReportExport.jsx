@@ -8,12 +8,12 @@ import cosechaBase64 from "../../../assets/images/cosechaBase64"; // Icono de co
 
 export const generatePDF = async (
   cropDetails,
-  inputs = [],
-  culturalWorks = [],
-  totalInputCost = 0,
-  totalWorkValue = 0,
-  production = 0,
-  income = 0,
+  inputs ,
+  culturalWorks,
+  totalInputCost,
+  totalWorkValue,
+  production,
+  income1,
   utility = 0
 ) => {
   const doc = new jsPDF();
@@ -68,7 +68,7 @@ try {
 
   doc.text("Fecha de cosecha:", 14, 100);
   doc.addImage(cosechaBase64, "PNG", 60, 90, 10, 10);
-  doc.text(cropDetails.estimatedHarvestDate ? new Date(cropDetails.estimatedHarvestDate).toLocaleDateString() : "No disponible", 75, 100);
+  doc.text(cropDetails.HarvestDate ? new Date(cropDetails.HarvestDate).toLocaleDateString() : "No disponible", 75, 100);
 
   // Producción e ingresos
   doc.text("Producción", 14, 115);
@@ -82,8 +82,9 @@ try {
     startY: 145,
     head: [["Descripción", "Valor"]],
     body: [
-      ["Insumos", `$${totalInputCost.toLocaleString()}`],
-      ["Labores Culturales", `$${totalWorkValue.toLocaleString()}`],
+      ["labores culturales", `$${totalInputCost.toLocaleString()}`],
+      ["insumos agricolas", `$${totalWorkValue.toLocaleString()}`],
+      ["cultivo", `$${totalWorkValue.toLocaleString()}`],
       ["Valor Total", `$${(totalInputCost + totalWorkValue).toLocaleString()}`],
     ],
     theme: "grid",

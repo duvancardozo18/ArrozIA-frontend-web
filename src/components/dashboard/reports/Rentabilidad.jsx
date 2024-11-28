@@ -4,38 +4,57 @@ import CropInputsTable from '../../dashboard/reports/CropInputsTable';
 import CulturalWorkTable from '../../dashboard/reports/CulturalWorkTable';
 import AgriculturalInputTable from '../../dashboard/reports/AgriculturalInputTable';
 import axiosInstance from "../../../config/AxiosInstance";
-import TotalCostsTable from "../../dashboard/reports/TotalCostsTable";
+import TotalCostsTable from "../../dashboard/reports/TotalCostsTable";  
+import TotalCostsTable2 from "../../dashboard/reports/TotalCostsTable2";
 
-const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }) => {
+const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId, plotId,selectedCropId  }) => {
   const [overallTotalCost, setOverallTotalCost] = useState("no disponible");
   const [filteredCulturalWorks, setFilteredCulturalWorks] = useState([]);
   const [production, setProduction] = useState(0); // Estado para producción
   const [totalIncome, setTotalIncome] = useState(0); // Estado para ingresos
+  const [cultivoTotalCost, setCultivoTotalCost] = useState(0); // Estado para el total de costos del cultivo
+  const [insumosTotalCost, setInsumosTotalCost] = useState(0);  // Estado para almacenar el total de los insumos
+  const [totalInsumos, setTotalInsumos] = useState('0');
+  const [totalCulturalWork, setTotalCulturalWork] = useState(0);  // Estado para el total de labores culturales
 
+ 
+  const handleTotalCulturalWorkChange = (total) => {
+    setTotalCulturalWork(total);  // Actualiza el total de labores culturales
+  };
+
+  const handleInsumosTotalCostChange = (total) => {
+    setInsumosTotalCost(total); // Actualizar el estado con el nuevo total de insumos
+  };
+  
+  const handleTotalCostChange = (totalCost) => {
+    setCultivoTotalCost(totalCost); // Actualizamos el estado con el total recibido
+  };
   const handleFilteredDataChange = (filteredData) => {
     setFilteredCulturalWorks(filteredData);
   };
 
+  // UseEffect para obtener el total de costos desde la API
   useEffect(() => {
-    // Obtener costos totales
-    const fetchOverallTotalCost = async () => {
-      if (!cultivoId) return;
-      try {
-        const response = await axiosInstance.get(`/overall-total/${cultivoId}`);
-        if (response.data && response.data.total !== undefined) {
-          setOverallTotalCost(response.data.total);
-        } else {
-          console.warn("La respuesta no contiene un valor total válido.");
-          setOverallTotalCost(0); // Si falla, el valor será 0 para evitar problemas de cálculo
+    if (cultivoId) {
+      console.log("Realizando la solicitud con cultivoId:", cultivoId);
+  
+      const fetchOverallTotalCost = async () => {
+        try {
+          const response = await axiosInstance.get(`/overall-total/${cultivoId}`);
+          console.log("Respuesta de la API:", response.data); // Imprimir la respuesta de la API
+  
+          if (response.data && response.data.total_general) {
+            setOverallTotalCost(response.data.total_general); // Ajustar esto si el formato de respuesta es diferente
+          } else {
+            console.error("No se obtuvo un total válido de la API");
+          }
+        } catch (error) {
+          console.error("Error al obtener el total de costos:", error);
         }
-      } catch (error) {
-        console.error("Error al obtener el costo total:", error);
-        setOverallTotalCost(0); // Si falla, el valor será 0
-      }
-    };
+      };
 
-    // Obtener datos de producción
-    const fetchProductionData = async () => {
+      // Obtener datos de producción
+     const fetchProductionData = async () => {
       if (!cultivoId) return;
       try {
         const response = await axiosInstance.get(`/harvest/crops/${cultivoId}`);
@@ -47,9 +66,11 @@ const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }
         console.error("Error al obtener los datos de producción:", error);
       }
     };
-
     fetchOverallTotalCost();
     fetchProductionData();
+
+  }
+    
   }, [cultivoId]);
 
   // Calcular utilidad: ingresos menos costos totales
@@ -106,7 +127,7 @@ const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }
               ))}
               <tr className="total-row">
                 <td>VALOR TOTAL</td>
-                <td>${typeof overallTotalCost === 'number' ? overallTotalCost.toLocaleString() : overallTotalCost}</td>
+                <td>{overallTotalCost !== "no disponible" ? `$${overallTotalCost.toLocaleString()}` : "Cargando..."}</td> {/* Mostrar el total de costos */}
               </tr>
             </tbody>
           </table>
@@ -114,9 +135,10 @@ const Rentabilidad = ({ plantingDate, harvestDate, expenses, income, cultivoId }
       </div>
 
       {/* Tablas de Insumos y Labores Culturales */}
-      <TotalCostsTable cultivoId={cultivoId} />
-      <CropInputsTable cultivoId={cultivoId} />
-      <CulturalWorkTable cultivoId={cultivoId} onFilteredDataChange={handleFilteredDataChange} />
+      <TotalCostsTable cultivoTotalCost={cultivoTotalCost} plotId={cultivoId} insumosTotalCost={insumosTotalCost}  totalCulturalWork={totalCulturalWork} cultivoId={cultivoId}/>
+      <TotalCostsTable2 cultivoId={cultivoId} onTotalCostChange={handleTotalCostChange} />
+      <CropInputsTable cultivoId={cultivoId} onTotalCostChange={handleInsumosTotalCostChange} />
+      <CulturalWorkTable cultivoId={cultivoId} onFilteredDataChange={handleFilteredDataChange} onTotalCulturalWorkChange={handleTotalCulturalWorkChange} />
       {/*<AgriculturalInputTable />*/}
     </div>
   );

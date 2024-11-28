@@ -4,6 +4,7 @@ import Rentabilidad from './Rentabilidad';
 import Rendimiento from './Rendimiento';
 import TabContent from './TabContent';
 import TotalCostsTable from './TotalCostsTable'; // Importar TotalCostsTable
+import TotalCostsTable2 from './TotalCostsTable2'; // Importar TotalCostsTable2
 import ExportModal from './ExportModal';
 import "../../../css/CropDetails.scss";
 
@@ -16,7 +17,12 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
   const [varietyName, setVarietyName] = useState("Cargando..."); // Nuevo estado para el nombre de la variedad
   const [showExportModal, setShowExportModal] = useState(false);
   const [activeTab, setActiveTab] = useState('rentabilidad'); // Cambiar el tab activo inicial a rentabilidad
+  const [cultivoTotalCost, setCultivoTotalCost] = useState(0); // Estado para el costo total del cultivo
 
+  // Función para recibir el costo total del cultivo de TotalCostsTable2
+  const handleTotalCostUpdate = (totalCost) => {
+    setCultivoTotalCost(totalCost); // Actualizamos el estado con el costo total del cultivo
+  };
   useEffect(() => {
     if (!selectedCropId) {
       console.error("Error: selectedCropId es undefined o null.");
@@ -28,10 +34,14 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
         const response = await axiosInstance.get(`/crops/${selectedCropId}`);
         console.log("Crop details:", response.data);
         setCropDetails(response.data);
-        console.log("CropDetails:", cropDetails);
-
+        
         // Si el cultivo tiene un lote relacionado, obtener sus detalles
-        if (response.data.plotId) fetchLotDetails(response.data.plotId);
+        if (response.data.plotId) {
+          console.log("plotId:", response.data.plotId);  // Asegúrate que plotId tiene valor
+          fetchLotDetails(response.data.plotId);  // Si plotId está disponible, buscar los detalles del lote
+        } else {
+          console.error("plotId no encontrado en los detalles del cultivo.");
+        }
 
         // Obtener el nombre de la variedad
         if (response.data.varietyId) {
@@ -106,6 +116,11 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
     fetchCulturalWorks();
   }, [selectedCropId]);
 
+  // Función para recibir el total del costo del cultivo
+  const handleTotalCostChange = (totalCost) => {
+    setCultivoTotalCost(totalCost);  // Actualizamos el estado con el total del costo
+  };
+
   if (!selectedCropId) {
     return <p>Por favor, selecciona un cultivo válido para ver los detalles.</p>;
   }
@@ -134,7 +149,7 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
         return null;
     }
   };
-
+  
   return (
     <div className="crop-details">
       <h3>Detalles del Cultivo: {cropDetails.cropName}</h3>
@@ -155,7 +170,7 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
       <div className="tab-content">
         {renderTabContent()}
       </div>
-
+      
       <button onClick={() => setShowExportModal(true)} className="export-button">Exportar Informe</button>
       {showExportModal && (
         <ExportModal

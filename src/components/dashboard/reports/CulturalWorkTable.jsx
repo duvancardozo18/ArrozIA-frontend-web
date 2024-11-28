@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../config/AxiosInstance";
-import "../../../css/CropInputsTable.scss";
+import "../../../css/cropinputstable.scss";
 
-const CulturalWorkTable = ({ cultivoId, onFilteredDataChange }) => {
+const CulturalWorkTable = ({ cultivoId, onFilteredDataChange, onTotalCulturalWorkChange  }) => {
   const [culturalWorks, setCulturalWorks] = useState([]);
   const [totalValue, setTotalValue] = useState(0);
   const [filters, setFilters] = useState({
@@ -20,7 +20,9 @@ const CulturalWorkTable = ({ cultivoId, onFilteredDataChange }) => {
       try {
         const response = await axiosInstance.get(`/crops/${cultivoId}/cultural-works`);
         setCulturalWorks(response.data);
-        setTotalValue(response.data.reduce((acc, work) => acc + work.valor, 0));
+        const total = response.data.reduce((acc, work) => acc + work.valor, 0);
+        setTotalValue(total);
+        onTotalCulturalWorkChange(total);  // Pasar el total de las labores culturales
         onFilteredDataChange(response.data); // Envía los datos iniciales
       } catch (error) {
         console.error("Error fetching cultural works:", error);
