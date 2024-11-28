@@ -1,22 +1,51 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import axiosInstance from "../../../config/AxiosInstance"; // Importamos axiosInstance
-//import * as XLSX from "xlsx";
 import logoBase64 from "../../../assets/images/logoBase64"; // Importa el logo como Base64
 import siembraBase64 from "../../../assets/images/siembraBase64"; // Icono de siembra en Base64
 import cosechaBase64 from "../../../assets/images/cosechaBase64"; // Icono de cosecha en Base64
 
 export const generatePDF = async (
   cropDetails,
-  inputs ,
+  inputs,
   culturalWorks,
   totalInputCost,
   totalWorkValue,
+  totalRent,
+  machineryAndLaborCosts,
+  agriculturalInputCosts,
   production,
-  income1,
-  utility = 0
+  income,
+  costDetails
 ) => {
   const doc = new jsPDF();
+
+  // Obtener nombre de la variedad a través del endpoint /get-variety/{variety_id}
+  let varietyName = cropDetails.varietyName; // Asumimos que varietyName está disponible en cropDetails
+  if (!varietyName && cropDetails.varietyId) {
+    try {
+      const response = await axiosInstance.get(`/get-variety/${cropDetails.varietyId}`);
+      varietyName = response.data.nombre || "Variedad desconocida"; // Si no encontramos el nombre, mostramos un mensaje predeterminado
+    } catch (error) {
+      console.error("Error al obtener el nombre de la variedad:", error);
+      varietyName = "Variedad desconocida"; // Si hay un error, mostramos un mensaje predeterminado
+    }
+  }
+
+  // Asegúrate de que los datos que usas para el PDF estén disponibles
+  console.log('Generando PDF con los siguientes datos: ', {
+    cropDetails,
+    inputs,
+    culturalWorks,
+    totalInputCost,
+    totalWorkValue,
+    totalRent,
+    machineryAndLaborCosts,
+    agriculturalInputCosts,
+    production,
+    income,
+    costDetails
+  });
 
   // Agregar el logo y título
   doc.addImage(logoBase64, "PNG", 10, 10, 30, 30);
@@ -25,113 +54,91 @@ export const generatePDF = async (
   doc.text("ARROZ IA", 50, 25);
   doc.setFontSize(18);
   doc.setTextColor(0, 0, 0);
-  doc.text("REPORTE - FINANCIERO", 80, 35);
+  doc.text("REPORTE - FINANANCIERO", 80, 35);
 
   // Fecha de generación
   const currentDate = new Date().toLocaleString();
   doc.setFontSize(12);
-  doc.text(`GENERADO: ${currentDate}`, 80, 42);
+  doc.text(`GENERADO: ${currentDate}`, 80, 45);
 
-  // Obtener información de la finca desde el endpoint /farm/{farm_id}
-  // Obtener información de la finca desde el endpoint /farm/{farm_id}
-let farmLocation = "No disponible";
-try {
-  const farmId = cropDetails.farmId || null; // Usamos el farmId pasado desde CropDetails
-  console.log("Fetching location for farmId:", farmId); // Para depuración
-  if (farmId) {
-    const response = await axiosInstance.get(`/farm/${farmId}`);
-    console.log("Farm API response:", response.data); // Verifica la respuesta de la API
-    const { ciudad, departamento } = response.data;
-    farmLocation = `${ciudad || "Ciudad desconocida"} - ${departamento || "Departamento desconocido"}`;
-  } else {
-    console.warn("No farmId provided in cropDetails.");
-  }
-} catch (error) {
-  console.error("Error fetching farm location:", error);
+  // Datos generales del cultivo
+  doc.setFontSize(14);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Cultivo: ${cropDetails.cropName}`, 10, 60);
+  doc.text(`Variedad: ${varietyName}`, 10, 70); // Usamos el nombre de la variedad obtenido del endpoint
+  doc.text(`Fecha de Siembra: ${cropDetails.plantingDate}`, 10, 80);
+  doc.text(`Fecha de Cosecha Estimada: ${cropDetails.estimatedHarvestDate}`, 10, 90);
+  doc.text(`Lote: ${cropDetails.plotId}`, 10, 100);
+  
+
+// Costos Totales
+doc.setFontSize(16);
+doc.text("Costos Totales", 10, 110); // Título de la tabla de Costos Totales
+autoTable(doc, {
+  startY: 120, // Espacio para la tabla de Costos Totales
+  head: [['Concepto', 'Valor']], // Encabezados de la tabla
+  body: [
+    ['Total Insumos Agrícolas', `$${totalInputCost.toLocaleString()}`], // Muestra el total de insumos agrícolas
+    ['Total Labores Culturales', `$${totalWorkValue.toLocaleString()}`], // Muestra el total de labores culturales
+  ],
+  theme: "grid", // Estilo de la tabla
+  styles: { halign: "right" }, // Alineación de los datos
+});
+
+// Verificar si hay suficiente espacio en la página antes de agregar la siguiente tabla
+let nextTableStartY = doc.autoTable.previous.finalY + 30; // Ajustamos el espacio antes de la siguiente tabla
+if (nextTableStartY > doc.internal.pageSize.height - 40) {
+  doc.addPage();  // Si la tabla no cabe, saltamos a la siguiente página
+  nextTableStartY = 20; // Resetear la posición Y después del salto de página
 }
 
+// Tabla de Costos de Insumos
+doc.setFontSize(16);
+doc.text("Insumos utilizados", 10, nextTableStartY); // Título de la tabla de Costos de Insumos
+autoTable(doc, {
+  startY: nextTableStartY + 10, // Espacio entre el título y la tabla
+  head: [['Insumo', 'Cantidad', 'Costo Unitario', 'Costo Total']],
+  body: inputs.map((input) => [
+    input.tipo_insumo?.nombre,   
+    input.cantidad || 0,
+    input.valor_unitario?.toLocaleString() || "0",
+    input.valor_total?.toLocaleString() || "0",
+  ]),
+});
 
-  // Información General
-  doc.setFontSize(12);
-  doc.text(`Ubicación: ${farmLocation}`, 14, 55);
-  doc.text(`Finca: ${cropDetails.farmName || "No disponible"}`, 14, 63);
-  doc.text(`Lote: ${cropDetails.plotId || "No disponible"}`, 14, 71);
-  doc.text(`Cultivo: ${cropDetails.cropName || "No disponible"}`, 100, 55);
-  doc.text(`Área Cultivada: ${cropDetails.cultivatedArea || "No disponible"} ${cropDetails.areaUnit || ""}`, 100, 63);
-  doc.text(`Variedad: ${cropDetails.varietyName || "No disponible"}`, 100, 71);
+// Total de Costos de Insumos
+doc.setFontSize(14);
+doc.text(`Total Costos de Insumos: ${totalInputCost.toLocaleString()}`, 50, doc.autoTable.previous.finalY + 10);
 
-  // Fechas de siembra y cosecha
-  doc.setFontSize(12);
-  doc.text("Fecha de siembra:", 14, 85);
-  doc.addImage(siembraBase64, "PNG", 60, 75, 10, 10);
-  doc.text(cropDetails.plantingDate ? new Date(cropDetails.plantingDate).toLocaleDateString() : "No disponible", 75, 85);
+// Verificar espacio para la siguiente tabla de Costos de Labores Culturales
+nextTableStartY = doc.autoTable.previous.finalY + 30;
+if (nextTableStartY > doc.internal.pageSize.height - 40) {
+  doc.addPage();  // Si la tabla no cabe, saltamos a la siguiente página
+  nextTableStartY = 20; // Resetear la posición Y después del salto de página
+}
 
-  doc.text("Fecha de cosecha:", 14, 100);
-  doc.addImage(cosechaBase64, "PNG", 60, 90, 10, 10);
-  doc.text(cropDetails.HarvestDate ? new Date(cropDetails.HarvestDate).toLocaleDateString() : "No disponible", 75, 100);
+// Tabla de Costos de Labores Culturales
+doc.setFontSize(16);
+doc.text("Costos de Labores Culturales", 10, nextTableStartY); // Espacio ajustado entre el título y la tabla
+autoTable(doc, {
+  startY: nextTableStartY + 10, // Espacio entre el título y la tabla
+  head: [['Actividad', 'Fecha de Inicio', 'Fecha de Culminación', 'Operario', 'Maquinaria']],
+  body: culturalWorks.map((work) => [
+    work.actividad,
+    work.fecha_inicio,
+    work.fecha_culminacion,
+    work.operario,
+    work.maquinaria,
+  ]),
+});
 
-  // Producción e ingresos
-  doc.text("Producción", 14, 115);
-  doc.text(`${production} toneladas`, 75, 115);
-  doc.text("Ingresos", 14, 125);
-  doc.text(`$${income.toLocaleString()}`, 75, 125);
+// Total de Costos de Labores Culturales
+doc.setFontSize(14);
+doc.text(`Total Costos de Labores Culturales: ${totalWorkValue.toLocaleString()}`, 10, doc.autoTable.previous.finalY + 10);
 
-  // Costos totales
-  doc.text("Costos totales", 14, 140);
-  autoTable(doc, {
-    startY: 145,
-    head: [["Descripción", "Valor"]],
-    body: [
-      ["labores culturales", `$${totalInputCost.toLocaleString()}`],
-      ["insumos agricolas", `$${totalWorkValue.toLocaleString()}`],
-      ["cultivo", `$${totalWorkValue.toLocaleString()}`],
-      ["Valor Total", `$${(totalInputCost + totalWorkValue).toLocaleString()}`],
-    ],
-    theme: "grid",
-    styles: { halign: "right" },
-  });
-
-  // Tabla de insumos
-  const finalYCosts = doc.lastAutoTable.finalY + 10;
-  doc.text("Insumos Utilizados", 14, finalYCosts);
-  autoTable(doc, {
-    startY: finalYCosts + 5,
-    head: [["Concepto", "Valor Unitario", "Cantidad", "Descripción", "Valor Total"]],
-    body: inputs.map((input) => [
-      input.concepto || "No disponible",
-      `$${input.valor_unitario?.toLocaleString() || 0}`,
-      input.cantidad || 0,
-      input.descripcion || "No disponible",
-      `$${input.valor_total?.toLocaleString() || 0}`,
-    ]),
-    theme: "grid",
-    styles: { halign: "center" },
-  });
-
-  // Tabla de labores culturales
-  const finalYInputs = doc.lastAutoTable.finalY + 10;
-  doc.text("Labores Culturales", 14, finalYInputs);
-  autoTable(doc, {
-    startY: finalYInputs + 5,
-    head: [["Fecha Inicio", "Fecha Fin", "Actividad", "Maquinaria", "Operario", "Descripción", "Valor"]],
-    body: culturalWorks.map((work) => [
-      work.fecha_inicio ? new Date(work.fecha_inicio).toLocaleDateString() : "No disponible",
-      work.fecha_culminacion ? new Date(work.fecha_culminacion).toLocaleDateString() : "No disponible",
-      work.actividad || "No disponible",
-      work.maquinaria || "No aplica",
-      work.operario || "No disponible",
-      work.descripcion || "No disponible",
-      `$${work.valor?.toLocaleString() || 0}`,
-    ]),
-    theme: "grid",
-    styles: { halign: "center" },
-  });
-
-  // Guardar PDF
-  doc.save(`Reporte_Financiero_${cropDetails.cropName || "No disponible"}.pdf`);
+  // Guardar el documento PDF
+  doc.save(`reporte_financiero_${cropDetails.cropName}.pdf`);
 };
-
-
 
 
 

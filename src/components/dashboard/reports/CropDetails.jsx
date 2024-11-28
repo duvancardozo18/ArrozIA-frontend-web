@@ -174,21 +174,18 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
       <button onClick={() => setShowExportModal(true)} className="export-button">Exportar Informe</button>
       {showExportModal && (
         <ExportModal
-        onClose={() => setShowExportModal(false)}
-        cropDetails={{
-          ...cropDetails,
-          varietyName,
-          lotDetails,
-          farmName: selectedFarmName,
-          farmId: cropDetails.farm?.id || cropDetails.farmId || null, // Pasamos farmId
-          farmLocation: lotDetails
-            ? `${lotDetails.ciudad || "Ciudad desconocida"} - ${lotDetails.departamento || "Departamento desconocido"}`
-            : "No disponible",
-        }}
-        inputs={inputs}
-        culturalWorks={culturalWorks}
-      />
-      
+          onClose={() => setShowExportModal(false)}
+          cropDetails={cropDetails}
+          varietyName = {varietyName}
+          lotDetails={lotDetails}
+          farmName = {selectedFarmName}
+          farmId = {cropDetails.farm?.id || cropDetails.farmId || null} // Pasamos farmId
+          farmLocation ={ lotDetails ? `${lotDetails.ciudad || "Ciudad desconocida"} - ${lotDetails.departamento || "Departamento desconocido"}` : "No disponible"}
+          inputs={inputs}
+          culturalWorks={culturalWorks}
+          cultivoTotalCost={cultivoTotalCost}
+          cultivoId={selectedCropId}
+        />
       )}
     </div>
   );

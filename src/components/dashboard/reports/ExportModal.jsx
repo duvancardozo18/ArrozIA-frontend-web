@@ -3,7 +3,7 @@ import "../../../css/ExportModal.scss";
 import { generatePDF, generateXLS } from "./ReportExport"; // Asegúrate de ajustar la ruta correctamente
 import axiosInstance from "../../../config/AxiosInstance"; // Importar AxiosInstance
 
-const ExportModal = ({ onClose, cropDetails, inputs = [], culturalWorks = [], cultivoId }) => {
+const ExportModal = ({ onClose, cropDetails, inputs, culturalWorks, cultivoId }) => {
   const [format, setFormat] = useState('XLSX');
   const [totalInputCost, setTotalInputCost] = useState(0);
   const [totalWorkValue, setTotalWorkValue] = useState(0);
@@ -27,20 +27,21 @@ const ExportModal = ({ onClose, cropDetails, inputs = [], culturalWorks = [], cu
         const rentResponse = await axiosInstance.get(`/lands/${cultivoId}/total-rent`);
         setTotalRent(rentResponse.data.total_rent || 0);
 
-        // Obtener costos de maquinaria y mano de obra
-        const machineryLaborResponse = await axiosInstance.get(`/lands/${cultivoId}/machinery-and-labor-costs`);
-        setMachineryAndLaborCosts(machineryLaborResponse.data || []);
+        // Obtener costos de maquinaria y mano de obra (si aplica)
+        const machineryAndLaborResponse = await axiosInstance.get(`/cultivos/${cultivoId}/machinery-labor-cost`);
+        setMachineryAndLaborCosts(machineryAndLaborResponse.data || []);
 
         // Obtener costos de insumos agrícolas
-        const agriculturalInputResponse = await axiosInstance.get(`/lands/${cultivoId}/agricultural-input-costs`);
+        const agriculturalInputResponse = await axiosInstance.get(`/cultivos/${cultivoId}/agricultural-inputs`);
         setAgriculturalInputCosts(agriculturalInputResponse.data || []);
+        
       } catch (error) {
         console.error("Error al obtener los totales:", error);
       }
     };
-    
+
     fetchTotals();
-  }, [cultivoId]);
+  }, [cultivoId]); // Dependencia para volver a ejecutar cuando cambie el cultivoId
 
   const handleGenerateReport = () => {
     // Verificar que existan datos (filtrados o completos)
@@ -74,29 +75,26 @@ const ExportModal = ({ onClose, cropDetails, inputs = [], culturalWorks = [], cu
     }
   
     onClose();
-  };  
+  };
 
   return (
     <div className="export-modal">
-      <div className="export-modal-content">
-        <button className="close-button" onClick={onClose}>×</button>
-        <h3>Exportar informe de Rentabilidad</h3>
-        <p>Seleccione las opciones de exportación:</p>
-
+      <div className="modal-content">
+        <h3>Generar Reporte</h3>
         <div className="format-selection">
-          <label>Formato:</label>
-          <select value={format} onChange={(e) => setFormat(e.target.value)}>
+          <label>Selecciona el formato:</label>
+          <select 
+            value={format} 
+            onChange={(e) => setFormat(e.target.value)} 
+            className="format-select"
+          >
             <option value="XLSX">XLSX</option>
             <option value="PDF">PDF</option>
           </select>
         </div>
 
-        <button
-          className="generate-report-button"
-          onClick={handleGenerateReport}
-        >
-          Generar reporte
-        </button>
+        <button onClick={handleGenerateReport} className="generate-btn">Generar Reporte</button>
+        <button onClick={onClose} className="close-btn">Cerrar</button>
       </div>
     </div>
   );
