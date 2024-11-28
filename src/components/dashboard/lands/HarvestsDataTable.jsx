@@ -368,7 +368,7 @@ const HarvestsDataTable = ({ cultivoId }) => {
                 {errors.fecha_cosecha && <p>{errors.fecha_cosecha}</p>}
               </InputGroup>
               <InputGroup>
-                <label>Cantidad Producida</label>
+                <label>Cantidad Producida (Toneladas)</label>
                 <input
                   type="number"
                   name="cantidad_producida_cosecha"
@@ -385,7 +385,7 @@ const HarvestsDataTable = ({ cultivoId }) => {
                 )}
               </InputGroup>
               <InputGroup>
-                <label>Venta</label>
+                <label>Valor de la venta</label>
                 <input
                   type="number"
                   name="venta_cosecha"
@@ -435,7 +435,7 @@ const HarvestsDataTable = ({ cultivoId }) => {
 
               <SectionTitle>Mercado</SectionTitle>
               <InputGroup>
-                <label>Valor Unitario de Compra de la Carga</label>
+                <label>Valor de la Carga</label>
                 <input
                   type="number"
                   name="precio_carga_mercado"
