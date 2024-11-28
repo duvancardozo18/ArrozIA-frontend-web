@@ -19,12 +19,6 @@ const LandCard = ({ land, isExpanded, onToggle }) => {
       <div className="content">
         <h3 className="land-name">{land.nombre}</h3>
       </div>
-      {isExpanded && (
-        <div className="land-details">
-          {/* Aquí puedes agregar más detalles si se necesitan al expandir */}
-          <p>Área: {land.area} ha</p>
-        </div>
-      )}
     </div>
   );
 };

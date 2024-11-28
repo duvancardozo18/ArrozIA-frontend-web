@@ -14,42 +14,75 @@
 
 /* Column for the lands list */
 .lands-column {
-    flex: 1; /* Allows this column to take up an equal portion of the available space */
+    flex: 1;
     padding: 10px;
-    background-color: #f9f9f9; /* Optional: to visually separate the columns */
+    background-color: #f9f9f9;
     box-sizing: border-box;
 }
 
 /* Column for the soil analysis */
 .soil-analysis-column {
-    flex: 2; /* Allows this column to take up twice the space as lands column */
+    flex: 2;
     padding: 10px;
-    background-color: #ffffff; /* Optional: to visually separate the columns */
+    background-color: #ffffff;
     box-sizing: border-box;
 }
 
-/* Soil analysis table container inside the soil-analysis-column */
+/* Soil analysis table container */
 .soil-analysis-table-container {
-    width: 100%; /* Ensures full width of the container */
+    width: 100%;
     box-sizing: border-box;
 }
 
 /* Responsive design for smaller screens */
 @media (max-width: 768px) {
     .soil-analysis-view-container {
-        flex-direction: column; /* Stacks the columns vertically */
+        flex-direction: column;
     }
 
     .lands-column,
     .soil-analysis-column {
-        width: 100%; /* Each column takes full width when stacked */
+        width: 100%;
     }
 }
 
+/* Header container for title and button */
+.header-container {
+    position: relative; /* Ensure the button is positioned relative to this container */
+    padding-bottom: 10px;
+}
 
-.lands-container {
+.header-title {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+/* Add button styles */
+.add-button {
+    position: absolute; /* Position relative to the header container */
+    top: 0;
+    right: 0;
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+}
+
+.add-button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.add-button .button__icon {
+    margin-left: 8px;
 }
 
 .land-card {
