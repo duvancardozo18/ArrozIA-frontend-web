@@ -50,7 +50,7 @@ const GestionAgricola = () => {
           onClick={() => setActiveTable("variedades")}
           className={`toggle-button ${activeTable === "variedades" ? "active" : ""}`}
         >
-          variedades
+          Variedades
         </button>
         <button
           onClick={() => setActiveTable("maquinaria")}

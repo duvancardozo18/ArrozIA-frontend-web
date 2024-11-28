@@ -90,10 +90,10 @@ const TaskTable = ({ refresh, cultivoId }) => {
           estado: task.estado?.nombre || "Estado desconocido",
           es_mecanizable: task.es_mecanizable ? "Sí" : "No",
           labor_cultural: task.labor_cultural?.nombre || "Labor desconocida",
-          insumo_agricola: task.insumo_agricola?.nombre || "Insumo desconocido",
+          insumo_agricola: task.insumo_agricola?.nombre || "N/A",
           usuario: task.usuario?.nombre || "Usuario desconocido",
           cantidad_insumo: task.cantidad_insumo || "N/A",
-          maquinaria: task.maquinaria_agricola?.name || "Sin maquinaria",
+          maquinaria: task.maquinaria_agricola?.name || "N/A",
           precio_labor: task.precio_labor_cultural,
           descripcion: task.descripcion,
         }));

@@ -157,12 +157,12 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
   const validateFields = () => {
     const newErrors = {};
 
-    if (!task.title) newErrors.title = "Descripción requerida";
+    //if (!task.title) newErrors.title = "Descripción requerida";
     if (!task.costoLabor) newErrors.costoLabor = "Costo de la labor requerido";
-    if (!task.cantidadInsumo) newErrors.cantidadInsumo = "Cantidad de insumo requerida";
+    //if (!task.cantidadInsumo) newErrors.cantidadInsumo = "Cantidad de insumo requerida";
     if (!task.start) newErrors.start = "Fecha estimada requerida";
     if (!task.laborCulturalId) newErrors.laborCulturalId = "Labor cultural requerida";
-    if (!task.insumoAgricolaId) newErrors.insumoAgricolaId = "Insumo requerido";
+    //if (!task.insumoAgricolaId) newErrors.insumoAgricolaId = "Insumo requerido";
     if (!task.usuarioId) newErrors.usuarioId = "Usuario requerido";
     if (task.esMecanizable && !task.maquinariaAgricolaId) {
       newErrors.maquinariaAgricolaId = "Maquinaria requerida";
@@ -178,17 +178,18 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
     const taskData = {
       fecha_estimada: task.start,
       fecha_realizacion: null,
-      descripcion: task.title,
+      descripcion: task.title ? task.title : null, 
       estado_id: 1,
       es_mecanizable: task.esMecanizable,
       labor_cultural_id: task.laborCulturalId,
-      insumo_agricola_id: task.insumoAgricolaId,
+      cantidad_insumo: task.cantidadInsumo ? task.cantidadInsumo : null, 
+      insumo_agricola_id: task.insumoAgricolaId ? task.insumoAgricolaId : null,
       usuario_id: task.usuarioId,
       maquinaria_agricola_id: task.esMecanizable ? task.maquinariaAgricolaId : null,
       cultivo_id: cultivoId,
-      precio_labor_cultural: task.costoLabor, // Campo para el costo de la labor
-      cantidad_insumo: task.cantidadInsumo, // Nuevo campo
+      precio_labor_cultural: task.costoLabor,
     };
+    
 
     try {
       await axiosInstance.post("/tasksCreate", taskData);
@@ -202,6 +203,7 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     onClose();
+    window.location.reload(); 
   };
 
   const handleChange = (field, value) => {
@@ -233,46 +235,6 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
               />
             </Tooltip>
 
-            <Tooltip title={errors.title || ""} open={!!errors.title} placement="top" arrow>
-              <StyledTextField
-                label="Descripción"
-                fullWidth
-                value={task.title}
-                onChange={(e) => handleChange("title", e.target.value)}
-              />
-            </Tooltip>
-
-            <Tooltip title={errors.costoLabor || ""} open={!!errors.costoLabor} placement="top" arrow>
-              <StyledTextField
-                label="Costo de la Labor"
-                type="number"
-                fullWidth
-                value={task.costoLabor}
-                onChange={(e) => handleChange("costoLabor", e.target.value)}
-              />
-            </Tooltip>
-
-            <Tooltip title={errors.cantidadInsumo || ""} open={!!errors.cantidadInsumo} placement="top" arrow>
-              <StyledTextField
-                label="Cantidad de Insumo"
-                type="number"
-                fullWidth
-                value={task.cantidadInsumo}
-                onChange={(e) => handleChange("cantidadInsumo", e.target.value)}
-              />
-            </Tooltip>
-
-            <Tooltip title={errors.start || ""} open={!!errors.start} placement="top" arrow>
-              <StyledTextField
-                label="Fecha Programada"
-                type="date"
-                fullWidth
-                value={task.start}
-                onChange={(e) => handleChange("start", e.target.value)}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Tooltip>
-
             <Tooltip title={errors.laborCulturalId || ""} open={!!errors.laborCulturalId} placement="top" arrow>
               <StyledFormControl fullWidth>
                 <InputLabel>Labor Cultural</InputLabel>
@@ -289,21 +251,36 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
               </StyledFormControl>
             </Tooltip>
 
-            <Tooltip title={errors.insumoAgricolaId || ""} open={!!errors.insumoAgricolaId} placement="top" arrow>
-              <StyledFormControl fullWidth>
-                <InputLabel>Insumo</InputLabel>
-                <Select
-                  value={task.insumoAgricolaId}
-                  onChange={(e) => handleChange("insumoAgricolaId", e.target.value)}
-                >
-                  {inputs.map((input) => (
-                    <MenuItem key={input.id} value={input.id}>
-                      {input.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </StyledFormControl>
+            <Tooltip title={errors.title || ""} open={!!errors.title} placement="top" arrow>
+              <StyledTextField
+                label="Descripción (Opcional)"
+                value={task.title}
+                onChange={(e) => handleChange("title", e.target.value)}
+              />
             </Tooltip>
+
+            <Tooltip title={errors.costoLabor || ""} open={!!errors.costoLabor} placement="top" arrow>
+              <StyledTextField
+                label="Costo de la Labor"
+                type="number"
+                fullWidth
+                value={task.costoLabor}
+                onChange={(e) => handleChange("costoLabor", e.target.value)}
+              />
+            </Tooltip>
+
+            <Tooltip title={errors.start || ""} open={!!errors.start} placement="top" arrow>
+              <StyledTextField
+                label="Fecha Programada"
+                type="date"
+                fullWidth
+                value={task.start}
+                onChange={(e) => handleChange("start", e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Tooltip>
+
+            
 
             <Tooltip title={errors.usuarioId || ""} open={!!errors.usuarioId} placement="top" arrow>
               <StyledFormControl fullWidth>
@@ -320,6 +297,33 @@ const TaskDialog = ({ open, onClose, onSave, cultivoNombre, cultivoId }) => {
                 </Select>
               </StyledFormControl>
             </Tooltip>
+
+            <Tooltip title={errors.insumoAgricolaId || ""} open={!!errors.insumoAgricolaId} placement="top" arrow>
+              <StyledFormControl fullWidth>
+                <InputLabel>Insumo (Opcional)</InputLabel>
+                <Select
+                  value={task.insumoAgricolaId}
+                  onChange={(e) => handleChange("insumoAgricolaId", e.target.value)}
+                >
+                  {inputs.map((input) => (
+                    <MenuItem key={input.id} value={input.id}>
+                      {input.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </StyledFormControl>
+            </Tooltip>
+
+            <Tooltip title={errors.cantidadInsumo || ""} open={!!errors.cantidadInsumo} placement="top" arrow>
+              <StyledTextField
+                label="Cantidad de Insumo (Opcional)"
+                type="number"
+                fullWidth
+                value={task.cantidadInsumo}
+                onChange={(e) => handleChange("cantidadInsumo", e.target.value)}
+              />
+            </Tooltip>
+
 
             {task.esMecanizable && (
               <Tooltip title={errors.maquinariaAgricolaId || ""} open={!!errors.maquinariaAgricolaId} placement="top" arrow>

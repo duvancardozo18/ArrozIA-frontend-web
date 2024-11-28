@@ -187,13 +187,12 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
                 name="descripcion"
                 value={formData.descripcion}
                 onChange={handleChange}
-                required
                 rows={3}
                 maxLength={300}
               />
             </InputGroup>
             <InputGroup>
-              <label>Precio Hectaria</label>
+              <label>Precio por Hectaria</label>
               <input
                 type="number"
                 name="precio_hectaria"
@@ -205,12 +204,11 @@ const CreateLaborModal = ({ closeModal, onSave }) => {
               />
             </InputGroup>
             <InputGroup>
-              <label>Etapa Fenológica</label>
+              <label>Etapa Fenológica (Opcional)</label>
               <select
                 name="id_etapa_fenologica"
                 value={formData.id_etapa_fenologica}
                 onChange={handleChange}
-                required
               >
                 <option value="" disabled>Selecciona una etapa fenológica</option>
                 {phenologicalStages.map((stage) => (
