@@ -58,14 +58,18 @@ const TotalCostsTable2 = ({ cultivoId, onTotalCostChange }) => {
             <tr key={cost.id}>
               <td>{cost.concepto}</td>
               <td>{cost.descripcion}</td>
-              <td>${cost.precio.toFixed(2)}</td>
+              <td>
+                {cost.precio.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}
+              </td>
             </tr>
           ))}
         </tbody>
         <tfoot>
           <tr>
             <td colSpan="2" className="total-row">Total</td>
-            <td className="total-value">${totalCost.toFixed(2)}</td>
+            <td className="total-value">
+              {totalCost.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}
+            </td>
           </tr>
         </tfoot>
       </table>
