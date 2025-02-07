@@ -55,42 +55,42 @@ Tener instalado las siguientes herramientas:
 
 
 ### Login
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Login.png>)
 
 ### Roles
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Roles.png>)
 
 ### Usuarios
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Usuarios.png>)
 
 ### Fincas
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Fincas.png>)
 
 ### Cultivos
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Cultivo.png>)
 
 ### Gestion Agricola
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Gestion_Agricola.png>)
 
 ### Labores Culturales
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Labores_culturales.png>)
 
 ### Tarea - Labor Cultural
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Tareas.png>)
 
 ### Diagnostico Fitosanitario
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Diagnostico_Fitosanitario.png>)
 
 ### Analisis Edafologico
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Analisis_edafologico.png>)
 
 ### Monitoreos
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Monitoreos.png>)
 
 ### Datos Meteorologicos
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Datos_Meteorologicos.png>)
 
 ### Reportes
-![](<#>)
+![](<https://raw.githubusercontent.com/duvancardozo18/ArrozIA-frontend-web/refs/heads/main/resources/images/Reportes.png>)
 
 
