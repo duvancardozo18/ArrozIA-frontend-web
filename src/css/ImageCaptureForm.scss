@@ -43,7 +43,7 @@
           background-color: #28a745;
   
           &:hover {
-            background-color: darken(#28a745, 10%);
+            background-color: #28a745;
           }
         }
   
@@ -51,7 +51,7 @@
           background-color: #007bff;
   
           &:hover {
-            background-color: darken(#007bff, 10%);
+            background-color: #007bff;
           }
   
           &:disabled {
@@ -85,7 +85,7 @@
         font-size: 16px;
   
         &:hover {
-          background-color: darken(#28a745, 10%);
+          background-color: #28a745;
         }
       }
     }

@@ -118,8 +118,7 @@ const EditSoilAnalysisModal = ({ closeModal, onSave, selectedLand, soilAnalysisD
     lote_id: selectedLand ? selectedLand.id : soilAnalysisData?.lote_id || "",
     lote_name: soilAnalysisData.lote ? soilAnalysisData.lote.nombre : "",
     fecha_analisis: soilAnalysisData ? soilAnalysisData.fecha_analisis : "",
-    tipo_suelo_id: soilAnalysisData.tipo_suelo_id || "",  // Asegúrate de que el tipo_suelo_id se establece bien
-    tipo_suelo_id: soilAnalysisData?.soil_type?.id || "", // Asegúrate de que se establece bien el id de tipo de suelo
+    tipo_suelo_id: soilAnalysisData?.soil_type?.id || "",
     archivo_reporte: null,
     parametro_biologico: {
       biomasa_microbiana: soilAnalysisData?.parametro_biologico?.biomasa_microbiana || "",
