@@ -1,5 +1,3 @@
-
-// Variables de color
 :root {
   --color-primary: #6C9BCF;
   --color-danger: #FF0060;
@@ -31,7 +29,6 @@
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
 
-// Reset básico
 * {
   margin: 0;
   padding: 0;
@@ -42,31 +39,25 @@
   box-sizing: border-box;
 }
 
-
-
-
 .text-muted {
   color: var(--color-info-dark);
 }
 
-// Contenedores y estilos de la página
 .layout {
-    display: flex;
-    justify-content: space-between; /* Esto distribuirá los dos componentes en columnas */
-    gap: 2rem; /* Añade espacio entre las dos secciones */
-  }
-  
-  .right-section {
-    width: 28%; /* Esto ya debería estar aplicando el tamaño adecuado */
-    margin-top: 1.4rem;
-  }
-  
-  .left-section {
-    flex-grow: 1; /* Esto hará que FincaMain ocupe el espacio restante a la izquierda */
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
 
-// Layout responsive
+.right-section {
+  width: 28%;
+  margin-top: 1.4rem;
+}
+
+.left-section {
+  flex-grow: 1;
+}
+
 @media screen and (max-width: 768px) {
   .layout {
     flex-direction: column;
@@ -78,47 +69,20 @@
   }
 }
 
-
-
-
-
-
-
-
-
-.text-muted {
-  color: var(--color-info-dark);
-}
-
-// Contenedores y estilos de la página
 .content-area {
   padding: var(--padding-1);
-}
-
-.layout {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
 }
 
 .box-lote {
   width: 70%;
   background-color: var(--color-white);
   color: var(--color-dark);
-  // padding: var(--card-padding);
   padding-top: 25px;
   text-align: center;
   box-shadow: var(--box-shadow);
   border-radius: var(--card-border-radius);
   margin-top: 1.3rem;
 }
-
-
-.right-section {
-  width: 28%;
-  margin-top: 1.4rem;
-}
-
 
 .farms {
   margin-top: 2rem;
@@ -130,21 +94,20 @@
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.7rem;
-  padding: 1.4rem (--card-padding);
+  padding: 1.4rem var(--card-padding);
   border-radius: var(--border-radius-2);
   box-shadow: var(--box-shadow);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.farm-notification .notification .content{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0;
-    width: 100%;
+.farm-notification .notification .content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  width: 100%;
 }
-
 
 .icon {
   padding: 0.6rem;
@@ -154,133 +117,125 @@
   display: flex;
 }
 
-//edicion para la card finca
-
 .card-finca {
-    background-color: var(--color-white);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.7rem;
-    padding: 1.4rem;
-    border-radius: var(--border-radius-2);
-    box-shadow: none; /* Sin sombra por defecto */
-    cursor: pointer;
-    transition: all 0.3s ease;
-    justify-content: space-between;
-    position: relative;
-  
-    &:hover {
-      background-color: var(--color-light); /* Efecto hover */
-      transform: translateY(-5px); /* Efecto de elevación */
-    }
-  
-    &.selected {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra solo para la finca seleccionada */
-    }
-  }
-  
-  
-  
-  .icon-container {
-    background-color: #14B814; /* Fondo verde para el ícono */
-    padding: 0.8rem;
-    border-radius: 10px; /* Bordes redondeados */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .content {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .info h3 {
-    font-size: 1rem;
-    font-weight: 500;
-    white-space: nowrap;        /* No permite que el texto salte a otra línea */
-    overflow: hidden;           /* Oculta cualquier contenido que se desborde */
-    text-overflow: ellipsis;    /* Muestra puntos suspensivos (...) si el texto es demasiado largo */
-    max-width: 100px;           /* Ajusta este valor según el diseño de tu tarjeta */
-  }
-  
-  
-  .info small {
-    font-size: 0.85rem;
-    color: var(--color-info-dark);
-  }
-  
-  .actions {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .actions svg {
-    font-size: 1.5rem;
-  }
-  
-  .actions svg:hover {
-    transition: all 0.2s ease;
-  }
+  background-color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+  padding: 1.4rem;
+  border-radius: var(--border-radius-2);
+  box-shadow: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  justify-content: space-between;
+  position: relative;
+}
 
-//edicion para la tabla lote
+.card-finca:hover {
+  background-color: var(--color-light);
+  transform: translateY(-5px);
+}
+
+.card-finca.selected {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.icon-container {
+  background-color: #14B814;
+  padding: 0.8rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.info h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+.info small {
+  font-size: 0.85rem;
+  color: var(--color-info-dark);
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.actions svg {
+  font-size: 1.5rem;
+}
+
+.actions svg:hover {
+  transition: all 0.2s ease;
+}
+
 .lote-table-container {
-    width: 100%;
-    background-color: var(--color-white);
-    // padding: 20px;
-    border-radius: var(--card-border-radius);
-    box-shadow: none; /* Sin sombra por defecto */
-    
-    &.with-shadow {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra solo si hay finca seleccionada */
-    }
-  }
-  
-  
-  .lote-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  
-  .lote-table th, .lote-table td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid var(--color-light);
-  }
-  
-  .lote-table th {
-    font-weight: 600;
-    border: none; /* Sin borde para eliminar el aspecto de tabla */
-  }
-  
-  .lote-table-container .add-lote-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .separator {
-    margin-top: 10px;
-    border: none;
-    border-top: 1px solid var(--color-light);
-  }
-  
-  button {
-    border: none;
-    background: none;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    opacity: 0.8;
-  }
-  
-   
+  width: 100%;
+  background-color: var(--color-white);
+  border-radius: var(--card-border-radius);
+  box-shadow: none;
+}
+
+.lote-table-container.with-shadow {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.lote-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.lote-table th,
+.lote-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-light);
+}
+
+.lote-table th {
+  font-weight: 600;
+  border: none;
+}
+
+.lote-table-container .add-lote-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.separator {
+  margin-top: 10px;
+  border: none;
+  border-top: 1px solid var(--color-light);
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
 .icon.deactive {
   background-color: var(--color-danger);
 }
@@ -300,7 +255,6 @@
   transition: all 0.3s ease;
 }
 
-// Layout responsive
 @media screen and (max-width: 768px) {
   .layout {
     flex-direction: column;

@@ -7,6 +7,7 @@
 
   .area-top-title {
     color: var(--text-color-inverted);
+    margin: 0 auto;
   }
 
   .area-top-l {
@@ -27,7 +28,6 @@
     }
   }
 
-  // react-date-range plugin theme customization
   .date-range-wrapper {
     display: inline-block;
     box-shadow: var(--light-shadow1);
