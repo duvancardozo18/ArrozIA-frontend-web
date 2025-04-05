@@ -122,13 +122,19 @@ const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAl
               >
                 <td>{lote.nombre}</td>
                 <td>
-                  <buttonEdit onClick={(e) => { e.stopPropagation(); onEditLote(lote); }}>
-                    <EditIcon style={{ color: '#007BFF' }} />
-                  </buttonEdit>
-                  <buttonDelete onClick={(e) => { e.stopPropagation(); onDeleteLote(lote); }}>
-                    <DeleteIcon style={{ color: '#FF4D4F' }} />
-                  </buttonDelete>
-                </td>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onEditLote(lote); }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      <EditIcon style={{ color: '#007BFF' }} />
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onDeleteLote(lote); }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      <DeleteIcon style={{ color: '#FF4D4F' }} />
+                    </button>
+                  </td>
                 <td>
                   <button
                     onClick={(e) => {

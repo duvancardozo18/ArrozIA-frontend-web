@@ -22,13 +22,13 @@ const Farms = () => {
     const welcomeShown = localStorage.getItem("welcomeShown");
 
     // Verificar valores en consola
-    console.log("Token:", token);
-    console.log("Bienvenida mostrada antes:", welcomeShown);
+    //console.log("Token:", token);
+    //console.log("Bienvenida mostrada antes:", welcomeShown);
 
     if (token && !welcomeShown) {
       setShowSnackbar(true);
       localStorage.setItem("welcomeShown", "true");
-      console.log("Bienvenida mostrada ahora:", localStorage.getItem("welcomeShown"));
+      //console.log("Bienvenida mostrada ahora:", localStorage.getItem("welcomeShown"));
     }
   }, []);
 
