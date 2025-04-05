@@ -21,7 +21,7 @@ import CreateMachineryModal from "../../components/dashboard/AgriculturalManagem
 const GestionAgricola = () => {
   const { isAuthenticated } = useContext(AuthContext);
   const [refreshTable, setRefreshTable] = useState(false);
-  const [activeTable, setActiveTable] = useState("etapas-fenologicas");
+  const [activeTable, setActiveTable] = useState("insumos");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -39,39 +39,40 @@ const GestionAgricola = () => {
   return (
     <div className="content-area">
       <Header title="Gestión Agrícola" />
-      <div className="button-group">
-        <button
-          onClick={() => setActiveTable("insumos")}
-          className={`toggle-button ${activeTable === "insumos" ? "active" : ""}`}
-        >
-          Insumos Agrícolas
-        </button>
-        <button
-          onClick={() => setActiveTable("variedades")}
-          className={`toggle-button ${activeTable === "variedades" ? "active" : ""}`}
-        >
-          Variedades
-        </button>
-        <button
-          onClick={() => setActiveTable("maquinaria")}
-          className={`toggle-button ${activeTable === "maquinaria" ? "active" : ""}`}
-        >
-          Maquinaria
-        </button>
-        <button
-          onClick={() => setActiveTable("laborCultural")}
-          className={`toggle-button ${activeTable === "laborCultural" ? "active" : ""}`}
-        >
-          Labor Cultural
-        </button>
-       
-        <button
-          onClick={() => setActiveTable("etapas-fenologicas")}
-          className={`toggle-button ${activeTable === "etapas-fenologicas" ? "active" : ""}`}
-        >
-          Etapas Fenológicas
-        </button>
-      </div>
+      <div className="button-group-container">
+  <div className="button-group">
+    <button
+      onClick={() => setActiveTable("insumos")}
+      className={`toggle-button ${activeTable === "insumos" ? "active" : ""}`}
+    >
+      Insumos Agrícolas
+    </button>
+    <button
+      onClick={() => setActiveTable("variedades")}
+      className={`toggle-button ${activeTable === "variedades" ? "active" : ""}`}
+    >
+      Variedades
+    </button>
+    <button
+      onClick={() => setActiveTable("maquinaria")}
+      className={`toggle-button ${activeTable === "maquinaria" ? "active" : ""}`}
+    >
+      Maquinaria
+    </button>
+    <button
+      onClick={() => setActiveTable("laborCultural")}
+      className={`toggle-button ${activeTable === "laborCultural" ? "active" : ""}`}
+    >
+      Labor Cultural
+    </button>
+    <button
+      onClick={() => setActiveTable("etapas-fenologicas")}
+      className={`toggle-button ${activeTable === "etapas-fenologicas" ? "active" : ""}`}
+    >
+      Etapas Fenológicas
+    </button>
+  </div>
+</div>
 
       {activeTable === "variedades" && (
         <ButtonCrear buttonText="Crear Variedad" ModalComponent={CreateRiceVarietyModal} onSave={handleSave} />

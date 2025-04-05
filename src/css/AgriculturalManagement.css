@@ -1,28 +1,48 @@
+.button-group-container {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 10px; /* Espacio para el scroll */
+  margin-bottom: 20px;
+  -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
+}
+
 .button-group {
-    display: flex;
-    gap: 10px; // Espacio entre los botones
-    margin-bottom: 20px; // Espacio debajo del grupo de botones
-  }
-  
-  .toggle-button {
-    padding: 10px 20px;
-    border: 1px solid #28a745; // Cambiado a verde
-    background-color: white;
-    color: #28a745; // Cambiado a verde
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    border-radius: 4px;
-    font-weight: bold;
-  }
-  
-  .toggle-button:hover {
-    background-color: #28a745; // Cambiado a verde
-    color: white;
-  }
-  
-  .toggle-button.active {
-    background-color: #28a745; // Cambiado a verde
-    color: white;
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5); // Cambiado a verde
-  }
-  
+  display: inline-flex;
+  gap: 10px;
+  padding: 5px 10px; /* Espacio interno para que los botones no toquen los bordes */
+  white-space: nowrap; /* Evita que los botones se envuelvan */
+}
+
+.toggle-button {
+  padding: 10px 20px;
+  border: 1px solid #28a745;
+  background-color: white;
+  color: #28a745;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border-radius: 4px;
+  font-weight: bold;
+  flex-shrink: 0; /* Evita que los botones se encojan */
+}
+
+.toggle-button:hover {
+  background-color: #28a745;
+  color: white;
+}
+
+.toggle-button.active {
+  background-color: #28a745;
+  color: white;
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+/* Ocultar la barra de scroll en algunos navegadores 
+.button-group-container::-webkit-scrollbar {
+  display: none;
+}
+
+.button-group-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+*/
