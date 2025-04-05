@@ -187,8 +187,7 @@ const Tasks = () => {
 
   return (
     <div className="content-area">
-      <Header />
-      <h2>Tareas</h2>
+      <Header title="Mis Tareas" />
       <Container>
         <ContainerBox>
           <Sidebar>
@@ -208,6 +207,7 @@ const Tasks = () => {
             {selectedFarmId && (
               <>
                 <h3>Cultivos</h3>
+                {tasks.length === 0 && <NoTasksMessage>Seleccione un Cultivo</NoTasksMessage>}
                 <CropNavigation>
                   <button className="arrow-button" onClick={scrollLeft}>
                     {'<'}
@@ -226,7 +226,7 @@ const Tasks = () => {
                     {'>'}
                   </button>
                 </CropNavigation>
-                {tasks.length === 0 && <NoTasksMessage>No tienes tareas asignadas.</NoTasksMessage>}
+                
               </>
             )}
           </Content>

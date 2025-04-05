@@ -149,7 +149,7 @@ const CropSelection = () => {
 
   return (
     <div className="content-area">
-      <Header title="Diagnóstico Fitosanitario" />
+      <Header title="Diagnósticos" />
       <Container>
         <Sidebar>
           <h2>Fincas</h2>

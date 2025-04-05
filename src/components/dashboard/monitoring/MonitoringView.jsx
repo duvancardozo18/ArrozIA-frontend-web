@@ -157,7 +157,7 @@ const MonitoringView = () => {
 
   return (
     <div className="content-area">
-      <Header title="Monitoreo de Cultivos" />
+      <Header title="Monitoreos" />
       <Container>
         <Sidebar>
           <h2>Fincas</h2>

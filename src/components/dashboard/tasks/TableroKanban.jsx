@@ -125,7 +125,7 @@ const TableroKanban = ({ tasks, onTaskUpdate, selectedCropName }) => {
 
       {tasks.length === 0 ? (
         <NoTasksMessage>
-          NO tienes tareas asignadas.
+         
         </NoTasksMessage>
       ) : (
         <DragDropContext onDragEnd={handleDragEnd}>

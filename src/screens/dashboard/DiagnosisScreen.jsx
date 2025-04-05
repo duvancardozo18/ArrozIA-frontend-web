@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../config/AuthProvider';
-import Header from '../../components/dashboard/Header';
 import CropSelection from '../../components/dashboard/diagnosis2/CropSelection';
 import ImageCaptureForm from '../../components/dashboard/diagnosis2/ImageCaptureForm';
 import ImageUploadHandler from '../../components/dashboard/diagnosis2/ImageUploadHandler';
@@ -61,7 +60,6 @@ const DiagnosisScreen = () => {
 
   return (
     <div id="diagnosis-screen" className="diagnosis-content-area" style={{ paddingTop: '60px' }}>
-      <Header title="Diagnóstico Fitosanitario" />
 
       <div className="diagnosis-card-container">
         {!selectedCrop && (

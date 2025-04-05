@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from "../../config/AuthProvider";
-import Header from '../../components/dashboard/Header';
 import '../../css/Reports.css';
 import { Navigate } from 'react-router-dom';
 import ReportsView from '../../components/dashboard/reports/ReportsView';
@@ -59,8 +58,6 @@ const Reports = () => {
 
   return (
     <div className="content-area">
-      <Header title="Reportes" />
-
       {/* Select para listar los reportes (cultivos) */}
       <div className="report-select">
         <label htmlFor="report-select">Selecciona un Reporte:</label>

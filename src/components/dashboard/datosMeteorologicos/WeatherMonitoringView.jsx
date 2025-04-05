@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import CardsView from './CardsView';
 
 
+
 const MonitoringView = styled.div`
   display: flex;
   flex-direction: column;
@@ -337,10 +338,9 @@ const WeatherMonitoringView = () => {
 
   return (
     <>
-    <Header />
+    <Header title="Metereología" />
     <MonitoringView>
       <div>
-        <h2>Datos Meteorológicos</h2>
         <CardsView 
           farms={farms}
           selectedFarmId={selectedFarmId}

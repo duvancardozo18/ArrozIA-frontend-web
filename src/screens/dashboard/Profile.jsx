@@ -100,9 +100,11 @@ const ProfileForm = () => {
   };
 
   return (
+    <>
+    <Header title="Perfil" />
     <Box sx={{ maxWidth: 1200, margin: "0 auto", padding: 2 }}>
       <div className="">
-        <Header title="Perfil" />
+       
       </div>
       {loading ? (
         <Typography align="center">Cargando...</Typography>
@@ -252,6 +254,7 @@ const ProfileForm = () => {
 
       {error && <Typography color="error">{error}</Typography>}
     </Box>
+    </>
   );
 };
 

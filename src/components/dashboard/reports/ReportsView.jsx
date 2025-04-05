@@ -3,6 +3,7 @@ import SpaIcon from "@mui/icons-material/Spa";
 import axiosInstance from "../../../config/AxiosInstance";
 import CropDetails from "./CropDetails";
 import styled from "styled-components";
+import Header from '../../dashboard/Header';
 
 // Styled components
 const StyledSelect = styled.select`
@@ -10,7 +11,7 @@ const StyledSelect = styled.select`
   padding: 10px;
   font-size: 1rem;
   margin-bottom: 10px;
-  margin-top: 10px;
+  margin-top: 40px;
   border-radius: 5px;
   border: 1px solid #ddd;
   background-color: #f9f9f9;
@@ -98,7 +99,7 @@ const ReportsView = () => {
 
   return (
     <div className="reports-view">
-      <h2>Reportes</h2>
+      <Header title="Reportes" />
       <StyledSelect onChange={handleFarmSelection} value={selectedFarmId || ""}>
         <option value="" disabled>
           Selecciona una finca
@@ -146,7 +147,7 @@ const ReportsView = () => {
           )}
         </>
       ) : (
-        <p>No hay cultivos disponibles para esta finca.</p>
+        <p></p>
       )}
     </div>
   );

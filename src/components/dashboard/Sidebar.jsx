@@ -127,7 +127,7 @@ const Sidebar = () => {
                <MenuItem
                to="/weather-monitoring"
                icon={<MdOutlineCloud size={35} />}
-               text="Datos Meteorológicos"
+               text="Meteorología"
              />
             )}
              {hasPermission("ver_analisis_edafologico") && (

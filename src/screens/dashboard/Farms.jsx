@@ -5,7 +5,7 @@ import FarmMain from "../../components/dashboard/farms/FarmMain";
 import AllotmentMain from "./Lands";
 import "../../css/Farms.css";
 import { Navigate } from "react-router-dom";
-import { Snackbar, Alert } from "@mui/material"; 
+
 
 const Farms = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -58,18 +58,6 @@ const Farms = () => {
           isDarkMode={isDarkMode}
         />
       </div>
-
-      {/* Snackbar para mostrar el mensaje de bienvenida */}
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={3000} // Mostrar por 3 segundos
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} 
-      >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
-          ¡Iniciaste sesión con éxito, bienvenido!
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
