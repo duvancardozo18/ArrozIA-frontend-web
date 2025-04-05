@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import MonitoringCard from "./MonitoringCard";
@@ -8,7 +7,6 @@ import SuccessModal from "../modal/SuccessModal"; // Modal de éxito
 import axiosInstance from "../../../config/AxiosInstance";
 import styled from "styled-components";
 
-const localizer = momentLocalizer(moment);
 
 // Estilo para hacer que el contenedor ocupe toda la altura
 const MonitoringContainer = styled.div`
@@ -61,17 +59,7 @@ const AddButton = styled.button`
   }
 `;
 
-const CalendarWrapper = styled.div`
-  flex-shrink: 0; /* Evita que el calendario cambie de tamaño */
-  flex-grow: 0;
-  max-width: 100%; /* Asegura que no se desborde horizontalmente */
-  height: 400px; /* Tamaño fijo del calendario */
-  margin-bottom: 20px;
 
-  @media (min-width: 768px) {
-    height: 500px; /* Aumenta el tamaño en pantallas más grandes */
-  }
-`;
 
 const ColumMonitoring = ({ selectedCrop, monitorings, onOpenModal, refreshMonitorings, isAdmin  }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -149,15 +137,6 @@ const ColumMonitoring = ({ selectedCrop, monitorings, onOpenModal, refreshMonito
             )}
           </Header>
 
-          <CalendarWrapper>
-            <BigCalendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: "100%", width: "100%" }}
-            />
-          </CalendarWrapper>
           
           <MonitoringCardsContainer>
             {monitorings.length > 0 ? (
