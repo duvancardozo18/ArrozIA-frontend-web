@@ -5,7 +5,7 @@ import LandView from '../../../components/dashboard/lands/LandView';
 import VegetativeCycle from "../../../screens/dashboard/vegetativeCycle";
 import { Navigate } from 'react-router-dom';
 import styled from 'styled-components';
-import '../../../css/Crop.scss';
+import '../../../css/Crop.css';
 
 const StyledButton = styled.button`
   background-color: #28a745;

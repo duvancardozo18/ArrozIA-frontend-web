@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "../../../../css/ViewModal.scss";
+import "../../../../css/ViewModal.css";
 
 const ViewLaborModal = ({ show, closeModal, labor }) => {
   if (!show || !labor) return null;

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../../css/ImageCaptureForm.scss';
+import '../../../css/ImageCaptureForm.css';
 
 const DiagnosisResultsView = ({ results, onRetakeImages, cropName }) => {
   if (!results || !results.prediction) {

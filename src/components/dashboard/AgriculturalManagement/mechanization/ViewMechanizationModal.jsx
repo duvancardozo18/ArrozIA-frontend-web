@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "../../../../css/ViewModal.scss"; // Ensure this file exists and is properly configured
+import "../../../../css/ViewModal.css"; // Ensure this file exists and is properly configured
 
 const ViewMechanizationModal = ({ show, closeModal, operation }) => {
   if (!show || !operation) return null;

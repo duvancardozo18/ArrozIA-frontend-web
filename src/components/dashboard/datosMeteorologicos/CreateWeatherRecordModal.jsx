@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import '../../../css/RegistroMeteorologicoModal.scss';
+import '../../../css/RegistroMeteorologicoModal.css';
 import axiosInstance from '../../../config/AxiosInstance';
 import SuccessModal from '../../dashboard/modal/SuccessModal';
 

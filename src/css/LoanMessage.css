@@ -1,3 +1,7 @@
+
+  /* You might need to adjust this path based on your project structure */
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+  
 .loan-container {
     align-items: center;
     justify-content: center;
@@ -24,7 +28,4 @@
   .fa {
     font-size: 100px; /* Adjust size as needed */
   }
-  
-  /* You might need to adjust this path based on your project structure */
-  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
   

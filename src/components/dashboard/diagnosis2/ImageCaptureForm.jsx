@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MdCameraAlt } from 'react-icons/md';
-import '../../../css/ImageCaptureForm.scss';
+import '../../../css/ImageCaptureForm.css';
 
 
 const ImageCaptureForm = ({ onImagesSelected }) => {

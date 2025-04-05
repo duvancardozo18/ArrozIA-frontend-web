@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../../../css/AgriculturalTables.scss";
+import "../../../../css/AgriculturalTables.css";
 import axiosInstance from "../../../../config/AxiosInstance";
 import TableMachineryAction from "./TableMachineryAction"; // Ajusta la ruta si es necesario
 

@@ -2,7 +2,7 @@ import React from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import '../../../css/Farms.scss';
+import '../../../css/Farms.css';
 
 
 const CropTable = ({ crops, onAddCrop, onEditCrop, onDeleteCrop, onSelectCrop, selectedCrop }) => {

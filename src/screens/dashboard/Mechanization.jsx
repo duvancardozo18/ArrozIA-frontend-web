@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import Header from "../../components/dashboard/Header";
 import { AuthContext } from "../../config/AuthProvider";
 import MechanizationMain from "../../components/dashboard/mechanization/MechanizationMain"; // Componente principal de mecanización
-import "../../css/mechanization.scss";
+import "../../css/mechanization.css";
 
 import { Navigate } from "react-router-dom";
 

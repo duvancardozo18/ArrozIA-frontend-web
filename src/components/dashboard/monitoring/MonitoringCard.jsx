@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBug, faLeaf, faHeartbeat, faSeedling } from "@fortawesome/free-solid-svg-icons";
-import "../../../css/MonitoringCard.scss";
+import "../../../css/MonitoringCard.css";
 import EditMonitoringModal from "./EditMonitoringModal";
 import DeleteModal from "../modal/DeleteModal";
 import FinalizeMonitoringModal from "./FinalizeMonitoringModal";

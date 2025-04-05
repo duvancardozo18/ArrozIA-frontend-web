@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axiosInstance from "../../../config/AxiosInstance";
-import "../../../css/ViewModal.scss"; // Asegúrate de importar tu SCSS
+import "../../../css/ViewModal.css"; // Asegúrate de importar tu css
 
 const ViewSoilAnalysisModal = ({ show, closeModal, selectedLand, selectedAnalysis }) => {
   const [analysisData, setAnalysisData] = useState(null);

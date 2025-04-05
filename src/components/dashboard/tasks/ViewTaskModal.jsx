@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "../../../css/ViewModal.scss"; // Asegúrate de tener un archivo CSS o SCSS para estilos específicos del modal.
+import "../../../css/ViewModal.css"; // Asegúrate de tener un archivo CSS o css para estilos específicos del modal.
 
 const ViewTaskModal = ({ show, closeModal, task }) => {
   if (!show || !task) return null;

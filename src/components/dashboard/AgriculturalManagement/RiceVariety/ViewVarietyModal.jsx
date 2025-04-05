@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "../../../../css/ViewModal.scss"; // Asegúrate de que este archivo existe y está correctamente configurado
+import "../../../../css/ViewModal.css"; // Asegúrate de que este archivo existe y está correctamente configurado
 
 const ViewVarietyModal = ({ show, closeModal, variety }) => {
   if (!show || !variety) return null;

@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons"; 
-import "../../../css/LandCard.scss"; 
+import "../../../css/LandCard.css"; 
 
 const LandCard = ({ land, isExpanded, onToggle }) => {
   const handleToggle = () => {

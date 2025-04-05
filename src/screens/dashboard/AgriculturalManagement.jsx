@@ -9,7 +9,7 @@ import { Navigate } from "react-router-dom";
 import CreateRiceVarietyModal from "../../components/dashboard/AgriculturalManagement/RiceVariety/CreateRiceVarietyModal";
 import PhenologicalStageTable from "../../components/dashboard/AgriculturalManagement/PhenologicalStage/PhenologicalStageTable";
 import CreatePhenologicalStageModal from "../../components/dashboard/AgriculturalManagement/PhenologicalStage/CreatePhenologicalStageModal";
-import "../../css/AgriculturalManagement.scss";
+import "../../css/AgriculturalManagement.css";
 
 import LaborCulturalTable from "../../components/dashboard/AgriculturalManagement/LaborCultural/LaborCulturalTable";
 import CreateLaborModal from "../../components/dashboard/AgriculturalManagement/LaborCultural/CreateLaborModal";

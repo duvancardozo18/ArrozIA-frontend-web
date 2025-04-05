@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AreaTableAction from "./TableUserAction";
-import "../../../css/AreaTable.scss";
+import "../../../css/AreaTable.css";
 import axiosInstance from '../../../config/AxiosInstance';
 
 const TABLE_HEADS = [

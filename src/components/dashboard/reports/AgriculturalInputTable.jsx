@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../config/AxiosInstance";
-import "../../../css/CropInputsTable.scss"; // Asegúrate de reutilizar los estilos existentes
+import "../../../css/CropInputsTable.css"; // Asegúrate de reutilizar los estilos existentes
 
 const AgriculturalInputTable = () => {
   const [inputs, setInputs] = useState([]);

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from "../../config/AuthProvider";
 import Header from '../../components/dashboard/Header';
-import '../../css/Reports.scss';
+import '../../css/Reports.css';
 import { Navigate } from 'react-router-dom';
 import ReportsView from '../../components/dashboard/reports/ReportsView';
 import axiosInstance from "../../config/AxiosInstance";

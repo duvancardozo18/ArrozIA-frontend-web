@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../../css/LoanMessage.scss'; // Assuming the CSS is in this file
+import '../../../css/LoanMessage.css'; // Assuming the CSS is in this file
 
 const LoanMessage = () => {
   return (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../../css/SoilAnalysis.scss";
+import "../../../css/SoilAnalysis.css";
 import TableSoilAnalysisAction from "./TableSoilAnalysisAction";
 import CreateSoilAnalysisModal from "./CreateSoilAnalysisModal";
 import SuccessModal from "../modal/SuccessModal";

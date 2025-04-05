@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from "../../config/AuthProvider";
 import Header from '../../components/dashboard/Header';
-import '../../css/Crop.scss';
+import '../../css/Crop.css';
 import { Navigate, useNavigate } from 'react-router-dom';
 import axiosInstance from "../../config/AxiosInstance";
 

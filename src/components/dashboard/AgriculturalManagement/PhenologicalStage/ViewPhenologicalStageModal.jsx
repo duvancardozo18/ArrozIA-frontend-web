@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "../../../../css/ViewModal.scss"; // Asegúrate de importar tu SCSS
+import "../../../../css/ViewModal.css"; // Asegúrate de importar tu css
 
 const ViewPhenologicalStageModal = ({ show, closeModal, stage }) => {
   if (!show) return null;

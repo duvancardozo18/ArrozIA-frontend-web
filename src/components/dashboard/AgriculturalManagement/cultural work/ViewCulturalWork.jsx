@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "../../../../css/ViewModal.scss"; // Make sure this file exists and is correctly set up
+import "../../../../css/ViewModal.css"; // Make sure this file exists and is correctly set up
 
 const ViewCulturalWorkModal = ({ show, closeModal, work }) => {
   if (!show || !work) return null;

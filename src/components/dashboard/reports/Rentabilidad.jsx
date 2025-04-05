@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../../../css/ReportSummary.scss';
+import '../../../css/ReportSummary.css';
 import CropInputsTable from '../../dashboard/reports/CropInputsTable';
 import CulturalWorkTable from '../../dashboard/reports/CulturalWorkTable';
 import AgriculturalInputTable from '../../dashboard/reports/AgriculturalInputTable';

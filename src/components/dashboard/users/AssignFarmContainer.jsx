@@ -3,7 +3,7 @@ import axiosInstance from '../../../config/AxiosInstance';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SuccessModal from '../modal/SuccessModal';
-import "../../../css/AssignFarmContainer.scss";
+import "../../../css/AssignFarmContainer.css";
 
 const AssignFarmContainer = ({ onSave }) => {
   const [users, setUsers] = useState([]); // Lista de usuarios

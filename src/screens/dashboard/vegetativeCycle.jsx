@@ -4,7 +4,7 @@ import { AuthContext } from "../../config/AuthProvider";
 import Header from '../../components/dashboard/Header';
 import axiosInstance from '../../config/AxiosInstance';
 import { Navigate } from 'react-router-dom';
-import '../../css/Crop.scss';
+import '../../css/Crop.css';
 import VegetativeCard from "../../components/dashboard/vegetativecycle/VegetativeCard";
 import EditStageModal from "../../components/dashboard/vegetativecycle/EditStageModal";
 

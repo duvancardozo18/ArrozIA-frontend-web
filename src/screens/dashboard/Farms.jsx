@@ -3,7 +3,7 @@ import Header from "../../components/dashboard/Header";
 import { AuthContext } from "../../config/AuthProvider";
 import FarmMain from "../../components/dashboard/farms/FarmMain";
 import AllotmentMain from "./Lands";
-import "../../css/Farms.scss";
+import "../../css/Farms.css";
 import { Navigate } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material"; 
 

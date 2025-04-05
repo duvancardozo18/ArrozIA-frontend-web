@@ -8,7 +8,7 @@ import DiagnosisResultsView from '../../components/dashboard/diagnosis2/Diagnosi
 import DiagnosisHistory from '../../components/dashboard/diagnosis2/DiagnosisHistory';
 import { Navigate } from 'react-router-dom';
 import axiosInstance from '../../config/AxiosInstance';
-import '../../css/Diagnosis.scss';
+import '../../css/Diagnosis.css';
 
 const DiagnosisScreen = () => {
   const { isAuthenticated } = useContext(AuthContext);

@@ -3,7 +3,7 @@ import axiosInstance from "../../../config/AxiosInstance";
 import SuccessModal from "../modal/SuccessModal";
 import MapsLeaflet from "./MapsLeaflet";
 import AsyncSelect from 'react-select/async';
-import styles from '../../../css/NewFarm.module.scss';
+import styles from '../../../css/NewFarm.module.css';
 
 const NewFarm = ({ closeModal, addFarm }) => {
   const [formData, setFormData] = useState({

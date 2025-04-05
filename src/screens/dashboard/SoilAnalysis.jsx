@@ -4,7 +4,7 @@ import ColumLands from "../../components/dashboard/soilsanalysis/ColumLands";
 import ColumSoilAnalysis from "../../components/dashboard/soilsanalysis/ColumSoilAnalysis";
 import { AuthContext } from "../../config/AuthProvider";
 import { Navigate } from "react-router-dom";
-import "../../css/SoilAnalysis.scss";
+import "../../css/SoilAnalysis.css";
 import axiosInstance from "../../config/AxiosInstance";
 import CreateSoilAnalysisModal from "../../components/dashboard/soilsanalysis/CreateSoilAnalysisModal";
 

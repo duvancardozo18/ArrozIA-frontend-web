@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AuditsTable from "../../components/dashboard/Audits/AuditsTable";
-import "../../css/AuditsScreen.scss";
+import "../../css/AuditsScreen.css";
 
 const AuditsScreen = () => {
   const [startDate, setStartDate] = useState("");

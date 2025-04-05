@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import "../../../../css/ViewModal.scss"; // Asegúrate de importar tu SCSS
+import "../../../../css/ViewModal.css"; // Asegúrate de importar tu css
 
 const ViewMachineryModal = ({ show, closeModal, machinery }) => {
   const [currentMachinery, setCurrentMachinery] = useState(null);

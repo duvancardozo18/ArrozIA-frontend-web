@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AreaTableActionRoles from "./TableRoleAction"; 
-import "../../../css/AreaTable.scss";
+import "../../../css/AreaTable.css";
 import axiosInstance from '../../../config/AxiosInstance';  
  
 

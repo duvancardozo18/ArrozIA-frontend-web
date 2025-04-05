@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import "./css/App.scss";
+import "./css/App.css";
 import { ThemeContext } from "./context/ThemeContext";
 import { DARK_THEME, LIGHT_THEME } from "./constants/themeConstants";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";

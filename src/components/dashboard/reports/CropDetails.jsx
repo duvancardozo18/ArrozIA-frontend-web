@@ -6,7 +6,7 @@ import TabContent from './TabContent';
 import TotalCostsTable from './TotalCostsTable'; // Importar TotalCostsTable
 import TotalCostsTable2 from './TotalCostsTable2'; // Importar TotalCostsTable2
 import ExportModal from './ExportModal';
-import "../../../css/CropDetail.scss";
+import "../../../css/CropDetail.css";
 
 const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
   const [cropDetails, setCropDetails] = useState(null);

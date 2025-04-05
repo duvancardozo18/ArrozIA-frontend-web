@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../config/AxiosInstance';
-import '../../../css/ImageCaptureForm.scss';
+import '../../../css/ImageCaptureForm.css';
 
 const ImageUploadHandler = ({ images, cultivoId, onUploadComplete }) => {
   const [uploadProgress, setUploadProgress] = useState(0);

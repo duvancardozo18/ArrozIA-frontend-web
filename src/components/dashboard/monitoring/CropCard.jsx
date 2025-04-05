@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWheatAwn } from "@fortawesome/free-solid-svg-icons"; 
-import "../../../css/CropCard.scss"; 
+import "../../../css/CropCard.css"; 
 
 const CropCard = ({ crop, isExpanded, onToggle }) => {
   const handleToggle = () => {

@@ -2,7 +2,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudSun } from "@fortawesome/free-solid-svg-icons";
-import "../../../css/LoteCard.scss"; // Asegúrate de que los estilos estén importados correctamente
+import "../../../css/LoteCard.css"; // Asegúrate de que los estilos estén importados correctamente
 
 const LoteCard = ({ lote, isExpanded, onToggle }) => {
   const handleToggle = () => {

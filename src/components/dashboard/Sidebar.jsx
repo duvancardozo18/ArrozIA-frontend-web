@@ -18,7 +18,7 @@ import { BiTask } from "react-icons/bi";
 import { LuMonitorDot } from "react-icons/lu";
 import { FaSearch, FaMapSigns, FaSeedling } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "../../css/Sidebar.scss";
+import "../../css/Sidebar.css";
 import { SidebarContext } from "../../context/SidebarContext";
 import { AuthContext } from "../../config/AuthProvider";
 

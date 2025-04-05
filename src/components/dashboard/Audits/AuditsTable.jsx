@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import "../../../css/AuditsTable.scss";
+import "../../../css/AuditsTable.css";
 
 const AuditsTable = ({ audits }) => {
   return (

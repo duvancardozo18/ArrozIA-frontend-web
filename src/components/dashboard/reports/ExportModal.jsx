@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import "../../../css/ExportModal.scss";
+import "../../../css/ExportModal.css";
 import { generatePDF, generateXLS } from "./ReportExport"; // Asegúrate de ajustar la ruta correctamente
 import axiosInstance from "../../../config/AxiosInstance"; // Importar AxiosInstance
 

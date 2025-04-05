@@ -1,6 +1,6 @@
 // AreaTop.js
 import { MdOutlineMenu } from "react-icons/md";
-import "../../css/Header.scss";
+import "../../css/Header.css";
 import { useContext, useEffect, useRef, useState } from "react";
 import { SidebarContext } from "../../context/SidebarContext";
 import "react-date-range/dist/styles.css"; // main style file

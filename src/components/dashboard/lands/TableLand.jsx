@@ -3,7 +3,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../config/AxiosInstance';
-import '../../../css/Farms.scss';
+import '../../../css/Farms.css';
 
 const AllotmentTable = ({ lands, onAddLote, onEditLote, onDeleteLote, onSelectAllotment, selectedAllotment }) => {
   const [hasLotes, setHasLotes] = useState(false);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from "../../../config/AxiosInstance";
-import "../../../css/TotalCostsTable2.scss";  // Asegúrate de que este archivo esté presente
+import "../../../css/TotalCostsTable2.css";  // Asegúrate de que este archivo esté presente
 
 const TotalCostsTable2 = ({ cultivoId, onTotalCostChange }) => {
   const [costDetails, setCostDetails] = useState([]);  // Estado para los detalles de los costos

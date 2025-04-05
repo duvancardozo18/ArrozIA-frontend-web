@@ -6,7 +6,7 @@ import CreateWeatherRecordModal from './CreateWeatherRecordModal';
 import SuccessModal from '../../dashboard/modal/SuccessModal'; // Importar modal de éxito
 import "react-datepicker/dist/react-datepicker.css";
 import styled from 'styled-components';
-// import '../../../css/MonitoringView.scss';
+// import '../../../css/MonitoringView.css';
 import CardsView from './CardsView';
 
 

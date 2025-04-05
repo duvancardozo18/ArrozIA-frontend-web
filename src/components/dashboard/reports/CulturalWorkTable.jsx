@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../config/AxiosInstance";
-import "../../../css/CropInputsTable.scss";
+import "../../../css/CropInputsTable.css";
 
 const CulturalWorkTable = ({ cultivoId, onFilteredDataChange, onTotalCulturalWorkChange  }) => {
   const [culturalWorks, setCulturalWorks] = useState([]);

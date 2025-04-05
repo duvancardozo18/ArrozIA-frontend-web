@@ -1,32 +1,29 @@
-// google fonts
+/* google fonts */
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
-
 /*** Common variables ***/
 :root {
-  // colors
+  /* colors */
   --blue-color: #475be8;
   --green-color: #4ce13f;
   --orange-color: #f29a2e;
   --red-color: #ef0606;
   --dark-color: #292929;
   --light-color: #ffffff;
-  // typography
+  /* typography */
   --font-family-lato: "Lato", sans-serif;
   --font-family-manrope: "Manrope", sans-serif;
   --font-size: 16px;
   --line-height: 1.6;
   --font-weight: 400;
-  // transition
+  /* transition */
   --default-transition: all 300ms ease-in-out;
-  // chart
+  /* chart */
   --chart-primary-color: #475be8;
   --chart-secondary-color: #e6e6e6;
-  // box shadow
+  /* box shadow */
   --light-shadow1: rgba(0, 0, 0, 0.02) 0px 4px 12px;
-}
-
-// color mode toggle mixins
-@mixin lightMode {
+  
+  /* light mode variables by default */
   --primary-color: #14B814;
   --secondary-color: #fff;
   --background-color: #fafafa;
@@ -48,7 +45,8 @@
   --scroll-thumb-bg-color: #e9e9e9;
 }
 
-@mixin darkMode {
+/* dark mode variables */
+body.dark-mode {
   --primary-color: #14B814;
   --secondary-color: #2e2e48;
   --background-color: #383854;
@@ -65,7 +63,7 @@
   --toggle-btn-bg-color: #525270;
   --toggle-btn-icon-color: #bdbdbd;
   --thead-bg-color: #383854;
-  --tbl-border-color: ##383854;
+  --tbl-border-color: #383854;
   --scroll-track-bg-color: #2e2e48;
   --scroll-thumb-bg-color: #575777;
 }
@@ -77,18 +75,11 @@
   font-family: inherit;
 }
 
-// color mode toggle in body
+/* color mode toggle in body */
 body {
   font-family: var(--font-family-lato);
   font-size: var(--font-size);
   font-weight: var(--font-weight);
-  // by default light mode is on
-  @include lightMode();
-
-  // add dark-mode class on the body if dark mode is set true
-  &.dark-mode {
-    @include darkMode();
-  }
 }
 
 a {
@@ -106,7 +97,7 @@ ul {
   list-style-type: none;
 }
 
-// theme toggle button
+/* theme toggle button */
 .theme-toggle-btn {
   background-color: var(--bg-color-inverted);
   position: fixed;
@@ -124,10 +115,10 @@ ul {
   z-index: 100;
   cursor: pointer;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
 
-  .theme-icon {
-    width: 24px;
-  }
+.theme-toggle-btn .theme-icon {
+  width: 24px;
 }
 
 .page-wrapper {
@@ -141,32 +132,39 @@ ul {
   min-height: 100vh;
   padding: 50px 58px;
   margin-left: 260px;
+}
 
-  @media (max-width: 1400px) {
+@media (max-width: 1400px) {
+  .content-wrapper {
     padding: 32px;
   }
+}
 
-  @media (max-width: 1200px) {
+@media (max-width: 1200px) {
+  .content-wrapper {
     margin-left: 56px;
   }
+}
 
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
+  .content-wrapper {
     margin-left: 0;
     padding: 24px;
   }
+}
 
-  @media (max-width: 576px) {
+@media (max-width: 576px) {
+  .content-wrapper {
     margin-left: 0;
     padding: 16px;
   }
 }
 
-// content
-.content-area {
-  & > section {
-    margin-bottom: 16px;
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
+/* content */
+.content-area > section {
+  margin-bottom: 16px;
+}
+
+.content-area > section:last-child {
+  margin-bottom: 0;
 }

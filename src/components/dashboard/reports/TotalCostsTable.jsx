@@ -1,7 +1,7 @@
 // TotalCostsTable.jsx
 import React, { useEffect, useState } from 'react'; 
 import axiosInstance from "../../../config/AxiosInstance";
-import "../../../css/TotalCostsTable.scss";
+import "../../../css/TotalCostsTable.css";
 
 const TotalCostsTable = ({ plotId, cultivoTotalCost, insumosTotalCost, insumosAgricolas, totalCulturalWork , cultivoId, onTotalCostChange   }) => {
   const [costs, setCosts] = useState({

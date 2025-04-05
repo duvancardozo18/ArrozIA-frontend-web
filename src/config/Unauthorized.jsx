@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../css/Unauthorized.scss'; // Puedes agregar estilos si lo deseas
+import '../css/Unauthorized.css'; // Puedes agregar estilos si lo deseas
 
 const Unauthorized = () => {
   const navigate = useNavigate();
