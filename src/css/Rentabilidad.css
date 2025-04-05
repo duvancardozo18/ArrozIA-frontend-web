@@ -8,22 +8,7 @@
     margin: auto;
   }
   
-  .export-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    padding: 8px 16px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .export-button:hover {
-    background-color: #388e3c;
-  }
+
   
   .general-info-card {
     padding: 20px;

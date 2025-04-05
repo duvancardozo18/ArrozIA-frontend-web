@@ -3,8 +3,6 @@ import axiosInstance from "../../../config/AxiosInstance";
 import Rentabilidad from './Rentabilidad';
 import Rendimiento from './Rendimiento';
 import TabContent from './TabContent';
-import TotalCostsTable from './TotalCostsTable'; // Importar TotalCostsTable
-import TotalCostsTable2 from './TotalCostsTable2'; // Importar TotalCostsTable2
 import ExportModal from './ExportModal';
 import "../../../css/CropDetail.css";
 
@@ -152,6 +150,7 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
   
   return (
     <div className="crop-details">
+      <button onClick={() => setShowExportModal(true)} className="export-button">Exportar Informe</button>
       <h3>Detalles del Cultivo: {cropDetails.cropName}</h3>
       <p>Finca: {selectedFarmName || "No disponible"}</p>
       <p>Variedad: {varietyName}</p> {/* Mostrar el nombre de la variedad */}
@@ -171,7 +170,7 @@ const CropDetails = ({ selectedCropId, selectedFarmName, onClose }) => {
         {renderTabContent()}
       </div>
       
-      <button onClick={() => setShowExportModal(true)} className="export-button">Exportar Informe</button>
+     
       {showExportModal && (
         <ExportModal
           onClose={() => setShowExportModal(false)}

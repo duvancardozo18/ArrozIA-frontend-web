@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import "../../../css/ExportModal.css";
-import { generatePDF, generateXLS } from "./ReportExport"; // Asegúrate de ajustar la ruta correctamente
+import { generatePDF } from "./ReportExport"; // Asegúrate de ajustar la ruta correctamente
 import axiosInstance from "../../../config/AxiosInstance"; // Importar AxiosInstance
 
 const ExportModal = ({ onClose, cropDetails, inputs, culturalWorks, cultivoId }) => {
-  const [format, setFormat] = useState('XLSX');
+  const [format] = useState('PDF');
   const [totalInputCost, setTotalInputCost] = useState(0);
   const [totalWorkValue, setTotalWorkValue] = useState(0);
   const [totalRent, setTotalRent] = useState(0); // Estado para el arriendo
@@ -61,18 +61,7 @@ const ExportModal = ({ onClose, cropDetails, inputs, culturalWorks, cultivoId })
         machineryAndLaborCosts,
         agriculturalInputCosts
       );
-    } else if (format === "XLSX") {
-      generateXLS(
-        cropDetails,
-        inputs, // Datos actuales de la tabla de insumos
-        culturalWorks, // Datos actuales de la tabla de labores culturales
-        totalInputCost,
-        totalWorkValue,
-        totalRent,
-        machineryAndLaborCosts,
-        agriculturalInputCosts
-      );
-    }
+    } 
   
     onClose();
   };
@@ -80,21 +69,13 @@ const ExportModal = ({ onClose, cropDetails, inputs, culturalWorks, cultivoId })
   return (
     <div className="export-modal">
       <div className="modal-content">
-        <h3>Generar Reporte</h3>
+        <label>Generar Reporte</label>
         <div className="format-selection">
-          <label>Selecciona el formato:</label>
-          <select 
-            value={format} 
-            onChange={(e) => setFormat(e.target.value)} 
-            className="format-select"
-          >
-            <option value="XLSX">XLSX</option>
-            <option value="PDF">PDF</option>
-          </select>
+          <p>El reporte se genera en formato PDF</p>
         </div>
 
-        <button onClick={handleGenerateReport} className="generate-btn">Generar Reporte</button>
-        <button onClick={onClose} className="close-btn">Cerrar</button>
+        <button onClick={handleGenerateReport} className="generate-btn">Exportar</button>
+        <button onClick={onClose} className="close-btn">x</button>
       </div>
     </div>
   );

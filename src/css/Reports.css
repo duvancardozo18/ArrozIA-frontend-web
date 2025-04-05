@@ -142,20 +142,7 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-.export-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
 
-.export-button:hover {
-  background-color: #388e3c;
-}
 
 /* Rentabilidad.css */
 .rentabilidad-container {
@@ -169,9 +156,6 @@
 }
 
 .export-button {
-  position: absolute;
-  top: 15px;
-  right: 15px;
   padding: 8px 16px;
   background-color: #4caf50;
   color: #fff;
@@ -179,6 +163,8 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-left: auto; /* Empuja el botón a la derecha */
+  display: block; /* Necesario para que margin-left: auto funcione */
 }
 
 .export-button:hover {

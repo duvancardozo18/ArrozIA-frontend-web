@@ -9,54 +9,96 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+} 
 
-  .export-modal-content {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 350px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.export-modal-content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 350px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 
-    h3 {
-      font-size: 1.2em;
-      margin-bottom: 10px;
-      color: #333;
-    }
-
-    p {
-      margin-bottom: 15px;
-      color: #666;
-    }
-
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: transparent;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    .generate-report-button {
-      background-color: #4caf50;
-      color: white;
-      padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 5px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background-color 0.3s;
-
-      &:hover {
-        background-color: #45a049;
-      }
-    }
-  }
 }
+
+h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+p {
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.modal-content label {
+  font-size: 20px;
+ 
+  
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.generate-btn {
+  margin-top: 30px;
+  background-color: #4caf50 ;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto; /* Empuja el botón a la derecha */
+  display: block;
+}
+
+.generate-btn:hover {
+  background-color: #45a049;
+  box-shadow: 0 2px 8px rgba(44, 123, 229, 0.4);
+}
+
+.generate-btn:active {
+  transform: translateY(1px);
+}
+
+/* Efecto de carga para el botón cuando está procesando */
+.generate-btn.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.generate-btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+  
+
+.format-selection {
+  margin-top: 10px;
+}
+
+
