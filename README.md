@@ -28,6 +28,7 @@ El sistema está compuesto por un backend y un frontend independientes, lo que p
 ### Requisitos 
 Tener instalado las siguientes herramientas: 
 - **Node js 18.20**
+- **Docker** (opcional, para despliegue en contenedores)
 
 
 ---
